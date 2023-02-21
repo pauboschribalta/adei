@@ -13,40 +13,143 @@ library(dplyr)
 
 ### Transformació de les dades
 
-#### Edat: 
-Quatre possibles categories: [0,25] [26-45] [46-65] [66-inf]
-  
-#### Job:
-
-admin.   blue-collar  entrepreneur     housemaid    management       retired self-employed      services       student 
-technician    unemployed       unknown 
-
-#### Marital:
-
-divorced  married   single  unknown 
+Obtenim les dades:
 
 ```{r dataset, include=TRUE}
 
 df <- read.csv2("./bank-additional.csv")
+```
 
-###age
+Especifiquem aquelles dades que hem convertit i les transformacions que hem aplicat en elles.
+
+#### Age:
+
+Quatre possibles categories: [0,25] [26-45] [46-65] [66-inf]
+
+```{r}
 df$age <- cut(df$age, 
               breaks = c(0, 25, 45, 65, max(df$age)),
               labels = c("A", "B", "C", "D"))
+```
 
-###jobs
+#### Job:
+
+admin. blue-collar entrepreneur housemaid management retired self-employed services student technician unemployed unknown
+
+```{r}
 df %>% mutate(job = ifelse(job == "retired" | job == "unemployed" | job == "student" | job == "housemaid", "unemployed", job))
 df %>% mutate(job = ifelse(job == "entrepeneur", "self-employed", job))
+```
 
-###education
+#### Marital:
+
+divorced married single unknown
+
+```{r}
+
+```
+
+#### Education:
+
+```{r}
 df %>% mutate(education = ifelse(education, education == "basic.4y" | education == "basic.6y" | education == "basic.9y", "basic", education))
 df %>% mutate(education = ifelse(education, education == "unknown", NA , education))
+```
 
-###duration
+#### Default:
+
+```{r}
+
+```
+
+#### Housing:
+
+```{r}
+
+```
+
+#### Loan:
+
+```{r}
+
+```
+
+#### Contact:
+
+```{r}
+
+```
+
+#### Month
+
+```{r}
+
+```
+
+#### Day of week:
+
+```{r}
+
+```
+
+#### Duration:
+
+```{r}
 df <- cut(df$duration,
           breaks = c(0, 30, 300, max(df$duration)),
           labels = c("Baixa", "Mitja", "Alta"))
+```
 
-###pdays
+#### Campaign:
+
+```{r}
+
+```
+
+#### Pdays:
+
+```{r}
 df %>% mutate(pdays = ifelse(pdays, pdays == 999, NA , pdays))
+```
+
+#### Previous:
+
+```{r}
+
+```
+
+#### Poutcome:
+
+```{r}
+
+```
+
+#### Employment variation rate
+
+```{r}
+
+```
+
+#### Consumer price index
+
+```{r}
+
+```
+
+#### Consumer confidence index
+
+```{r}
+
+```
+
+#### Euribor 3 month rate
+
+```{r}
+
+```
+
+#### Number of employees
+
+```{r}
+
 ```
