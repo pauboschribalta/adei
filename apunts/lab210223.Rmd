@@ -1,0 +1,304 @@
+---
+title: "Case Study"
+author: "Daniel Villalobos"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: '4'
+  html_document:
+    toc: yes
+    toc_float: yes
+    toc_depth: 4
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Carrega inicial de les dades
+```{r}
+file_path = "~/Escriptori/adei/lab1/bank-additional.csv"
+df = read.csv2(file_path, header = T)
+```
+
+```{r}
+head(df)
+```
+
+### Mostra de les dades amb les que treballare
+```{r}
+set.seed(1)
+n <- 5000
+number_of_trues = as.integer(runif(1, min = 2400, max=2600))
+```
+
+
+```{r}
+df_yes = df[df$y=="yes",]
+df_yes = df_yes[sample(1:number_of_trues), ]
+
+df_no = df[df$y=="no",]
+df_no = df_no[sample(1:(n-number_of_trues)),]
+df = rbind(df_yes, df_no)
+```
+
+
+### Análisis Exploratori
+
+```{r}
+summary(df)
+str(df)
+```
+
+
+```{r}
+hist(df$age)
+```
+
+
+```{r}
+barplot(prop.table(table(df$job)))
+```
+
+```{r}
+barplot(100*prop.table(table(df$marital)))
+
+which(df$marital == "unknown")
+```
+
+```{r}
+barplot(100*prop.table(table(df$education)))
+```
+
+
+```{r}
+barplot(100*prop.table(table(df$housing)))
+```
+
+```{r}
+barplot(100*prop.table(table(df$loan)))
+
+```
+
+```{r}
+
+barplot(100*prop.table(table(df$contact)))
+```
+
+
+```{r}
+barplot(100*prop.table(table(df$month)))
+
+```
+
+```{r}
+barplot(100*prop.table(table(df$day_of_week)))
+
+```
+
+```{r}
+hist(df$duration) #MALA PINTA
+
+df[which(df$duration == 4918),]
+```
+
+
+```{r}
+hist(df$campaign)
+
+```
+
+```{r}
+hist(df$pdays) #ALTANTO 999 - DESDOBLAAAR! 
+
+```
+
+```{r}
+hist(df$previous)
+
+```
+
+```{r}
+barplot(table(df$poutcome))
+
+```
+
+```{r}
+hist(as.numeric(df$emp.var.rate))
+```
+
+```{r}
+table(df$emp.var.rate) #VARIACI? TREBALL TRIMESTRAL 
+
+```
+
+```{r}
+table(df$cons.price.idx) #IPC MENSUAL
+
+```
+
+```{r}
+
+table(df$cons.conf.idx) # INDEX CONFIAN?A CONSUMIDOR
+```
+
+```{r}
+
+table(df$euribor3m) #EURIBOR A TRES MESOS PER DIA
+```
+
+
+```{r}
+table(df$nr.employed) #TREBALLADOR PER TRIMESTRE
+```
+
+
+
+### Transformacions
+
+```{r}
+summary(df)
+```
+
+#### Factoritzar variables categoriques
+```{r}
+summary(df$job)
+df$job <- as.factor(df$job)
+summary(df$job)
+```
+
+
+```{r}
+levels(df$education)
+df$education <- as.factor(df$education)
+levels(df$education)
+```
+
+#### Manera eficient de fer-ho
+```{r}
+df[sapply(df, is.character)] <- lapply(df[sapply(df, is.character)], 
+                                       as.factor)
+summary(df)
+```
+
+#### Agrupar categories
+
+```{r}
+df$education_grouped <- df$education
+levels(df$education_grouped) <- c("basic", "basic","basic","high.school","illiterate", "professional.course", "university.degree", "unknown")
+levels(df$education_grouped)
+levels(df$education_grouped)[levels(df$education_grouped)=='unknown'] <- NA
+```
+
+```{r}
+summary(df$job)
+levels(df$job) <- c("admin.", "blue-collar", "entrepreneur", "housemaid", "management"," retired", "self-employed", "services", "student", "technician", "unemployed", NA)
+```
+
+```{r}
+levels(df$housing) <- c("no", NA, "yes")
+levels(df$loan) <- c("no", NA, "yes")
+```
+
+```{r}
+summary(df)
+```
+
+
+#### Factoritzar variables numériques
+```{r}
+summary(df$duration)
+df$duration_cuted <- cut(df$duration, breaks=c(3,172,477.1,685,4200), include.lowest = T)
+summary(df$duration_cuted)
+```
+
+```{r}
+df$emp.var.rate <- as.factor(df$emp.var.rate)
+df$emp.var.rate <- as.factor(df$cons.price.idx)
+df$emp.var.rate <- as.factor(df$cons.conf.idx)
+df$emp.var.rate <- as.factor(df$euribor3m)
+df$emp.var.rate <- as.factor(df$nr.employed)
+summary(df)
+```
+
+### missings 
+```{r}
+df$marital[df$marital == 'unknown'] = NA
+levels(df$marital)
+summary(df$marital)
+
+levels(df$marital)[levels(df$marital)=='unknown'] <- NA
+summary(df$marital)
+```
+
+##### outliers
+```{r}
+#boxplot(df$duration)
+treshold = quantile(df$duration, 0.75)*3
+out_ind <- which(df$duration > treshold)
+df[out_ind,]$duration <- NA
+summary(df$duration)
+```
+
+```{r}
+summary(df)
+```
+
+
+```{r}
+boxplot(df$campaign)
+treshold <- quantile(df$campaign, 0.75)*3
+out_ind <- which(df$campaign > treshold)
+df[out_ind,]$campaign <- NA
+summary(df$campaign)
+
+```
+### Imputacio de missings
+
+#### Variables numériques
+```{r}
+library(missMDA)
+```
+
+```{r}
+summary(df)
+names(df)
+vars_con<-names(df)[c(1, 11:14)]
+vars_dis<-names(df)[c(2:10, 15:23)]
+vars_res<-names(df)[c(21)]
+```
+
+
+```{r}
+summary(df[,vars_con])
+res.impca<-imputePCA(df[,vars_con],ncp=3)
+summary(res.impca$completeObs)
+```
+```{r}
+par(mfrow=c(1,2))
+hist(df$duration)
+hist(res.impca$completeObs[,"duration"])
+```
+
+```{r}
+# We should apply a similar approach for other numeric variables.
+
+# Once you have validated the process:
+df[,vars_con ]<-res.impca$completeObs
+```
+
+#### Variables categoriques
+```{r}
+summary(df[,vars_dis])
+res.immca<-imputeMCA(df[,vars_dis],ncp=18)
+summary(res.immca$completeObs)
+
+df[,vars_dis ]<-res.immca$completeObs
+```
+
+
+```{r}
+summary(df[,vars_dis])
+```
+

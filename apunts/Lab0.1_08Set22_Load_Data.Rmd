@@ -1,0 +1,145 @@
+---
+title: "Sessió 0.1"
+author: "Bernat Plandolit López"
+date: "7/9/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data Reading
+
+Data can be given in many formats, some more popular than others (xlsx, csv, txt, json) an from databases (SQL Queries...) or RData fields. The latter is very convenient when working with R.
+
+The data for the project comes in a csv file:
+
+```{r Read data}
+df <- read.csv("Airbnb_Open_Data.csv")
+```
+
+Once we have our data read, we can save it as an RData file, which will be very easy to save and load:
+
+```{r Save data}
+save(df, file = "Airbnb_Open_Data_Raw.RData")
+```
+
+If we want to load it, we only need to use `load`:
+
+```{r Load data}
+load("Airbnb_Open_Data_Raw.RData")
+```
+
+We can save multiple objects in an RData file (in fact, everything that we might have in the environment).
+
+## Base R
+
+R is a free software, that is, thounsands of people are contributing to its developement every day and libraries that we can use are virtually infinite. However, we can always use integrated base R commands to make our code.
+
+### Access to columns and rows
+
+Select one column:
+
+```{r}
+# The following are equivalent
+df$id
+df[, 1]
+df[, "id"]
+```
+
+Selection of columns:
+
+```{r}
+df[, 1:3]
+df[, c("id", "NAME", "host.id")]
+```
+
+A data frame acts like a matrice, so one can filter rows with the first part of the [, ]. One can use logic conditions to filter:
+
+Select first 3 columns only for neighborhood Williamsburg:
+
+```{r}
+df[df$neighbourhood == "Williamsburg", c("id", "NAME", "host.id")]
+```
+
+
+**Note**: in R the first index is 1, not 0. And negative indices remove columns/rows.
+
+Use `head()`to avoid showing too many instances:
+
+```{r}
+df_test <- df[df$neighbourhood == "Williamsburg", c("id", "NAME", "host.id")]
+head(df_test)
+```
+
+### Create new columns or modify
+
+To create new columns you only need to assign values to a column with the $ operator:
+
+```{r}
+df$is_williamsburg <- ifelse(df$neighbourhood == "Williamsburg", "Yes", "No")
+
+head(df[, c("NAME", "is_williamsburg")])
+```
+
+We can check last values as well:
+
+```{r}
+tail(df[, c("NAME", "is_williamsburg")])
+```
+
+We can change the name of the variables using `colnames`:
+
+```{r}
+colnames(df)[2:3] <- c("name", "host_id")
+colnames(df)
+```
+
+
+### Factors
+
+In order to work properly with categorical variables we need to tell R that they are factors. We can check the object type with `class()`:
+
+```{r}
+class(df$neighbourhood.group)
+```
+
+We can transform variables into factors with `as.factor`:
+
+```{r}
+as.factor(df$neighbourhood.group)
+```
+
+Be aware of the levels and how they work when we remove a category... does it go away?
+
+### Quantiles
+
+A quite standard way to create factors from numerical variables is the usage of quantiles:
+
+```{r}
+quantile(df$availability.365, na.rm = T)
+```
+
+## Tidyverse
+
+Hadley Whickham developed tidyverse. Once one is skilled in the package all these tasks can become more easy and faster to perform (practice makes the wrangler). It is not compulsary for this course, just a personal help.  
+
+Use of the pipe `%>%` to chain commands.
+
+```{r}
+# install.packages("tidyverse")
+library(tidyverse)
+```
+
+Sintax:
+
+```{r}
+df %>%
+  filter(neighbourhood.group %in% c("Manhattan", "Brooklyn")) %>% 
+  select(NAME, neighbourhood.group, minimum.nights) %>% 
+  mutate(is.manhattan = ifelse(neighbourhood.group == "Manhattan", "yes", "no"),
+         NAME = as.factor(NAME)) %>% 
+  group_by(is.manhattan) %>% 
+  summarise(mean(minimum.nights, na.rm = T))
+```
