@@ -24,7 +24,7 @@ Especifiquem aquelles dades que hem convertit i les transformacions que hem apli
 
 #### Age:
 
-Quatre possibles categories: [0,25] [26-45] [46-65] [66-inf]
+Quatre possibles noves categories: A[0,25] B[26,45] C[46,65] D[+66].
 
 ```{r}
 df$age <- cut(df$age, 
@@ -34,7 +34,11 @@ df$age <- cut(df$age,
 
 #### Job:
 
-admin. blue-collar entrepreneur housemaid management retired self-employed services student technician unemployed unknown
+Les categories "retired", "unemployed", "student" i "housemaid" passaran a ser "unemployed".
+
+Els "enterpeneur" passaran a ser "self-employed".
+
+Tractarem els "unknown" com a "unemployed".
 
 ```{r}
 df %>% mutate(job = ifelse(job == "retired" | job == "unemployed" | job == "student" | job == "housemaid", "unemployed", job))
@@ -43,13 +47,19 @@ df %>% mutate(job = ifelse(job == "entrepeneur", "self-employed", job))
 
 #### Marital:
 
-divorced married single unknown
+Es mantenen les categories existents.
+
+Tractarem els "unknown" com a "single".
 
 ```{r}
 
 ```
 
 #### Education:
+
+Les categories "basic.4y", "basic.6y", "basic.9y" passaran a ser "basic".
+
+Inputarem els valors "unknown".
 
 ```{r}
 df %>% mutate(education = ifelse(education, education == "basic.4y" | education == "basic.6y" | education == "basic.9y", "basic", education))
@@ -58,11 +68,19 @@ df %>% mutate(education = ifelse(education, education == "unknown", NA , educati
 
 #### Default:
 
+Es mantenen les categories existents.
+
+Tractarem els "unknown" com a "no".
+
 ```{r}
 
 ```
 
 #### Housing:
+
+Es mantenen les categories existents.
+
+Inputarem els valors "unknown".
 
 ```{r}
 
@@ -70,11 +88,17 @@ df %>% mutate(education = ifelse(education, education == "unknown", NA , educati
 
 #### Loan:
 
+Es mantenen les categories existents.
+
+Inputarem els valors "unknown".
+
 ```{r}
 
 ```
 
 #### Contact:
+
+Eliminarem la variable, no aporta cap informació saber si va ser contacte amb mòbil o amb telèfon fix.
 
 ```{r}
 
@@ -82,17 +106,23 @@ df %>% mutate(education = ifelse(education, education == "unknown", NA , educati
 
 #### Month
 
+Es mantenen les categories existents.
+
 ```{r}
 
 ```
 
 #### Day of week:
 
+Es mantenen les categories existents.
+
 ```{r}
 
 ```
 
 #### Duration:
+
+Tres possibles noves categories: Baixa[0,30] Mitja[30,300] Alta[+300] (Valors amb segons).
 
 ```{r}
 df <- cut(df$duration,
@@ -102,11 +132,17 @@ df <- cut(df$duration,
 
 #### Campaign:
 
+Es mantenen els valors existents.
+
 ```{r}
 
 ```
 
 #### Pdays:
+
+Es mantenen els valors existents.
+
+Transformarem els valors "999" en NA.
 
 ```{r}
 df %>% mutate(pdays = ifelse(pdays, pdays == 999, NA , pdays))
@@ -114,17 +150,25 @@ df %>% mutate(pdays = ifelse(pdays, pdays == 999, NA , pdays))
 
 #### Previous:
 
+Dos valors possibles: No[0] Yes[+1].
+
 ```{r}
 
 ```
 
 #### Poutcome:
 
+Es mantenen les categories existents.
+
+Inputarem els valors "unknown".
+
 ```{r}
 
 ```
 
 #### Employment variation rate
+
+Es mantenen els valors existents.
 
 ```{r}
 
@@ -138,17 +182,23 @@ df %>% mutate(pdays = ifelse(pdays, pdays == 999, NA , pdays))
 
 #### Consumer confidence index
 
+Es mantenen els valors existents.
+
 ```{r}
 
 ```
 
 #### Euribor 3 month rate
 
+Tres possibles noves categories: Baix[0,1] Mig[1,3] Alt[+3];
+
 ```{r}
 
 ```
 
 #### Number of employees
+
+Es mantenen els valors existents.
 
 ```{r}
 
