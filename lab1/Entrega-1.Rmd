@@ -41,8 +41,10 @@ Els "enterpeneur" passaran a ser "self-employed".
 Tractarem els "unknown" com a "unemployed".
 
 ```{r}
-df %>% mutate(job = ifelse(job == "retired" | job == "unemployed" | job == "student" | job == "housemaid", "unemployed", job))
-df %>% mutate(job = ifelse(job == "entrepeneur", "self-employed", job))
+df$job <- as.character(df$job)
+df$job <- ifelse(df$job %in% c("retired", "unemployed", "student", "housemaid", "unknown"), "unemployed", df$job)
+df$job <- ifelse(df$job == "entrepreneur", "self-employed", df$job)
+df$job <- as.factor(df$job)
 ```
 
 #### Marital:
@@ -62,8 +64,10 @@ Les categories "basic.4y", "basic.6y", "basic.9y" passaran a ser "basic".
 Inputarem els valors "unknown".
 
 ```{r}
-df %>% mutate(education = ifelse(education, education == "basic.4y" | education == "basic.6y" | education == "basic.9y", "basic", education))
-df %>% mutate(education = ifelse(education, education == "unknown", NA , education))
+df$education <- as.character(df$education)
+df$education <- ifelse(df$education %in% c("basic.4y", "basic.6y", "basic.9y"), "basic", df$education)
+df$education <- ifelse(df$education == "unknown", NA, df$education)
+df$education <- as.factor(df$education)
 ```
 
 #### Default:
