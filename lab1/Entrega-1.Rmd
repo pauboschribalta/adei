@@ -24,21 +24,31 @@ Especifiquem aquelles dades que hem convertit i les transformacions que hem apli
 
 #### Age:
 
-Quatre possibles noves categories: A[0,25] B[26,45] C[46,65] D[+66].
+Quatre possibles noves categories: Jove[0,25], Jove-Adult[26,45], Adult[46,65], Gran[+66].
+
+Realitzem aquesta distinció pels següents motius:
+
+Jove: No solen tenir gaire poder adquisitiu propi
+
+Jove-Adult: És quan s'acostumen a fer més plans de futur i a tenir més capacitat econòmica
+
+Adult: Solen ser persones amb una vida estable i sense gaires canvis econòmics grans
+
+Gran: Persones amb la vida feta sense canvis econòmics
 
 ```{r}
 df$age <- cut(df$age, 
               breaks = c(0, 25, 45, 65, max(df$age)),
-              labels = c("A", "B", "C", "D"))
+              labels = c("Jove", "Jove-Adult", "Adult", "Gran"))
 ```
 
 #### Job:
 
-Les categories "retired", "unemployed", "student" i "housemaid" passaran a ser "unemployed".
+Les categories "retired", "unemployed", "student" i "housemaid" passaran a ser "unemployed", ja que tenim en compte que són persones que no cotitzen.
 
 Els "enterpeneur" passaran a ser "self-employed".
 
-Tractarem els "unknown" com a "unemployed".
+Tractarem els "unknown" com a "unemployed", ja que assumirem el pitjor dels casos abans d'intentar predir la seva situació.
 
 ```{r}
 df$job <- as.character(df$job)
@@ -49,25 +59,32 @@ df$job <- as.factor(df$job)
 
 #### Marital:
 
-Es mantenen les categories existents.
+Es mantenen les categories existents, exceptuant els "unknown".
 
 Tractarem els "unknown" com a "single".
 
 ```{r}
-
+df$marital <- as.character(df$marital)
+df$marital <- ifelse(df$marital == "unknown", "single", df$marital)
+df$marital <- as.factor(df$marital)
 ```
 
 #### Education:
 
-Les categories "basic.4y", "basic.6y", "basic.9y" passaran a ser "basic".
+Les categories "basic.4y", "basic.6y", "basic.9y" passaran a ser "basic", ja que no aporta informació saber quin nivell de "basic" tenen.
 
-Inputarem els valors "unknown".
+Imputarem els valors "unknown".
 
 ```{r}
 df$education <- as.character(df$education)
 df$education <- ifelse(df$education %in% c("basic.4y", "basic.6y", "basic.9y"), "basic", df$education)
 df$education <- ifelse(df$education == "unknown", NA, df$education)
 df$education <- as.factor(df$education)
+
+res.immca<-imputeMCA(df$education,ncp=18) #No funciona
+summary(res.immca$completeObs)
+
+df$education<-res.immca$completeObs
 ```
 
 #### Default:
@@ -77,7 +94,9 @@ Es mantenen les categories existents.
 Tractarem els "unknown" com a "no".
 
 ```{r}
-
+df$default <- as.character(df$default)
+df$default <- ifelse(df$default == "unknown", "no", df$default)
+df$default <- as.factor(df$default)
 ```
 
 #### Housing:
@@ -105,28 +124,28 @@ Inputarem els valors "unknown".
 Eliminarem la variable, no aporta cap informació saber si va ser contacte amb mòbil o amb telèfon fix.
 
 ```{r}
-
+df <- select(df, -contact)
 ```
 
 #### Month
 
 Es mantenen les categories existents.
 
-```{r}
-
-```
-
 #### Day of week:
 
 Es mantenen les categories existents.
 
-```{r}
-
-```
-
 #### Duration:
 
 Tres possibles noves categories: Baixa[0,30] Mitja[30,300] Alta[+300] (Valors amb segons).
+
+Realitzem aquesta distinció pels següents motius:
+
+Baixa: Una trucada que no interessa al client i ni escolta l'oferta segurament.
+
+Mitja: Interessa al client i escolta l'oferta.
+
+Alta: Gran interès del client, no sols escolta l'oferta sino que va més enllà.
 
 ```{r}
 df <- cut(df$duration,
@@ -138,10 +157,6 @@ df <- cut(df$duration,
 
 Es mantenen els valors existents.
 
-```{r}
-
-```
-
 #### Pdays:
 
 Es mantenen els valors existents.
@@ -149,7 +164,7 @@ Es mantenen els valors existents.
 Transformarem els valors "999" en NA.
 
 ```{r}
-df %>% mutate(pdays = ifelse(pdays, pdays == 999, NA , pdays))
+df <- df %>% mutate(pdays = ifelse(pdays == 999, NA , pdays))
 ```
 
 #### Previous:
