@@ -81,10 +81,10 @@ df$education <- ifelse(df$education %in% c("basic.4y", "basic.6y", "basic.9y"), 
 df$education <- ifelse(df$education == "unknown", NA, df$education)
 df$education <- as.factor(df$education)
 
-res.immca<-imputeMCA(df$education,ncp=18) #No funciona
-summary(res.immca$completeObs)
+#res.immca<-imputeMCA(df$education,ncp=18) #No funciona
+#summary(res.immca$completeObs)
 
-df$education<-res.immca$completeObs
+#df$education<-res.immca$completeObs
 ```
 
 #### Default:
@@ -148,7 +148,7 @@ Mitja: Interessa al client i escolta l'oferta.
 Alta: Gran interès del client, no sols escolta l'oferta sino que va més enllà.
 
 ```{r}
-df <- cut(df$duration,
+df$duration <- cut(df$duration,
           breaks = c(0, 30, 300, max(df$duration)),
           labels = c("Baixa", "Mitja", "Alta"))
 ```
@@ -172,53 +172,38 @@ df <- df %>% mutate(pdays = ifelse(pdays == 999, NA , pdays))
 Dos valors possibles: No[0] Yes[+1].
 
 ```{r}
-
+df <- df %>% mutate(previous = ifelse(previous >= 1, "Yes" , previous))
+df <- df %>% mutate(previous = ifelse(previous == 0, "No" , previous))
+df$previous <- as.factor(df$previous)
 ```
 
 #### Poutcome:
 
-Es mantenen les categories existents.
-
-Inputarem els valors "unknown".
-
-```{r}
-
-```
+Es mantenen els valors existents.
 
 #### Employment variation rate
 
 Es mantenen els valors existents.
 
-```{r}
-
-```
-
 #### Consumer price index
 
-```{r}
-
-```
+Es mantenen els valors existents.
 
 #### Consumer confidence index
 
 Es mantenen els valors existents.
-
-```{r}
-
-```
 
 #### Euribor 3 month rate
 
 Tres possibles noves categories: Baix[0,1] Mig[1,3] Alt[+3];
 
 ```{r}
-
+df$euribor3m <- as.numeric(df$euribor3m)
+df$euribor3m <- cut(df$euribor3m, 
+              breaks = c(0, 1, 3, max(df$euribor3m)),
+              labels = c("Baix", "Mig", "Alt"))
 ```
 
 #### Number of employees
 
 Es mantenen els valors existents.
-
-```{r}
-
-```
