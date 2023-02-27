@@ -7,6 +7,7 @@ date: '2023-02-20'
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
+library(missMDA)
 ```
 
 ## R Markdown
@@ -81,10 +82,11 @@ df$education <- ifelse(df$education %in% c("basic.4y", "basic.6y", "basic.9y"), 
 df$education <- ifelse(df$education == "unknown", NA, df$education)
 df$education <- as.factor(df$education)
 
-#res.immca<-imputeMCA(df$education,ncp=18) #No funciona
-#summary(res.immca$completeObs)
+summary(df$education)
+res.immca<-imputeMCA(df$education, ncp = 18)
+summary(res.immca$completeObs)
 
-#df$education<-res.immca$completeObs
+df$education<-res.immca$completeObs
 ```
 
 #### Default:
@@ -106,7 +108,15 @@ Es mantenen les categories existents.
 Inputarem els valors "unknown".
 
 ```{r}
+df$housing <- as.character(df$housing)
+df$housing <- ifelse(df$housing == "unknown", NA, df$housing)
+df$housing <- as.factor(df$housing)
 
+summary(df$housing)
+res.immca<-imputeMCA(df$housing, ncp = 18)
+summary(res.immca$completeObs)
+
+df$housing<-res.immca$completeObs
 ```
 
 #### Loan:
@@ -116,7 +126,15 @@ Es mantenen les categories existents.
 Inputarem els valors "unknown".
 
 ```{r}
+df$loan <- as.character(df$loan)
+df$loan <- ifelse(df$loan == "unknown", NA, df$loan)
+df$loan <- as.factor(df$loan)
 
+summary(df$loan)
+res.immca<-imputeMCA(df$loan, ncp = 18)
+summary(res.immca$completeObs)
+
+df$loan<-res.immca$completeObs
 ```
 
 #### Contact:
