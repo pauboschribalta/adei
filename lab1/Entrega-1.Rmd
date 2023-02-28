@@ -4,24 +4,44 @@ output: html_document
 date: '2023-02-20'
 ---
 
+Posada apunt i descarrega de paquets necessàris per a importar les funcions necessàries.
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(dplyr)
-library(missMDA)
+# Load Required Packages: to be increased over the course
+options(contrasts=c("contr.treatment","contr.treatment"))
+
+requiredPackages <- c("chemometrics","FactoMineR","car", "dplyr","knitr","missMDA")
+
+#use this function to check if each package is on the local machine
+#if a package is installed, it will be loaded
+#if any are not, the missing package(s) will be installed and loaded
+package.check <- lapply(requiredPackages, FUN = function(x) {
+  for (x in requiredPackages) {
+    if (!require(x, character.only = TRUE)) {
+    install.packages(x, dependencies = TRUE)
+    library(x, character.only = TRUE)
+  }
+  }
+})
 ```
 
 ## R Markdown
 
-### Transformació de les dades
+## Transformació de les dades
 
 Obtenim les dades:
 
 ```{r dataset, include=TRUE}
 
 df <- read.csv2("./bank-additional.csv")
+var_cat <- c("job", "marital", "education", "default", "housing", "loan", "contact", "month", "day_of_week", "poutcome")
+var_num <- c("age", "duration", "campaign", "pdays", "previous", "emp.var.rate", "cons.price.idx", "cons.conf.idx", "euribor3m", "nr.employed")
 ```
 
 Especifiquem aquelles dades que hem convertit i les transformacions que hem aplicat en elles.
+
+### Decisions per variables
 
 #### Age:
 
@@ -29,32 +49,39 @@ Quatre possibles noves categories: Jove[0,25], Jove-Adult[26,45], Adult[46,65], 
 
 Realitzem aquesta distinció pels següents motius:
 
-Jove: No solen tenir gaire poder adquisitiu propi
+-   Jove: No solen tenir gaire poder adquisitiu propi
 
-Jove-Adult: És quan s'acostumen a fer més plans de futur i a tenir més capacitat econòmica
+-   Jove-Adult: És quan s'acostumen a fer més plans de futur i a tenir més capacitat econòmica
 
-Adult: Solen ser persones amb una vida estable i sense gaires canvis econòmics grans
+-   Adult: Solen ser persones amb una vida estable i sense gaires canvis econòmics grans
 
-Gran: Persones amb la vida feta sense canvis econòmics
+-   Gran: Persones amb la vida feta sense canvis econòmics
+
+La variable passarà a ser categòrica.
 
 ```{r}
 df$age <- cut(df$age, 
               breaks = c(0, 25, 45, 65, max(df$age)),
               labels = c("Jove", "Jove-Adult", "Adult", "Gran"))
+var_cat <- c("age", var_cat)
+n <- which(var_num == "age")
+var_num <- var_num[-c(n)]
+rm(n)
 ```
 
 #### Job:
 
 Les categories "retired", "unemployed", "student" i "housemaid" passaran a ser "unemployed", ja que tenim en compte que són persones que no cotitzen.
 
-Els "enterpeneur" passaran a ser "self-employed".
+Els "enterpeneur" passaran a ser "self-employed". vector indicating the indexes of the quantitative supplementary variables
 
-Tractarem els "unknown" com a "unemployed", ja que assumirem el pitjor dels casos abans d'intentar predir la seva situació.
+Imputarem els valors unknown.
 
 ```{r}
 df$job <- as.character(df$job)
-df$job <- ifelse(df$job %in% c("retired", "unemployed", "student", "housemaid", "unknown"), "unemployed", df$job)
+df$job <- ifelse(df$job %in% c("retired", "unemployed", "student", "housemaid"), "unemployed", df$job)
 df$job <- ifelse(df$job == "entrepreneur", "self-employed", df$job)
+df$job <- ifelse(df$job == "unknown", NA, df$job)
 df$job <- as.factor(df$job)
 ```
 
@@ -62,11 +89,11 @@ df$job <- as.factor(df$job)
 
 Es mantenen les categories existents, exceptuant els "unknown".
 
-Tractarem els "unknown" com a "single".
+Imputarem els valors unknown.
 
 ```{r}
 df$marital <- as.character(df$marital)
-df$marital <- ifelse(df$marital == "unknown", "single", df$marital)
+df$marital <- ifelse(df$marital == "unknown", NA, df$marital)
 df$marital <- as.factor(df$marital)
 ```
 
@@ -81,23 +108,17 @@ df$education <- as.character(df$education)
 df$education <- ifelse(df$education %in% c("basic.4y", "basic.6y", "basic.9y"), "basic", df$education)
 df$education <- ifelse(df$education == "unknown", NA, df$education)
 df$education <- as.factor(df$education)
-
-summary(df$education)
-res.immca<-imputeMCA(df$education, ncp = 18)
-summary(res.immca$completeObs)
-
-df$education<-res.immca$completeObs
 ```
 
 #### Default:
 
 Es mantenen les categories existents.
 
-Tractarem els "unknown" com a "no".
+Imputarem els valors "unknown".
 
 ```{r}
 df$default <- as.character(df$default)
-df$default <- ifelse(df$default == "unknown", "no", df$default)
+df$default <- ifelse(df$default == "unknown", NA, df$default)
 df$default <- as.factor(df$default)
 ```
 
@@ -111,12 +132,6 @@ Inputarem els valors "unknown".
 df$housing <- as.character(df$housing)
 df$housing <- ifelse(df$housing == "unknown", NA, df$housing)
 df$housing <- as.factor(df$housing)
-
-summary(df$housing)
-res.immca<-imputeMCA(df$housing, ncp = 18)
-summary(res.immca$completeObs)
-
-df$housing<-res.immca$completeObs
 ```
 
 #### Loan:
@@ -129,12 +144,6 @@ Inputarem els valors "unknown".
 df$loan <- as.character(df$loan)
 df$loan <- ifelse(df$loan == "unknown", NA, df$loan)
 df$loan <- as.factor(df$loan)
-
-summary(df$loan)
-res.immca<-imputeMCA(df$loan, ncp = 18)
-summary(res.immca$completeObs)
-
-df$loan<-res.immca$completeObs
 ```
 
 #### Contact:
@@ -159,16 +168,23 @@ Tres possibles noves categories: Baixa[0,30] Mitja[30,300] Alta[+300] (Valors am
 
 Realitzem aquesta distinció pels següents motius:
 
-Baixa: Una trucada que no interessa al client i ni escolta l'oferta segurament.
+-   Baixa: Una trucada que no interessa al client i ni escolta l'oferta segurament.
 
-Mitja: Interessa al client i escolta l'oferta.
+-   Mitja: Interessa al client i escolta l'oferta.
 
-Alta: Gran interès del client, no sols escolta l'oferta sino que va més enllà.
+-   Alta: Gran interès del client, no sols escolta l'oferta sino que va més enllà.
+
+La variable passarà a ser categòrica.
 
 ```{r}
 df$duration <- cut(df$duration,
           breaks = c(0, 30, 300, max(df$duration)),
           labels = c("Baixa", "Mitja", "Alta"))
+
+var_cat <- c("duration", var_cat)
+n <- which(var_num == "duration")
+var_num <- var_num[-c(n)]
+rm(n)
 ```
 
 #### Campaign:
@@ -179,7 +195,7 @@ Es mantenen els valors existents.
 
 Es mantenen els valors existents.
 
-Transformarem els valors "999" en NA.
+Transformarem els valors "999" en NA i els imputarem.
 
 ```{r}
 df <- df %>% mutate(pdays = ifelse(pdays == 999, NA , pdays))
@@ -189,10 +205,17 @@ df <- df %>% mutate(pdays = ifelse(pdays == 999, NA , pdays))
 
 Dos valors possibles: No[0] Yes[+1].
 
+La variable passarà a ser categòrica.
+
 ```{r}
 df <- df %>% mutate(previous = ifelse(previous >= 1, "Yes" , previous))
 df <- df %>% mutate(previous = ifelse(previous == 0, "No" , previous))
 df$previous <- as.factor(df$previous)
+
+var_cat <- c("previous", var_cat)
+n <- which(var_num == "previous")
+var_num <- var_num[-c(n)]
+rm(n)
 ```
 
 #### Poutcome:
@@ -215,13 +238,47 @@ Es mantenen els valors existents.
 
 Tres possibles noves categories: Baix[0,1] Mig[1,3] Alt[+3];
 
+La variable passarà a ser categòrica.
+
 ```{r}
 df$euribor3m <- as.numeric(df$euribor3m)
 df$euribor3m <- cut(df$euribor3m, 
               breaks = c(0, 1, 3, max(df$euribor3m)),
               labels = c("Baix", "Mig", "Alt"))
+
+var_cat <- c("euribor3m", var_cat)
+n <- which(var_num == "euribor3m")
+var_num <- var_num[-c(n)]
+rm(n)
 ```
 
 #### Number of employees
 
 Es mantenen els valors existents.
+
+### Imputació de missings
+
+#### Variables categòriques
+
+Imputem tots els NAs que tenim en el conjunt de variables categòriques (var_cat).
+
+```{r}
+summary(df[,var_cat])
+res.immca<-imputeMCA(df[,var_cat],ncp = length(var_cat)-1)
+summary(res.immca$completeObs)
+
+df[,var_cat ]<-res.immca$completeObs
+```
+
+#### Variables numèriques
+
+Imputem tots els NAs que tenim en el conjunt de variables categòriques (var_cat).
+
+```{r}
+summary(df[,var_num])
+res.impca<-imputePCA(df[,var_num],ncp = length(var_num)-1)
+summary(res.impca$completeObs)
+
+df[,var_num ]<-res.impca$completeObs
+
+```
