@@ -1,7 +1,9 @@
 ---
 title: "Entrega-1"
-output: html_document
-date: '2023-02-20'
+output:
+  pdf_document: default
+  html_document: default
+date: "2023-02-20"
 ---
 
 Posada apunt i descarrega de paquets necessàris per a importar les funcions necessàries.
@@ -35,8 +37,9 @@ Obtenim les dades:
 ```{r dataset, include=TRUE}
 
 df <- read.csv2("./bank-additional.csv")
-var_cat <- c("job", "marital", "education", "default", "housing", "loan", "contact", "month", "day_of_week", "poutcome")
+var_cat <- c("job", "marital", "education", "default", "housing", "loan", "month", "day_of_week", "poutcome", "contact")
 var_num <- c("age", "duration", "campaign", "pdays", "previous", "emp.var.rate", "cons.price.idx", "cons.conf.idx", "euribor3m", "nr.employed")
+var_res <- c("y")
 ```
 
 Especifiquem aquelles dades que hem convertit i les transformacions que hem aplicat en elles.
@@ -99,7 +102,7 @@ df$marital <- as.factor(df$marital)
 
 #### Education:
 
-Les categories "basic.4y", "basic.6y", "basic.9y" passaran a ser "basic", ja que no aporta informació saber quin nivell de "basic" tenen.
+Les categories "basic.4y", "basic.6y", "basic.9y" passaran a ser "basic", ja que no aporta informació que considerem rellevant saber quin nivell de "basic" tenen.
 
 Imputarem els valors "unknown".
 
@@ -151,7 +154,7 @@ df$loan <- as.factor(df$loan)
 Eliminarem la variable, no aporta cap informació saber si va ser contacte amb mòbil o amb telèfon fix.
 
 ```{r}
-df <- select(df, -contact)
+#df <- select(df, -contact)
 ```
 
 #### Month
@@ -164,7 +167,7 @@ Es mantenen les categories existents.
 
 #### Duration:
 
-Tres possibles noves categories: Baixa[0,30] Mitja[30,300] Alta[+300] (Valors amb segons).
+Primer, tornarem en NA els outliers de duració. Posteriorment tindrem tres possibles noves categories: Baixa[0,30] Mitja[30,300] Alta[+300] (Valors amb segons).
 
 Realitzem aquesta distinció pels següents motius:
 
@@ -177,8 +180,13 @@ Realitzem aquesta distinció pels següents motius:
 La variable passarà a ser categòrica.
 
 ```{r}
+
+threshold = quantile(df$duration, 0.75, na.rm = TRUE)*3
+out_ind <- which(df$duration > threshold)
+df[out_ind,]$duration <- NA
+
 df$duration <- cut(df$duration,
-          breaks = c(0, 30, 300, max(df$duration)),
+          breaks = c(0, 30, 300, Inf),
           labels = c("Baixa", "Mitja", "Alta"))
 
 var_cat <- c("duration", var_cat)
@@ -189,13 +197,17 @@ rm(n)
 
 #### Campaign:
 
-Es mantenen els valors existents.
+Transformarem a NA els outliers d'aquesta columna. Els imputarem.
+
+threshold = quantile(df$campaign, 0.75)*3
+out_ind <- which(df$campaighn > threshold)
+df[out_ind,]$campaign <- NA
 
 #### Pdays:
 
 Es mantenen els valors existents.
 
-Transformarem els valors "999" en NA i els imputarem.
+Transformarem els valors "999" en NA i els imputarem. També transformarem en NA els outliers d'aquesta columna ja previament transformada a NA.
 
 ```{r}
 df <- df %>% mutate(pdays = ifelse(pdays == 999, NA , pdays))
@@ -256,6 +268,11 @@ rm(n)
 
 Es mantenen els valors existents.
 
+#### Y
+
+Imputarem els Na
+
+
 ### Imputació de missings
 
 #### Variables categòriques
@@ -276,9 +293,80 @@ Imputem tots els NAs que tenim en el conjunt de variables categòriques (var_cat
 
 ```{r}
 summary(df[,var_num])
+df[var_num] <- lapply(df[var_num], as.numeric)
+
 res.impca<-imputePCA(df[,var_num],ncp = length(var_num)-1)
 summary(res.impca$completeObs)
 
 df[,var_num ]<-res.impca$completeObs
+summary(df)
+```
+
+#### Variables resposta
+
+```{r}
+
+```
+
+## Profiling
+
+### Variables numériques
+```{r}
+
+```
+### Variables categòriques
+```{r}
+#edat
+res.catdes<-catdes(df,grep("^y$", colnames(df)), proba=0.05)
+
+res.catdes$test.chi2 # relació entre les variables y la variable resposta
+res.catdes$category 
+res.catdes$quanti  # Global association to numeric variables
+res.catdes$quali # Global association to factors
+```
+
+Euribor3m: El tipus d'interès a tres mesos (Euribor3m) és la variable més fortament relacionada amb la variable target "y" segons el nostre analisi i tractament de variables. Si l'Euribor3m és baix, és més probable que el client contracti el dipòsit a termini. Si aquest és alt, també és l'influenciador més gran en què el resultat acabi sent negatiu.
+
+Poutcome: La variable Poutcome (resultat de la campanya de màrqueting anterior) també està fortament relacionada amb la variable target "y". Si el resultat de la campanya anterior va ser exitós, és més probable que el client contracti el dipòsit a termini.
+
+Duration: També es veu altament relacionada amb el resultat. Això pot ser degut a que com més temps duri la trucada, és més probable que l'agent de vendes hagi tingut l'oportunitat de persuadir el client i fer-li una oferta més atractiva.
+
+Job: El tipus de treball del client també sembla estar relacionat amb la variable target "y". Els estudiants i els jubilats tenen més probabilitats de contractar el dipòsit a termini, mentre que els treballadors autònoms i els desocupats tenen menys probabilitats.
+
+Mes: El mes en què es va realitzar l'última campanya de màrqueting també sembla estar relacionat amb el resultat negatiu de la variable target "y". En particular, els mesos de maig i juny tenen una taxa de rebuig més alta que altres mesos, mentre que el març, septembre i octubre estan molt relacionats amb un resultat positiu.
+
+Contact: La forma de contacte també està relacionada amb el resultat de la variable target "y". Els clients contactats per telèfon fix tenen més probabilitats de rebutjar el dipòsit a termini que aquells contactats per correu electrònic o per telèfon mòbil.
+
+Age: En general, els clients més joves tenen més probabilitats de rebutjar el dipòsit a termini que els clients més grans.
+
+Campaign:  El nombre de contactes realitzats durant l'última campanya de màrqueting també està relacionat amb el resultat negatiu de la variable target "y". En general, com més contactes es realitzin, és més probable que el client rebutgi el dipòsit a termini.
+
+```{r}
+#duration
+res.catdes<-catdes(df,grep("^duration$", colnames(df)), proba=0.05)
+
+res.catdes$test.chi2 # relació entre les variables y la variable resposta
+res.catdes$category 
+res.catdes$quanti  # Global association to numeric variables
+res.catdes$quali # Global association to factors
+
+```
+    
+Contacte: La forma de contacte utilitzada en l'última campanya de màrqueting té una alta correlació amb la durada de la trucada. En particular, els clients contactats per telèfon mòbil tendeixen a tenir trucades més curtes que aquells contactats per telèfon. La relació negativa entre "Duration" i "Contact" podria explicar-se pel fet que el correu electrònic i el telèfon mòbil són formes de contacte més breus i concises que una trucada telefònica.
+
+Pdays: La variable "Pdays" representa el número de dies que han passat des que el client va ser contactat per última vegada per a una campanya de màrqueting anterior. Els clients que han estat contactats recentment (és a dir, menor valor en Pdays) tendeixen a tenir trucades més curtes en l'última campanya.
+
+Previous: La variable "Previous" representa el número de contactes realitzats abans de l'última campanya de màrqueting. En general, com més gran sigui el número de contactes, menor serà la durada de l'última trucada. La relació negativa entre "Duration" i "Previous" podria explicar-se per la possibilitat que l'agent de vendes hagi hagut de repetir informació prèviament proporcionada en trucades anteriors.
+
+Job: El tipus de treball del client també pot estar relacionat amb la durada de la trucada. En particular, els clients desocupats i els estudiants tendeixen a tenir trucades més curtes que altres tipus de treballadors. La relació negativa entre "Duration" i "Job" podria explicar-se pel fet que els clients desocupats i els estudiants poden tenir menys ingressos i, per tant, estar menys interessats en contractar un dipòsit a termini fix, el que es reflectiria en trucades més curtes.
+
+```{r}
+library(chemometrics)
+df_num <- df[, sapply(df, is.numeric)]
+
+# Identify multivariate outliers using the moutliers function
+outliers <- Moutlier(df_num, quantile=0.995)
+length(outliers$md)
+# View the outliers
 
 ```
