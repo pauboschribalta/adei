@@ -2,6 +2,7 @@
 title: "Entrega-1"
 output:
   pdf_document: default
+  word_document: default
   html_document: default
 date: "2023-02-20"
 ---
@@ -30,21 +31,192 @@ package.check <- lapply(requiredPackages, FUN = function(x) {
 
 ## R Markdown
 
-## Transformació de les dades
-
 Obtenim les dades:
 
 ```{r dataset, include=TRUE}
-
 df <- read.csv2("./bank-additional.csv")
-var_cat <- c("job", "marital", "education", "default", "housing", "loan", "month", "day_of_week", "poutcome", "contact")
-var_num <- c("age", "duration", "campaign", "pdays", "previous", "emp.var.rate", "cons.price.idx", "cons.conf.idx", "euribor3m", "nr.employed")
-var_res <- c("y")
 ```
 
-Especifiquem aquelles dades que hem convertit i les transformacions que hem aplicat en elles.
+### Exploració de les dades
 
-### Decisions per variables
+```{r}
+hist(df$age)
+```
+
+```{r}
+barplot(prop.table(table(df$job)))
+```
+
+```{r}
+barplot(100*prop.table(table(df$marital)))
+```
+
+```{r}
+barplot(100*prop.table(table(df$education)))
+```
+
+```{r}
+barplot(100*prop.table(table(df$housing)))
+```
+
+```{r}
+barplot(100*prop.table(table(df$loan)))
+```
+
+```{r}
+barplot(100*prop.table(table(df$contact)))
+```
+
+```{r}
+barplot(100*prop.table(table(df$month)))
+```
+
+```{r}
+barplot(100*prop.table(table(df$day_of_week)))
+```
+
+```{r}
+hist(df$duration)
+```
+
+```{r}
+hist(df$campaign)
+```
+
+```{r}
+pdays_aux <- subset(df$pdays, df$pdays != 999)
+hist(pdays_aux)
+```
+
+```{r}
+hist(df$previous)
+```
+
+```{r}
+barplot(table(df$poutcome))
+```
+
+```{r}
+hist(as.numeric(df$emp.var.rate))
+```
+
+```{r}
+table(df$emp.var.rate) #VARIACI? TREBALL TRIMESTRAL 
+```
+
+```{r}
+table(df$cons.price.idx) #IPC MENSUAL
+```
+
+```{r}
+table(df$cons.conf.idx) # INDEX CONFIAN?A CONSUMIDOR
+```
+
+```{r}
+table(df$euribor3m) #EURIBOR A TRES MESOS PER DIA
+```
+
+```{r}
+table(df$nr.employed) #TREBALLADOR PER TRIMESTRE
+```
+
+## Qualitat de les dades
+
+### Per variable
+
+#### Nombre de missings
+
+Passem tots els valors "unknown" a NA's per tractar-los com a missings i contem el total de NA's per variable.
+
+```{r}
+df[df == "unknown"] <- NA
+
+#Mostrem el nombre de missings per variable
+colSums(is.na(df))
+```
+
+#### Nombre d'errors
+
+1- Que una persona tingui pdays de 999 i que previous sigui més gran que 0
+
+```{r}
+err_ind <- which(df$pdays == 999 & df$previous > 0)
+length(err_ind)
+```
+
+#### Nombre d'outliers
+
+Busquem els outliers de les variables duration i campaign utilitzant la tècnica del tercer quantil
+```{r}
+boxplot(df$duration)
+```
+
+```{r}
+treshold <- quantile(df$duration, 0.75)*3
+out_dur <- which(df$duration > treshold)
+length(out_dur)
+```
+```{r}
+boxplot(df$campaign)
+```
+
+```{r}
+treshold <- quantile(df$campaign, 0.75)*3
+out_camp <- which(df$campaign > treshold)
+length(out_camp)
+```
+
+#### Ranking de variables amb més valors NA
+
+```{r}
+nas_per_var <- data.frame(num_nas = colSums(is.na(df)),
+                          variable = names(df))
+
+# Ordenem el data frame per nombre de NA's descendent
+nas_per_var <- nas_per_var[order(-nas_per_var$num_nas),]
+
+# Fem el gràfic de barres
+barplot(nas_per_var$num_nas,
+        names.arg = nas_per_var$variable,
+        ylab = "Nombre de NA's",
+        main = "Ranking de variables amb més NA's",
+        las = 2)
+```
+
+### Per individus
+
+#### Nombre de missings
+
+```{r}
+n_missings <- rowSums(is.na(df))
+table(n_missings)
+```
+
+#### Nombre d'errors
+
+```{r}
+#n_missings <- rowSums(is.e)
+table(n_missings)
+```
+
+#### Nombre d'outliers
+
+```{r}
+#n_missings <- rowSums(is.e)
+table(n_missings)
+```
+
+### Transformació de les dades
+
+Abans de res, passem les variables númeriques que estan representades amb chars a doubles:
+
+```{r}
+df$emp.var.rate <- as.numeric(df$emp.var.rate)
+df$cons.price.idx <- as.numeric(df$cons.price.idx)
+df$cons.conf.idx <- as.numeric(df$cons.conf.idx)
+df$euribor3m <- as.numeric(df$euribor3m)
+df$nr.employed <- as.numeric(df$nr.employed)
+```
 
 #### Age:
 
@@ -66,10 +238,6 @@ La variable passarà a ser categòrica.
 df$age <- cut(df$age, 
               breaks = c(0, 25, 45, 65, max(df$age)),
               labels = c("Jove", "Jove-Adult", "Adult", "Gran"))
-var_cat <- c("age", var_cat)
-n <- which(var_num == "age")
-var_num <- var_num[-c(n)]
-rm(n)
 ```
 
 #### Job:
@@ -78,96 +246,26 @@ Les categories "retired", "unemployed", "student" i "housemaid" passaran a ser "
 
 Els "enterpeneur" passaran a ser "self-employed". vector indicating the indexes of the quantitative supplementary variables
 
-Imputarem els valors unknown.
-
 ```{r}
 df$job <- as.character(df$job)
 df$job <- ifelse(df$job %in% c("retired", "unemployed", "student", "housemaid"), "unemployed", df$job)
 df$job <- ifelse(df$job == "entrepreneur", "self-employed", df$job)
-df$job <- ifelse(df$job == "unknown", NA, df$job)
 df$job <- as.factor(df$job)
-```
-
-#### Marital:
-
-Es mantenen les categories existents, exceptuant els "unknown".
-
-Imputarem els valors unknown.
-
-```{r}
-df$marital <- as.character(df$marital)
-df$marital <- ifelse(df$marital == "unknown", NA, df$marital)
-df$marital <- as.factor(df$marital)
 ```
 
 #### Education:
 
-Les categories "basic.4y", "basic.6y", "basic.9y" passaran a ser "basic", ja que no aporta informació que considerem rellevant saber quin nivell de "basic" tenen.
-
-Imputarem els valors "unknown".
+Les categories "basic.4y", "basic.6y", "basic.9y" passaran a ser "basic", ja que no aporta informació saber quin nivell de "basic" tenen.
 
 ```{r}
 df$education <- as.character(df$education)
 df$education <- ifelse(df$education %in% c("basic.4y", "basic.6y", "basic.9y"), "basic", df$education)
-df$education <- ifelse(df$education == "unknown", NA, df$education)
 df$education <- as.factor(df$education)
 ```
 
-#### Default:
-
-Es mantenen les categories existents.
-
-Imputarem els valors "unknown".
-
-```{r}
-df$default <- as.character(df$default)
-df$default <- ifelse(df$default == "unknown", NA, df$default)
-df$default <- as.factor(df$default)
-```
-
-#### Housing:
-
-Es mantenen les categories existents.
-
-Inputarem els valors "unknown".
-
-```{r}
-df$housing <- as.character(df$housing)
-df$housing <- ifelse(df$housing == "unknown", NA, df$housing)
-df$housing <- as.factor(df$housing)
-```
-
-#### Loan:
-
-Es mantenen les categories existents.
-
-Inputarem els valors "unknown".
-
-```{r}
-df$loan <- as.character(df$loan)
-df$loan <- ifelse(df$loan == "unknown", NA, df$loan)
-df$loan <- as.factor(df$loan)
-```
-
-#### Contact:
-
-Eliminarem la variable, no aporta cap informació saber si va ser contacte amb mòbil o amb telèfon fix.
-
-```{r}
-#df <- select(df, -contact)
-```
-
-#### Month
-
-Es mantenen les categories existents.
-
-#### Day of week:
-
-Es mantenen les categories existents.
-
 #### Duration:
 
-Primer, tornarem en NA els outliers de duració. Posteriorment tindrem tres possibles noves categories: Baixa[0,30] Mitja[30,300] Alta[+300] (Valors amb segons).
+Tres possibles noves categories: Baixa[0,30] Mitja[30,300] Alta[+300] (Valors amb segons).
 
 Realitzem aquesta distinció pels següents motius:
 
@@ -180,37 +278,9 @@ Realitzem aquesta distinció pels següents motius:
 La variable passarà a ser categòrica.
 
 ```{r}
-
-threshold = quantile(df$duration, 0.75, na.rm = TRUE)*3
-out_ind <- which(df$duration > threshold)
-df[out_ind,]$duration <- NA
-
 df$duration <- cut(df$duration,
-          breaks = c(0, 30, 300, Inf),
+          breaks = c(0, 30, 300, max(df$duration)),
           labels = c("Baixa", "Mitja", "Alta"))
-
-var_cat <- c("duration", var_cat)
-n <- which(var_num == "duration")
-var_num <- var_num[-c(n)]
-rm(n)
-```
-
-#### Campaign:
-
-Transformarem a NA els outliers d'aquesta columna. Els imputarem.
-
-threshold = quantile(df$campaign, 0.75)*3
-out_ind <- which(df$campaighn > threshold)
-df[out_ind,]$campaign <- NA
-
-#### Pdays:
-
-Es mantenen els valors existents.
-
-Transformarem els valors "999" en NA i els imputarem. També transformarem en NA els outliers d'aquesta columna ja previament transformada a NA.
-
-```{r}
-df <- df %>% mutate(pdays = ifelse(pdays == 999, NA , pdays))
 ```
 
 #### Previous:
@@ -223,28 +293,7 @@ La variable passarà a ser categòrica.
 df <- df %>% mutate(previous = ifelse(previous >= 1, "Yes" , previous))
 df <- df %>% mutate(previous = ifelse(previous == 0, "No" , previous))
 df$previous <- as.factor(df$previous)
-
-var_cat <- c("previous", var_cat)
-n <- which(var_num == "previous")
-var_num <- var_num[-c(n)]
-rm(n)
 ```
-
-#### Poutcome:
-
-Es mantenen els valors existents.
-
-#### Employment variation rate
-
-Es mantenen els valors existents.
-
-#### Consumer price index
-
-Es mantenen els valors existents.
-
-#### Consumer confidence index
-
-Es mantenen els valors existents.
 
 #### Euribor 3 month rate
 
@@ -257,21 +306,7 @@ df$euribor3m <- as.numeric(df$euribor3m)
 df$euribor3m <- cut(df$euribor3m, 
               breaks = c(0, 1, 3, max(df$euribor3m)),
               labels = c("Baix", "Mig", "Alt"))
-
-var_cat <- c("euribor3m", var_cat)
-n <- which(var_num == "euribor3m")
-var_num <- var_num[-c(n)]
-rm(n)
 ```
-
-#### Number of employees
-
-Es mantenen els valors existents.
-
-#### Y
-
-Imputarem els Na
-
 
 ### Imputació de missings
 
@@ -280,10 +315,10 @@ Imputarem els Na
 Imputem tots els NAs que tenim en el conjunt de variables categòriques (var_cat).
 
 ```{r}
+var_cat <- sapply(df, is.factor)
 summary(df[,var_cat])
 res.immca<-imputeMCA(df[,var_cat],ncp = length(var_cat)-1)
 summary(res.immca$completeObs)
-
 df[,var_cat ]<-res.immca$completeObs
 ```
 
@@ -292,12 +327,10 @@ df[,var_cat ]<-res.immca$completeObs
 Imputem tots els NAs que tenim en el conjunt de variables categòriques (var_cat).
 
 ```{r}
+var_num <- sapply(df, is.numeric)
 summary(df[,var_num])
-df[var_num] <- lapply(df[var_num], as.numeric)
-
 res.impca<-imputePCA(df[,var_num],ncp = length(var_num)-1)
 summary(res.impca$completeObs)
-
 df[,var_num ]<-res.impca$completeObs
 summary(df)
 ```
@@ -305,20 +338,17 @@ summary(df)
 #### Variables resposta
 
 ```{r}
-
 ```
 
 ## Profiling
 
 ### Variables numériques
 ```{r}
-
 ```
 ### Variables categòriques
 ```{r}
 #edat
 res.catdes<-catdes(df,grep("^y$", colnames(df)), proba=0.05)
-
 res.catdes$test.chi2 # relació entre les variables y la variable resposta
 res.catdes$category 
 res.catdes$quanti  # Global association to numeric variables
@@ -344,12 +374,10 @@ Campaign:  El nombre de contactes realitzats durant l'última campanya de màrqu
 ```{r}
 #duration
 res.catdes<-catdes(df,grep("^duration$", colnames(df)), proba=0.05)
-
 res.catdes$test.chi2 # relació entre les variables y la variable resposta
 res.catdes$category 
 res.catdes$quanti  # Global association to numeric variables
 res.catdes$quali # Global association to factors
-
 ```
     
 Contacte: La forma de contacte utilitzada en l'última campanya de màrqueting té una alta correlació amb la durada de la trucada. En particular, els clients contactats per telèfon mòbil tendeixen a tenir trucades més curtes que aquells contactats per telèfon. La relació negativa entre "Duration" i "Contact" podria explicar-se pel fet que el correu electrònic i el telèfon mòbil són formes de contacte més breus i concises que una trucada telefònica.
@@ -363,10 +391,8 @@ Job: El tipus de treball del client també pot estar relacionat amb la durada de
 ```{r}
 library(chemometrics)
 df_num <- df[, sapply(df, is.numeric)]
-
 # Identify multivariate outliers using the moutliers function
 outliers <- Moutlier(df_num, quantile=0.995)
 length(outliers$md)
 # View the outliers
-
 ```
