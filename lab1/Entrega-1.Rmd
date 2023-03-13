@@ -414,15 +414,14 @@ df[,var_cat ]<-res.immca$completeObs
 
 #### Variables numèriques
 
-Imputem tots els NAs que tenim en el conjunt de variables categòriques (var_cat).
+Imputem tots els NAs que tenim en el conjunt de variables numeriques (var_num).
 
 ```{r}
-var_num <- sapply(df, is.numeric)
 summary(df[,var_num])
+df[var_num] <- lapply(df[var_num], as.numeric)
 res.impca<-imputePCA(df[,var_num],ncp = length(var_num)-1)
 summary(res.impca$completeObs)
 df[,var_num ]<-res.impca$completeObs
-summary(df)
 ```
 
 #### Variables resposta
