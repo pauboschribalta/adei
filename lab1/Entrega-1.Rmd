@@ -1,0 +1,488 @@
+---
+title: "Entrega-1"
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+date: "2023-02-20"
+---
+
+Posada apunt i descarrega de paquets necessàris per a importar les funcions necessàries.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load Required Packages: to be increased over the course
+options(contrasts=c("contr.treatment","contr.treatment"))
+
+requiredPackages <- c("chemometrics","FactoMineR","car", "dplyr","knitr","missMDA")
+
+#use this function to check if each package is on the local machine
+#if a package is installed, it will be loaded
+#if any are not, the missing package(s) will be installed and loaded
+package.check <- lapply(requiredPackages, FUN = function(x) {
+  for (x in requiredPackages) {
+    if (!require(x, character.only = TRUE)) {
+    install.packages(x, dependencies = TRUE)
+    library(x, character.only = TRUE)
+  }
+  }
+})
+```
+
+## R Markdown
+
+Obtenim les dades:
+
+```{r dataset, include=TRUE}
+df <- read.csv2("./bank-additional-full.csv")
+```
+
+Agafem una mostra de 5000 persones de forma aleatoria per poder fer el nostre estudi. L'única condició que posarem serà que hi hagi un rang de y = yes
+
+```{r}
+set.seed(49643638)
+n <- 5000
+number_of_trues = as.integer(runif(1, min = 2400, max=2600))
+
+df_yes = df[df$y=="yes",]
+df_yes = df_yes[sample(1:number_of_trues), ]
+
+df_no = df[df$y=="no",]
+df_no = df_no[sample(1:(n-number_of_trues)),]
+df = rbind(df_yes, df_no)
+```
+
+### Exploració de les dades
+
+```{r}
+hist(df$age,
+     col = "blue",
+     xlim = c(min(df$age),
+              max(df$age)),
+              ylim = c(0, 1200),
+              main = "Distribució de l'edat", 
+              xlab = "Edat", 
+              ylab = "Frequència")
+```
+
+```{r}
+barplot(100*prop.table(table(df$job)),
+        ylim = c(0, 30),
+        col = "blue",
+        main = "Distribució de treball",
+        ylab = "Proporció",
+        las = 2)
+```
+
+```{r}
+barplot(100*prop.table(table(df$marital)),
+        ylim = c(0, 70),
+        main = "Distribució de l'estat civil", 
+        ylab = "Freqüència", 
+        col = "blue")
+```
+
+```{r}
+barplot(100*prop.table(table(df$education)),
+        ylim = c(0, 30),
+        col = "blue",
+        main = "Nivell d'educació",
+        ylab = "Freqüència",
+        las = 2)
+```
+
+```{r}
+pie(prop.table(table(df$housing)),
+        col = c("red", "yellow", "green"),
+        main = "Distribució de hipotèques")
+```
+
+```{r}
+pie(prop.table(table(df$loan)),
+        col = c("red", "yellow", "green"),
+        main = "Distribució de préstecs")
+```
+
+```{r}
+pie(prop.table(table(df$contact)),
+        col = c("orange", "blue"),
+        main = "Distribució de forma de comunicació")
+```
+
+```{r}
+mesos <- c("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")
+
+df$month <- as.factor(df$month)
+df$month <- factor(df$month, levels = mesos)
+
+barplot(table(df$month),
+        ylim = c(0, 3500),
+        col = "blue",
+        xlab = "Mesos",
+        ylab = "Freqüència",
+        main = "Distribució de les trucades per mesos")
+```
+
+```{r}
+days <- c("mon", "tue", "wed", "thu", "fri", "sat", "sun")
+
+df$day_of_week <- as.factor(df$day_of_week)
+df$day_of_week <- factor(df$day_of_week, levels = days)
+
+barplot(table(df$day_of_week),
+        ylim = c(0, 1400),
+        col = "blue",
+        xlab = "Dies",
+        ylab = "Freqüència",
+        main = "Distribució de trucades per dies")
+```
+
+```{r}
+hist(df$duration,
+     col = "blue",
+     xlim = c(min(df$duration),
+              max(df$duration)),
+              ylim = c(0, 3500),
+              main = "Distribució de la duració de les trucades", 
+              xlab = "Duració", 
+              ylab = "Frequència")
+```
+
+```{r}
+hist(df$campaign,
+     col = "blue",
+              ylim = c(0, 4000),
+              main = "Distribució de les campanyes anteriors", 
+              xlab = "Número de campanyes", 
+              ylab = "Frequència")
+```
+
+```{r}
+pdays_aux <- subset(df$pdays, df$pdays != 999)
+hist(pdays_aux,
+     col = "blue",
+              ylim = c(0, 30),
+              main = "Distribució dels dies entre contactes", 
+              xlab = "Número de dies", 
+              ylab = "Frequència")
+```
+
+```{r}
+#Contarem només si hi ha hagut contacte previ o no
+pie(table(ifelse(df$previous > 0, "yes", "no")), main = "Distribució campanya prèvia",
+    col = c("red", "green"))
+```
+
+```{r}
+barplot(table(df$poutcome),
+        ylim = c(0, 5000),
+        col = "blue",
+        ylab = "Freqüència",
+        main = "Distribució del resultat de campanyes anteriors")
+```
+
+```{r}
+hist(as.numeric(df$emp.var.rate))
+```
+
+```{r}
+table(df$emp.var.rate) #VARIACI? TREBALL TRIMESTRAL 
+```
+
+```{r}
+table(df$cons.price.idx) #IPC MENSUAL
+```
+
+```{r}
+table(df$cons.conf.idx) # INDEX CONFIAN?A CONSUMIDOR
+```
+
+```{r}
+table(df$euribor3m) #EURIBOR A TRES MESOS PER DIA
+```
+
+```{r}
+table(df$nr.employed) #TREBALLADOR PER TRIMESTRE
+```
+```{r}
+pie(prop.table(table(df$y)),
+        col = c("red", "green"),
+        main = "Distribució de la variable y")
+```
+
+## Qualitat de les dades
+
+### Per variable
+
+#### Nombre de missings
+
+Passem tots els valors "unknown" a NA's per tractar-los com a missings i contem el total de NA's per variable.
+
+```{r}
+df[df == "unknown"] <- NA
+
+#Mostrem el nombre de missings per variable
+colSums(is.na(df))
+```
+
+#### Nombre d'errors
+
+1- Que una persona tingui pdays de 999 i que previous sigui més gran que 0
+
+```{r}
+err_ind <- which(df$pdays == 999 & df$previous > 0)
+length(err_ind)
+```
+
+#### Nombre d'outliers
+
+Busquem els outliers de les variables duration i campaign utilitzant la tècnica del tercer quantil
+```{r}
+boxplot(df$duration)
+```
+
+```{r}
+treshold <- quantile(df$duration, 0.75)*3
+out_dur <- which(df$duration > treshold)
+length(out_dur)
+```
+```{r}
+boxplot(df$campaign)
+```
+
+```{r}
+treshold <- quantile(df$campaign, 0.75)*3
+out_camp <- which(df$campaign > treshold)
+length(out_camp)
+```
+
+#### Ranking de variables amb més valors NA
+
+```{r}
+nas_per_var <- data.frame(num_nas = colSums(is.na(df)),
+                          variable = names(df))
+
+# Ordenem el data frame per nombre de NA's descendent
+nas_per_var <- nas_per_var[order(-nas_per_var$num_nas),]
+
+# Fem el gràfic de barres
+barplot(nas_per_var$num_nas,
+        names.arg = nas_per_var$variable,
+        ylab = "Nombre de NA's",
+        main = "Ranking de variables amb més NA's",
+        las = 2)
+```
+
+### Per individus
+
+#### Nombre de missings
+
+```{r}
+n_missings <- rowSums(is.na(df))
+table(n_missings)
+```
+
+#### Nombre d'errors
+
+```{r}
+#n_missings <- rowSums(is.e)
+table(n_missings)
+```
+
+#### Nombre d'outliers
+
+```{r}
+#n_missings <- rowSums(is.e)
+table(n_missings)
+```
+
+### Transformació de les dades
+
+Abans de res, passem les variables númeriques que estan representades amb chars a doubles:
+
+```{r}
+df$emp.var.rate <- as.numeric(df$emp.var.rate)
+df$cons.price.idx <- as.numeric(df$cons.price.idx)
+df$cons.conf.idx <- as.numeric(df$cons.conf.idx)
+df$euribor3m <- as.numeric(df$euribor3m)
+df$nr.employed <- as.numeric(df$nr.employed)
+```
+
+#### Age:
+
+Quatre possibles noves categories: Jove[0,25], Jove-Adult[26,45], Adult[46,65], Gran[+66].
+
+Realitzem aquesta distinció pels següents motius:
+
+-   Jove: No solen tenir gaire poder adquisitiu propi
+
+-   Jove-Adult: És quan s'acostumen a fer més plans de futur i a tenir més capacitat econòmica
+
+-   Adult: Solen ser persones amb una vida estable i sense gaires canvis econòmics grans
+
+-   Gran: Persones amb la vida feta sense canvis econòmics
+
+La variable passarà a ser categòrica.
+
+```{r}
+df$age <- cut(df$age, 
+              breaks = c(0, 25, 45, 65, max(df$age)),
+              labels = c("Jove", "Jove-Adult", "Adult", "Gran"))
+```
+
+#### Job:
+
+Les categories "retired", "unemployed", "student" i "housemaid" passaran a ser "unemployed", ja que tenim en compte que són persones que no cotitzen.
+
+Els "enterpeneur" passaran a ser "self-employed". vector indicating the indexes of the quantitative supplementary variables
+
+```{r}
+df$job <- as.character(df$job)
+df$job <- ifelse(df$job %in% c("retired", "unemployed", "student", "housemaid"), "unemployed", df$job)
+df$job <- ifelse(df$job == "entrepreneur", "self-employed", df$job)
+df$job <- as.factor(df$job)
+```
+
+#### Education:
+
+Les categories "basic.4y", "basic.6y", "basic.9y" passaran a ser "basic", ja que no aporta informació saber quin nivell de "basic" tenen.
+
+```{r}
+df$education <- as.character(df$education)
+df$education <- ifelse(df$education %in% c("basic.4y", "basic.6y", "basic.9y"), "basic", df$education)
+df$education <- as.factor(df$education)
+```
+
+#### Duration:
+
+Tres possibles noves categories: Baixa[0,30] Mitja[30,300] Alta[+300] (Valors amb segons).
+
+Realitzem aquesta distinció pels següents motius:
+
+-   Baixa: Una trucada que no interessa al client i ni escolta l'oferta segurament.
+
+-   Mitja: Interessa al client i escolta l'oferta.
+
+-   Alta: Gran interès del client, no sols escolta l'oferta sino que va més enllà.
+
+La variable passarà a ser categòrica.
+
+```{r}
+df$duration <- cut(df$duration,
+          breaks = c(0, 30, 300, max(df$duration)),
+          labels = c("Baixa", "Mitja", "Alta"))
+```
+
+#### Previous:
+
+Dos valors possibles: No[0] Yes[+1].
+
+La variable passarà a ser categòrica.
+
+```{r}
+df <- df %>% mutate(previous = ifelse(previous >= 1, "Yes" , previous))
+df <- df %>% mutate(previous = ifelse(previous == 0, "No" , previous))
+df$previous <- as.factor(df$previous)
+```
+
+#### Euribor 3 month rate
+
+Tres possibles noves categories: Baix[0,1] Mig[1,3] Alt[+3];
+
+La variable passarà a ser categòrica.
+
+```{r}
+df$euribor3m <- as.numeric(df$euribor3m)
+df$euribor3m <- cut(df$euribor3m, 
+              breaks = c(0, 1, 3, max(df$euribor3m)),
+              labels = c("Baix", "Mig", "Alt"))
+```
+
+### Imputació de missings
+
+#### Variables categòriques
+
+Imputem tots els NAs que tenim en el conjunt de variables categòriques (var_cat).
+
+```{r}
+var_cat <- sapply(df, is.factor)
+summary(df[,var_cat])
+res.immca<-imputeMCA(df[,var_cat],ncp = length(var_cat)-1)
+summary(res.immca$completeObs)
+df[,var_cat ]<-res.immca$completeObs
+```
+
+#### Variables numèriques
+
+Imputem tots els NAs que tenim en el conjunt de variables categòriques (var_cat).
+
+```{r}
+var_num <- sapply(df, is.numeric)
+summary(df[,var_num])
+res.impca<-imputePCA(df[,var_num],ncp = length(var_num)-1)
+summary(res.impca$completeObs)
+df[,var_num ]<-res.impca$completeObs
+summary(df)
+```
+
+#### Variables resposta
+
+```{r}
+```
+
+## Profiling
+
+### Variables numériques
+```{r}
+```
+### Variables categòriques
+```{r}
+#edat
+res.catdes<-catdes(df,grep("^y$", colnames(df)), proba=0.05)
+res.catdes$test.chi2 # relació entre les variables y la variable resposta
+res.catdes$category 
+res.catdes$quanti  # Global association to numeric variables
+res.catdes$quali # Global association to factors
+```
+
+Euribor3m: El tipus d'interès a tres mesos (Euribor3m) és la variable més fortament relacionada amb la variable target "y" segons el nostre analisi i tractament de variables. Si l'Euribor3m és baix, és més probable que el client contracti el dipòsit a termini. Si aquest és alt, també és l'influenciador més gran en què el resultat acabi sent negatiu.
+
+Poutcome: La variable Poutcome (resultat de la campanya de màrqueting anterior) també està fortament relacionada amb la variable target "y". Si el resultat de la campanya anterior va ser exitós, és més probable que el client contracti el dipòsit a termini.
+
+Duration: També es veu altament relacionada amb el resultat. Això pot ser degut a que com més temps duri la trucada, és més probable que l'agent de vendes hagi tingut l'oportunitat de persuadir el client i fer-li una oferta més atractiva.
+
+Job: El tipus de treball del client també sembla estar relacionat amb la variable target "y". Els estudiants i els jubilats tenen més probabilitats de contractar el dipòsit a termini, mentre que els treballadors autònoms i els desocupats tenen menys probabilitats.
+
+Mes: El mes en què es va realitzar l'última campanya de màrqueting també sembla estar relacionat amb el resultat negatiu de la variable target "y". En particular, els mesos de maig i juny tenen una taxa de rebuig més alta que altres mesos, mentre que el març, septembre i octubre estan molt relacionats amb un resultat positiu.
+
+Contact: La forma de contacte també està relacionada amb el resultat de la variable target "y". Els clients contactats per telèfon fix tenen més probabilitats de rebutjar el dipòsit a termini que aquells contactats per correu electrònic o per telèfon mòbil.
+
+Age: En general, els clients més joves tenen més probabilitats de rebutjar el dipòsit a termini que els clients més grans.
+
+Campaign:  El nombre de contactes realitzats durant l'última campanya de màrqueting també està relacionat amb el resultat negatiu de la variable target "y". En general, com més contactes es realitzin, és més probable que el client rebutgi el dipòsit a termini.
+
+```{r}
+#duration
+res.catdes<-catdes(df,grep("^duration$", colnames(df)), proba=0.05)
+res.catdes$test.chi2 # relació entre les variables y la variable resposta
+res.catdes$category 
+res.catdes$quanti  # Global association to numeric variables
+res.catdes$quali # Global association to factors
+```
+    
+Contacte: La forma de contacte utilitzada en l'última campanya de màrqueting té una alta correlació amb la durada de la trucada. En particular, els clients contactats per telèfon mòbil tendeixen a tenir trucades més curtes que aquells contactats per telèfon. La relació negativa entre "Duration" i "Contact" podria explicar-se pel fet que el correu electrònic i el telèfon mòbil són formes de contacte més breus i concises que una trucada telefònica.
+
+Pdays: La variable "Pdays" representa el número de dies que han passat des que el client va ser contactat per última vegada per a una campanya de màrqueting anterior. Els clients que han estat contactats recentment (és a dir, menor valor en Pdays) tendeixen a tenir trucades més curtes en l'última campanya.
+
+Previous: La variable "Previous" representa el número de contactes realitzats abans de l'última campanya de màrqueting. En general, com més gran sigui el número de contactes, menor serà la durada de l'última trucada. La relació negativa entre "Duration" i "Previous" podria explicar-se per la possibilitat que l'agent de vendes hagi hagut de repetir informació prèviament proporcionada en trucades anteriors.
+
+Job: El tipus de treball del client també pot estar relacionat amb la durada de la trucada. En particular, els clients desocupats i els estudiants tendeixen a tenir trucades més curtes que altres tipus de treballadors. La relació negativa entre "Duration" i "Job" podria explicar-se pel fet que els clients desocupats i els estudiants poden tenir menys ingressos i, per tant, estar menys interessats en contractar un dipòsit a termini fix, el que es reflectiria en trucades més curtes.
+
+```{r}
+library(chemometrics)
+df_num <- df[, sapply(df, is.numeric)]
+# Identify multivariate outliers using the moutliers function
+outliers <- Moutlier(df_num, quantile=0.995)
+length(outliers$md)
+# View the outliers
+```
