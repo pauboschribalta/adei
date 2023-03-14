@@ -52,7 +52,38 @@ df_no = df_no[sample(1:(n-number_of_trues)),]
 df = rbind(df_yes, df_no)
 ```
 
+```{r}
+df$age <- as.numeric(df$age)
+
+df$job <- as.factor(df$job)
+df$marital <- as.factor(df$marital)
+df$education <- as.factor(df$education)
+df$default <- as.factor(df$default)
+df$housing <- as.factor(df$housing)
+df$loan <- as.factor(df$loan)
+df$contact <- as.factor(df$contact)
+df$month <- as.factor(df$month)
+df$day_of_week <- as.factor(df$day_of_week)
+
+df$duration <- as.numeric(df$duration)
+df$campaign <- as.numeric(df$campaign)
+df$previous <- as.numeric(df$previous)
+
+df$poutcome <- as.factor(df$poutcome)
+
+df$emp.var.rate <- as.numeric(df$emp.var.rate)
+df$cons.price.idx <- as.numeric(df$cons.price.idx)
+df$cons.conf.idx <- as.numeric(df$cons.conf.idx)
+df$euribor3m <- as.numeric(df$euribor3m)
+df$nr.employed <- as.numeric(df$nr.employed)
+
+df$y <- as.factor(df$y)
+```
+
 ### Exploració de les dades
+
+#### Age
+
 
 ```{r}
 hist(df$age,
@@ -64,8 +95,45 @@ hist(df$age,
               xlab = "Edat", 
               ylab = "Frequència")
 ```
+Agruparem en quatre possibles noves categories: Jove[0,25], Jove-Adult[26,45], Adult[46,65], Gran[+66].
+
+Realitzem aquesta distinció pels següents motius:
+
+-   Jove: No solen tenir gaire poder adquisitiu propi
+
+-   Jove-Adult: És quan s'acostumen a fer més plans de futur i a tenir més capacitat econòmica
+
+-   Adult: Solen ser persones amb una vida estable i sense gaires canvis econòmics grans
+
+-   Gran: Persones amb la vida feta, sense canvis econòmics
+
+La variable passarà a ser categòrica.
 
 ```{r}
+df$age <- cut(df$age, 
+              breaks = c(0, 25, 45, 65, max(df$age)),
+              labels = c("Jove", "Jove-Adult", "Adult", "Gran"))
+df$age <- as.factor(df$age)
+```
+
+```{r}
+pie(table(df$age),
+        col = c("mistyrose2", "darkolivegreen3", "khaki2", "azure2"),
+        main = "Distribució d'edats")
+```
+
+#### Job
+
+Les categories "retired", "unemployed", "student" i "housemaid" passaran a ser "unemployed", ja que tenim en compte que són persones que no cotitzen.
+
+Els "enterpeneur" passaran a ser "self-employed". vector indicating the indexes of the quantitative supplementary variables
+
+```{r}
+df$job <- as.character(df$job)
+df$job <- ifelse(df$job %in% c("retired", "unemployed", "student", "housemaid"), "unemployed", df$job)
+df$job <- ifelse(df$job == "entrepreneur", "self-employed", df$job)
+df$job <- as.factor(df$job)
+
 barplot(100*prop.table(table(df$job)),
         ylim = c(0, 30),
         col = "blue",
@@ -73,6 +141,8 @@ barplot(100*prop.table(table(df$job)),
         ylab = "Proporció",
         las = 2)
 ```
+
+#### Marital
 
 ```{r}
 barplot(100*prop.table(table(df$marital)),
@@ -82,14 +152,24 @@ barplot(100*prop.table(table(df$marital)),
         col = "blue")
 ```
 
+#### Education
+
+Les categories "basic.4y", "basic.6y", "basic.9y" passaran a ser "basic", ja que no aporta informació saber quin nivell de "basic" tenen.
+
 ```{r}
+df$education <- as.character(df$education)
+df$education <- ifelse(df$education %in% c("basic.4y", "basic.6y", "basic.9y"), "basic", df$education)
+df$education <- as.factor(df$education)
+
 barplot(100*prop.table(table(df$education)),
-        ylim = c(0, 30),
+        ylim = c(0, 35),
         col = "blue",
         main = "Nivell d'educació",
         ylab = "Freqüència",
         las = 2)
 ```
+
+#### Housing
 
 ```{r}
 pie(prop.table(table(df$housing)),
@@ -97,11 +177,15 @@ pie(prop.table(table(df$housing)),
         main = "Distribució de hipotèques")
 ```
 
+#### Loan
+
 ```{r}
 pie(prop.table(table(df$loan)),
         col = c("red", "yellow", "green"),
         main = "Distribució de préstecs")
 ```
+
+#### Contact
 
 ```{r}
 pie(prop.table(table(df$contact)),
@@ -109,10 +193,11 @@ pie(prop.table(table(df$contact)),
         main = "Distribució de forma de comunicació")
 ```
 
+#### Month
+
 ```{r}
 mesos <- c("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")
 
-df$month <- as.factor(df$month)
 df$month <- factor(df$month, levels = mesos)
 
 barplot(table(df$month),
@@ -123,10 +208,11 @@ barplot(table(df$month),
         main = "Distribució de les trucades per mesos")
 ```
 
+#### Day of the week
+
 ```{r}
 days <- c("mon", "tue", "wed", "thu", "fri", "sat", "sun")
 
-df$day_of_week <- as.factor(df$day_of_week)
 df$day_of_week <- factor(df$day_of_week, levels = days)
 
 barplot(table(df$day_of_week),
@@ -136,6 +222,8 @@ barplot(table(df$day_of_week),
         ylab = "Freqüència",
         main = "Distribució de trucades per dies")
 ```
+
+#### Duration
 
 ```{r}
 hist(df$duration,
@@ -148,6 +236,8 @@ hist(df$duration,
               ylab = "Frequència")
 ```
 
+#### Campaign
+
 ```{r}
 hist(df$campaign,
      col = "blue",
@@ -156,6 +246,8 @@ hist(df$campaign,
               xlab = "Número de campanyes", 
               ylab = "Frequència")
 ```
+
+#### Pdays
 
 ```{r}
 pdays_aux <- subset(df$pdays, df$pdays != 999)
@@ -167,11 +259,23 @@ hist(pdays_aux,
               ylab = "Frequència")
 ```
 
+#### Previous
+
+Dos valors possibles: No[0] Yes[+1].
+
+La variable passarà a ser categòrica.
+
 ```{r}
+df <- df %>% mutate(previous = ifelse(previous >= 1, "Yes" , previous))
+df <- df %>% mutate(previous = ifelse(previous == 0, "No" , previous))
+df$previous <- as.factor(df$previous)
+
 #Contarem només si hi ha hagut contacte previ o no
-pie(table(ifelse(df$previous > 0, "yes", "no")), main = "Distribució campanya prèvia",
+pie(prop.table(table(df$previous)), main = "Distribució campanya prèvia",
     col = c("red", "green"))
 ```
+
+#### Poutcome
 
 ```{r}
 barplot(table(df$poutcome),
@@ -181,29 +285,39 @@ barplot(table(df$poutcome),
         main = "Distribució del resultat de campanyes anteriors")
 ```
 
-```{r}
-hist(as.numeric(df$emp.var.rate))
-```
+#### Employment variation rate
 
 ```{r}
-table(df$emp.var.rate) #VARIACI? TREBALL TRIMESTRAL 
+hist(as.numeric(df$emp.var.rate),
+     col = "blue")
 ```
 
-```{r}
-table(df$cons.price.idx) #IPC MENSUAL
-```
+#### Consumer price index 
 
 ```{r}
-table(df$cons.conf.idx) # INDEX CONFIAN?A CONSUMIDOR
+table(df$cons.price.idx)
 ```
 
+#### Consumer confidence index
+
 ```{r}
-table(df$euribor3m) #EURIBOR A TRES MESOS PER DIA
+table(df$cons.conf.idx)
 ```
+
+#### Euribor 3 month rate
+
+```{r}
+table(df$euribor3m)
+```
+
+#### Number of employees
 
 ```{r}
 table(df$nr.employed) #TREBALLADOR PER TRIMESTRE
 ```
+
+#### Subscribed deposit
+
 ```{r}
 pie(prop.table(table(df$y)),
         col = c("red", "green"),
@@ -236,22 +350,37 @@ length(err_ind)
 
 #### Nombre d'outliers
 
-Busquem els outliers de les variables duration i campaign utilitzant la tècnica del tercer quantil
+Busquem els outliers de les variables utilitzant la tècnica del tercer quantil
+
 ```{r}
-boxplot(df$duration)
+boxplot(df$age, col = "blue")
+treshold <- quantile(df$age, 0.75)*3
+abline(h = treshold, col = "red", lty = "dashed")
 ```
 
 ```{r}
+out_dur <- which(df$age > treshold)
+length(out_dur)
+```
+
+```{r}
+boxplot(df$duration, col = "blue")
 treshold <- quantile(df$duration, 0.75)*3
+abline(h = treshold, col = "red", lty = "dashed")
+```
+
+```{r}
 out_dur <- which(df$duration > treshold)
 length(out_dur)
 ```
+
 ```{r}
-boxplot(df$campaign)
+boxplot(df$campaign, col = "blue")
+treshold <- quantile(df$campaign, 0.75)*3
+abline(h = treshold, col = "red", lty = "dashed")
 ```
 
 ```{r}
-treshold <- quantile(df$campaign, 0.75)*3
 out_camp <- which(df$campaign > treshold)
 length(out_camp)
 ```
@@ -296,107 +425,6 @@ table(n_missings)
 table(n_missings)
 ```
 
-### Transformació de les dades
-
-Abans de res, passem les variables númeriques que estan representades amb chars a doubles:
-
-```{r}
-df$emp.var.rate <- as.numeric(df$emp.var.rate)
-df$cons.price.idx <- as.numeric(df$cons.price.idx)
-df$cons.conf.idx <- as.numeric(df$cons.conf.idx)
-df$euribor3m <- as.numeric(df$euribor3m)
-df$nr.employed <- as.numeric(df$nr.employed)
-```
-
-#### Age:
-
-Quatre possibles noves categories: Jove[0,25], Jove-Adult[26,45], Adult[46,65], Gran[+66].
-
-Realitzem aquesta distinció pels següents motius:
-
--   Jove: No solen tenir gaire poder adquisitiu propi
-
--   Jove-Adult: És quan s'acostumen a fer més plans de futur i a tenir més capacitat econòmica
-
--   Adult: Solen ser persones amb una vida estable i sense gaires canvis econòmics grans
-
--   Gran: Persones amb la vida feta sense canvis econòmics
-
-La variable passarà a ser categòrica.
-
-```{r}
-df$age <- cut(df$age, 
-              breaks = c(0, 25, 45, 65, max(df$age)),
-              labels = c("Jove", "Jove-Adult", "Adult", "Gran"))
-```
-
-#### Job:
-
-Les categories "retired", "unemployed", "student" i "housemaid" passaran a ser "unemployed", ja que tenim en compte que són persones que no cotitzen.
-
-Els "enterpeneur" passaran a ser "self-employed". vector indicating the indexes of the quantitative supplementary variables
-
-```{r}
-df$job <- as.character(df$job)
-df$job <- ifelse(df$job %in% c("retired", "unemployed", "student", "housemaid"), "unemployed", df$job)
-df$job <- ifelse(df$job == "entrepreneur", "self-employed", df$job)
-df$job <- as.factor(df$job)
-```
-
-#### Education:
-
-Les categories "basic.4y", "basic.6y", "basic.9y" passaran a ser "basic", ja que no aporta informació saber quin nivell de "basic" tenen.
-
-```{r}
-df$education <- as.character(df$education)
-df$education <- ifelse(df$education %in% c("basic.4y", "basic.6y", "basic.9y"), "basic", df$education)
-df$education <- as.factor(df$education)
-```
-
-#### Duration:
-
-Tres possibles noves categories: Baixa[0,30] Mitja[30,300] Alta[+300] (Valors amb segons).
-
-Realitzem aquesta distinció pels següents motius:
-
--   Baixa: Una trucada que no interessa al client i ni escolta l'oferta segurament.
-
--   Mitja: Interessa al client i escolta l'oferta.
-
--   Alta: Gran interès del client, no sols escolta l'oferta sino que va més enllà.
-
-La variable passarà a ser categòrica.
-
-```{r}
-df$duration <- cut(df$duration,
-          breaks = c(0, 30, 300, max(df$duration)),
-          labels = c("Baixa", "Mitja", "Alta"))
-```
-
-#### Previous:
-
-Dos valors possibles: No[0] Yes[+1].
-
-La variable passarà a ser categòrica.
-
-```{r}
-df <- df %>% mutate(previous = ifelse(previous >= 1, "Yes" , previous))
-df <- df %>% mutate(previous = ifelse(previous == 0, "No" , previous))
-df$previous <- as.factor(df$previous)
-```
-
-#### Euribor 3 month rate
-
-Tres possibles noves categories: Baix[0,1] Mig[1,3] Alt[+3];
-
-La variable passarà a ser categòrica.
-
-```{r}
-df$euribor3m <- as.numeric(df$euribor3m)
-df$euribor3m <- cut(df$euribor3m, 
-              breaks = c(0, 1, 3, max(df$euribor3m)),
-              labels = c("Baix", "Mig", "Alt"))
-```
 
 ### Imputació de missings
 
@@ -432,9 +460,12 @@ df[,var_num ]<-res.impca$completeObs
 ## Profiling
 
 ### Variables numériques
+
 ```{r}
 ```
+
 ### Variables categòriques
+
 ```{r}
 #edat
 res.catdes<-catdes(df,grep("^y$", colnames(df)), proba=0.05)
@@ -458,7 +489,7 @@ Contact: La forma de contacte també està relacionada amb el resultat de la var
 
 Age: En general, els clients més joves tenen més probabilitats de rebutjar el dipòsit a termini que els clients més grans.
 
-Campaign:  El nombre de contactes realitzats durant l'última campanya de màrqueting també està relacionat amb el resultat negatiu de la variable target "y". En general, com més contactes es realitzin, és més probable que el client rebutgi el dipòsit a termini.
+Campaign: El nombre de contactes realitzats durant l'última campanya de màrqueting també està relacionat amb el resultat negatiu de la variable target "y". En general, com més contactes es realitzin, és més probable que el client rebutgi el dipòsit a termini.
 
 ```{r}
 #duration
@@ -468,7 +499,7 @@ res.catdes$category
 res.catdes$quanti  # Global association to numeric variables
 res.catdes$quali # Global association to factors
 ```
-    
+
 Contacte: La forma de contacte utilitzada en l'última campanya de màrqueting té una alta correlació amb la durada de la trucada. En particular, els clients contactats per telèfon mòbil tendeixen a tenir trucades més curtes que aquells contactats per telèfon. La relació negativa entre "Duration" i "Contact" podria explicar-se pel fet que el correu electrònic i el telèfon mòbil són formes de contacte més breus i concises que una trucada telefònica.
 
 Pdays: La variable "Pdays" representa el número de dies que han passat des que el client va ser contactat per última vegada per a una campanya de màrqueting anterior. Els clients que han estat contactats recentment (és a dir, menor valor en Pdays) tendeixen a tenir trucades més curtes en l'última campanya.
