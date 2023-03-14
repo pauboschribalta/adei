@@ -84,10 +84,9 @@ df$y <- as.factor(df$y)
 
 #### Age
 
-
 ```{r}
 hist(df$age,
-     col = "blue",
+     col = "blue4",
      xlim = c(min(df$age),
               max(df$age)),
               ylim = c(0, 1200),
@@ -95,7 +94,8 @@ hist(df$age,
               xlab = "Edat", 
               ylab = "Frequència")
 ```
-Agruparem en quatre possibles noves categories: Jove[0,25], Jove-Adult[26,45], Adult[46,65], Gran[+66].
+
+Agruparem en quatre noves categories: Jove[0,25], Jove-Adult[26,45], Adult[46,65], Gran[+66].
 
 Realitzem aquesta distinció pels següents motius:
 
@@ -119,10 +119,20 @@ df$age <- as.factor(df$age)
 ```{r}
 pie(table(df$age),
         col = c("mistyrose2", "darkolivegreen3", "khaki2", "azure2"),
-        main = "Distribució d'edats")
+        main = "Distribució d'edats agrupades")
+legend("right", fill = c("mistyrose2", "darkolivegreen3", "khaki2", "azure2") , legend = paste(100*prop.table(table(df$age)), "%"))
 ```
 
 #### Job
+
+```{r}
+barplot(100*prop.table(table(df$job)),
+        ylim = c(0, 30),
+        col = "blue4",
+        main = "Distribució de treball",
+        ylab = "Proporció",
+        las = 2)
+```
 
 Les categories "retired", "unemployed", "student" i "housemaid" passaran a ser "unemployed", ja que tenim en compte que són persones que no cotitzen.
 
@@ -133,11 +143,13 @@ df$job <- as.character(df$job)
 df$job <- ifelse(df$job %in% c("retired", "unemployed", "student", "housemaid"), "unemployed", df$job)
 df$job <- ifelse(df$job == "entrepreneur", "self-employed", df$job)
 df$job <- as.factor(df$job)
+```
 
+```{r}
 barplot(100*prop.table(table(df$job)),
         ylim = c(0, 30),
-        col = "blue",
-        main = "Distribució de treball",
+        col = "blue4",
+        main = "Distribució de treball agrupada",
         ylab = "Proporció",
         las = 2)
 ```
@@ -148,11 +160,20 @@ barplot(100*prop.table(table(df$job)),
 barplot(100*prop.table(table(df$marital)),
         ylim = c(0, 70),
         main = "Distribució de l'estat civil", 
-        ylab = "Freqüència", 
-        col = "blue")
+        ylab = "Proporció", 
+        col = "blue4")
 ```
 
 #### Education
+
+```{r}
+barplot(100*prop.table(table(df$education)),
+        ylim = c(0, 30),
+        col = "blue4",
+        main = "Nivell d'educació",
+        ylab = "Proporció",
+        las = 2)
+```
 
 Les categories "basic.4y", "basic.6y", "basic.9y" passaran a ser "basic", ja que no aporta informació saber quin nivell de "basic" tenen.
 
@@ -160,12 +181,14 @@ Les categories "basic.4y", "basic.6y", "basic.9y" passaran a ser "basic", ja que
 df$education <- as.character(df$education)
 df$education <- ifelse(df$education %in% c("basic.4y", "basic.6y", "basic.9y"), "basic", df$education)
 df$education <- as.factor(df$education)
+```
 
+```{r}
 barplot(100*prop.table(table(df$education)),
         ylim = c(0, 35),
-        col = "blue",
-        main = "Nivell d'educació",
-        ylab = "Freqüència",
+        col = "blue4",
+        main = "Distribució del nivell d'educació agrupada",
+        ylab = "Proporció",
         las = 2)
 ```
 
@@ -173,24 +196,27 @@ barplot(100*prop.table(table(df$education)),
 
 ```{r}
 pie(prop.table(table(df$housing)),
-        col = c("red", "yellow", "green"),
+        col = c("brown3", "yellow2", "green3"),
         main = "Distribució de hipotèques")
+legend("right", fill = c("brown3", "yellow2", "green3") , legend = paste(100*prop.table(table(df$housing)), "%"))
 ```
 
 #### Loan
 
 ```{r}
 pie(prop.table(table(df$loan)),
-        col = c("red", "yellow", "green"),
+        col = c("brown3", "yellow2", "green3"),
         main = "Distribució de préstecs")
+legend("right", fill = c("brown3", "yellow2", "green3") , legend = paste(100*prop.table(table(df$loan)), "%"))
 ```
 
 #### Contact
 
 ```{r}
-pie(prop.table(table(df$contact)),
-        col = c("orange", "blue"),
+pie(table(df$contact),
+        col = c("darkolivegreen3", "khaki2"),
         main = "Distribució de forma de comunicació")
+legend("right", fill = c("darkolivegreen3", "khaki2") , legend = paste(100*prop.table(table(df$contact)), "%"))
 ```
 
 #### Month
@@ -202,8 +228,7 @@ df$month <- factor(df$month, levels = mesos)
 
 barplot(table(df$month),
         ylim = c(0, 3500),
-        col = "blue",
-        xlab = "Mesos",
+        col = "blue4",
         ylab = "Freqüència",
         main = "Distribució de les trucades per mesos")
 ```
@@ -217,8 +242,7 @@ df$day_of_week <- factor(df$day_of_week, levels = days)
 
 barplot(table(df$day_of_week),
         ylim = c(0, 1400),
-        col = "blue",
-        xlab = "Dies",
+        col = "blue4",
         ylab = "Freqüència",
         main = "Distribució de trucades per dies")
 ```
@@ -227,12 +251,12 @@ barplot(table(df$day_of_week),
 
 ```{r}
 hist(df$duration,
-     col = "blue",
+     col = "blue4",
      xlim = c(min(df$duration),
               max(df$duration)),
               ylim = c(0, 3500),
               main = "Distribució de la duració de les trucades", 
-              xlab = "Duració", 
+              xlab = "Duració (segons)", 
               ylab = "Frequència")
 ```
 
@@ -240,10 +264,10 @@ hist(df$duration,
 
 ```{r}
 hist(df$campaign,
-     col = "blue",
+     col = "blue4",
               ylim = c(0, 4000),
-              main = "Distribució de les campanyes anteriors", 
-              xlab = "Número de campanyes", 
+              main = "Distribució dels contactes per client de la campanya actual", 
+              xlab = "Número de contactes", 
               ylab = "Frequència")
 ```
 
@@ -252,16 +276,25 @@ hist(df$campaign,
 ```{r}
 pdays_aux <- subset(df$pdays, df$pdays != 999)
 hist(pdays_aux,
-     col = "blue",
+     col = "blue4",
               ylim = c(0, 30),
-              main = "Distribució dels dies entre contactes", 
+              main = "Distribució dels dies entre contactes de diferents campanyes", 
               xlab = "Número de dies", 
               ylab = "Frequència")
 ```
 
 #### Previous
 
-Dos valors possibles: No[0] Yes[+1].
+```{r}
+hist(df$previous,
+     col = "blue4",
+              ylim = c(0, 5000),
+              main = "Distribució del número de contactes anteriors (diferents campanyes)", 
+              xlab = "Número de contactes", 
+              ylab = "Frequència")
+```
+
+Ho passem a dos valors possibles: No[0] Yes[+1].
 
 La variable passarà a ser categòrica.
 
@@ -269,10 +302,12 @@ La variable passarà a ser categòrica.
 df <- df %>% mutate(previous = ifelse(previous >= 1, "Yes" , previous))
 df <- df %>% mutate(previous = ifelse(previous == 0, "No" , previous))
 df$previous <- as.factor(df$previous)
+```
 
-#Contarem només si hi ha hagut contacte previ o no
-pie(prop.table(table(df$previous)), main = "Distribució campanya prèvia",
-    col = c("red", "green"))
+```{r}
+pie(table(df$previous), main = "Distribució unificada de contactes anteriors (diferents campanyes)",
+    col = c("brown3", "green3"))
+legend("right", fill = c("brown3", "green3") , legend = paste(100*prop.table(table(df$previous)), "%"))
 ```
 
 #### Poutcome
@@ -280,7 +315,7 @@ pie(prop.table(table(df$previous)), main = "Distribució campanya prèvia",
 ```{r}
 barplot(table(df$poutcome),
         ylim = c(0, 5000),
-        col = "blue",
+        col = "blue4",
         ylab = "Freqüència",
         main = "Distribució del resultat de campanyes anteriors")
 ```
@@ -288,39 +323,63 @@ barplot(table(df$poutcome),
 #### Employment variation rate
 
 ```{r}
-hist(as.numeric(df$emp.var.rate),
-     col = "blue")
+hist(df$emp.var.rate,
+     ylim = c(0, 3000),
+        col = "blue4",
+        xlab = "",
+        ylab = "Freqüència",
+        main = "Índex de variació d'ocupació")
 ```
 
-#### Consumer price index 
+#### Consumer price index
 
 ```{r}
-table(df$cons.price.idx)
+hist(df$cons.price.idx,
+     ylim = c(0, 3500),
+        col = "blue4",
+        xlab = "",
+        ylab = "Freqüència",
+        main = "Índex de preus al consumidor")
 ```
 
 #### Consumer confidence index
 
 ```{r}
-table(df$cons.conf.idx)
+hist(df$cons.conf.idx,
+     ylim = c(0, 3500),
+        col = "blue4",
+        xlab = "",
+        ylab = "Freqüència",
+        main = "Índex de confiança del consumidor")
 ```
 
 #### Euribor 3 month rate
 
 ```{r}
-table(df$euribor3m)
+hist(df$euribor3m,
+     ylim = c(0, 4000),
+        col = "blue4",
+        xlab = "",
+        ylab = "Freqüència",
+        main = "Índex euribor a 3 mesos")
 ```
 
 #### Number of employees
 
 ```{r}
-table(df$nr.employed) #TREBALLADOR PER TRIMESTRE
+hist(df$nr.employed,
+     ylim = c(0, 3500),
+        col = "blue4",
+        xlab = "",
+        ylab = "Freqüència",
+        main = "Nombre d'empleats")
 ```
 
 #### Subscribed deposit
 
 ```{r}
 pie(prop.table(table(df$y)),
-        col = c("red", "green"),
+        col = c("brown3", "green3"),
         main = "Distribució de la variable y")
 ```
 
@@ -353,21 +412,11 @@ length(err_ind)
 Busquem els outliers de les variables utilitzant la tècnica del tercer quantil
 
 ```{r}
-boxplot(df$age, col = "blue")
-treshold <- quantile(df$age, 0.75)*3
-abline(h = treshold, col = "red", lty = "dashed")
-```
-
-```{r}
-out_dur <- which(df$age > treshold)
-length(out_dur)
-```
-
-```{r}
-boxplot(df$duration, col = "blue")
+boxplot(df$duration, col = "blue4")
 treshold <- quantile(df$duration, 0.75)*3
 abline(h = treshold, col = "red", lty = "dashed")
 ```
+Trobem el nombre d'outliers
 
 ```{r}
 out_dur <- which(df$duration > treshold)
@@ -375,10 +424,12 @@ length(out_dur)
 ```
 
 ```{r}
-boxplot(df$campaign, col = "blue")
+boxplot(df$campaign, col = "blue4")
 treshold <- quantile(df$campaign, 0.75)*3
 abline(h = treshold, col = "red", lty = "dashed")
 ```
+
+Trobem el nombre d'outliers
 
 ```{r}
 out_camp <- which(df$campaign > treshold)
@@ -397,6 +448,8 @@ nas_per_var <- nas_per_var[order(-nas_per_var$num_nas),]
 # Fem el gràfic de barres
 barplot(nas_per_var$num_nas,
         names.arg = nas_per_var$variable,
+        ylim = c(0, 1400),
+        col = "blue4",
         ylab = "Nombre de NA's",
         main = "Ranking de variables amb més NA's",
         las = 2)
@@ -424,7 +477,6 @@ table(n_missings)
 #n_missings <- rowSums(is.e)
 table(n_missings)
 ```
-
 
 ### Imputació de missings
 
