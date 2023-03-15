@@ -457,6 +457,13 @@ barplot(nas_per_var$num_nas,
 
 ### Per individus
 
+#### Afegim variable que conta els NA
+
+```{r}
+df$na_count <- apply(df, 1, function(x) sum(is.na(x)))
+```
+
+
 #### Nombre de missings
 
 ```{r}
