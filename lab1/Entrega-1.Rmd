@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Load Required Packages: to be increased over the course
 options(contrasts=c("contr.treatment","contr.treatment"))
 
-requiredPackages <- c("chemometrics","FactoMineR","car", "dplyr","knitr","missMDA")
+requiredPackages <- c("chemometrics","FactoMineR","car", "dplyr","knitr","missMDA", "mvoutlier")
 
 #use this function to check if each package is on the local machine
 #if a package is installed, it will be loaded
@@ -468,12 +468,6 @@ df$pdays[err_ind]<-999
 df$previous[err_ind]<-"Yes"
 ```
 
-#### Afegim variable que conta els NA
-
-```{r}
-df$na_count <- apply(df, 1, function(x) sum(is.na(x)))
-```
-
 #### Nombre de missings
 
 ```{r}
@@ -498,15 +492,34 @@ out_ind <- rowSums(cbind(as.numeric(df$duration %in% out_dur), as.numeric(df$cam
 table(out_ind)
 ```
 
-### Imputació de missings
+#### Afegim variable que conta els NA
 
-Abans d'imputar els missings, passarem a NA's els index de les variables que hem trobat errors i outliers.
+Abans de contar els missings, passarem a NA's els index de les variables que hem trobat errors o outliers.
 
 ```{r}
 df$campaign[out_camp]<-NA
 df$duration[out_dur]<-NA
 df$previous[err_ind]<-NA
 ```
+
+Creem la nova variable i contem els NA's
+
+```{r}
+df$na_count <- apply(df, 1, function(x) sum(is.na(x)))
+```
+
+#### Relació entre grup d'edat i valors atípics
+
+Respecte els grups d'edat que hem definit anteriorment, volem veure quin d'aquests grups és més propenç a tenir missings (dins dels missings hi ha outliers i errors).
+
+```{r}
+missings_edat <- aggregate(df$na_count, by = list(df$age), sum)
+missings_edat <- missings_edat[order(missings_edat$x, decreasing = TRUE), ]
+names(missings_edat) <- c("Grup d'edat", "Missings")
+missings_edat
+```
+
+### Imputació de missings
 
 #### Variables categòriques
 
@@ -542,11 +555,6 @@ Imputació dels missings.
 res.impca<-imputePCA(df[,var_num],ncp = length(var_num)-1)
 summary(res.impca$completeObs)
 df[,var_num ]<-res.impca$completeObs
-```
-
-#### Variables resposta
-
-```{r}
 ```
 
 ## Profiling
@@ -601,17 +609,14 @@ res.condes$quali # Global association to factors
 **Job**: El tipus de treball del client també pot estar relacionat amb la durada de la trucada. En particular, els clients desocupats i els estudiants tendeixen a tenir trucades més curtes que altres tipus de treballadors. La relació negativa entre "Duration" i "Job" podria explicar-se pel fet que els clients desocupats i els estudiants poden tenir menys ingressos i, per tant, estar menys interessats en contractar un dipòsit a termini fix, el que es reflectiria en trucades més curtes.
 
 ```{r}
-library(mvoutlier)
-library(MVN)
-
 # select only the factor variables from the dataset
 cat_vars <- c("age", "job", "marital", "education", "default", "housing", "loan", 
               "contact", "month", "day_of_week", "poutcome", "y")
 df_cat <- df[, cat_vars]
 
 # perform multivariate outlier analysis
-outliers <- mvoutlier(df_cat)
+#outliers <- mvoutlier(df_cat)
 
 # create a new column to identify multivariate outliers
-df_cat$multivar_outlier <- ifelse(rownames(df_cat) %in% outliers, 1, 0)
+#df_cat$multivar_outlier <- ifelse(rownames(df_cat) %in% outliers, 1, 0)
 ```
