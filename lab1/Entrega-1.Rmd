@@ -105,7 +105,7 @@ Realitzem aquesta distinció pels següents motius:
 
 -   Adult: Solen ser persones amb una vida estable i sense gaires canvis econòmics grans
 
--   Gran: Persones amb la vida feta, sense canvis econòmics
+-   Gran: Persones amb la vida feta, sense canvis econòmics (Com que l'edat més gran registrada és 88 anys, entendrem que no tenim outliers)
 
 La variable passarà a ser categòrica.
 
@@ -403,7 +403,7 @@ colSums(is.na(df))
 1- Que una persona tingui pdays de 999 i que previous sigui més gran que 0
 
 ```{r}
-err_ind <- which(df$pdays == 999 & df$previous > 0)
+err_ind <- which(df$pdays == 999 & df$previous == "Yes")
 length(err_ind)
 ```
 
@@ -485,7 +485,21 @@ table(n_missings)
 table(n_missings)
 ```
 
+Esborrarem la variable pdays ja que no ens aporta cap informació adicional.
+
+```{r}
+df <- subset(df, select = -pdays)
+```
+
 ### Imputació de missings
+
+Abans d'imputar els missings, passarem a NA's els index de les variables que hem trobat errors i outliers.
+
+```{r}
+df$campaign[out_camp]<-NA
+df$duration[out_dur]<-NA
+df$previous[err_ind]<-NA
+```
 
 #### Variables categòriques
 
@@ -494,7 +508,7 @@ Imputem tots els NAs que tenim en el conjunt de variables categòriques (var_cat
 ```{r}
 var_cat <- sapply(df, is.factor)
 summary(df[,var_cat])
-res.immca<-imputeMCA(df[,var_cat],ncp = length(var_cat)-1)
+res.immca<-imputeMCA(df[,var_cat],ncp = 12)
 summary(res.immca$completeObs)
 df[,var_cat ]<-res.immca$completeObs
 ```
@@ -504,6 +518,7 @@ df[,var_cat ]<-res.immca$completeObs
 Imputem tots els NAs que tenim en el conjunt de variables numeriques (var_num).
 
 ```{r}
+var_num <- sapply(df, is.numeric)
 summary(df[,var_num])
 df[var_num] <- lapply(df[var_num], as.numeric)
 res.impca<-imputePCA(df[,var_num],ncp = length(var_num)-1)
