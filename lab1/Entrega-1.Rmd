@@ -608,15 +608,16 @@ res.condes$quali # Global association to factors
 
 **Job**: El tipus de treball del client també pot estar relacionat amb la durada de la trucada. En particular, els clients desocupats i els estudiants tendeixen a tenir trucades més curtes que altres tipus de treballadors. La relació negativa entre "Duration" i "Job" podria explicar-se pel fet que els clients desocupats i els estudiants poden tenir menys ingressos i, per tant, estar menys interessats en contractar un dipòsit a termini fix, el que es reflectiria en trucades més curtes.
 
+
+## Identify individuals considered as multivariate outliers
+
 ```{r}
-# select only the factor variables from the dataset
-cat_vars <- c("age", "job", "marital", "education", "default", "housing", "loan", 
-              "contact", "month", "day_of_week", "poutcome", "y")
-df_cat <- df[, cat_vars]
+library(chemometrics)
 
-# perform multivariate outlier analysis
-#outliers <- mvoutlier(df_cat)
-
-# create a new column to identify multivariate outliers
-#df_cat$multivar_outlier <- ifelse(rownames(df_cat) %in% outliers, 1, 0)
+# Perform multivariate outlier analysis using Moutlier function
+outliers <- Moutlier(df[, c("age_num", "duration")], quantile= 0.995)
+top5 <- order(outliers$md, decreasing=TRUE)[1:5]
+print("Els individus multivariate outlier a destacar són els presents a la següent llista:")
+print(top5)
+outliers$cutoff
 ```

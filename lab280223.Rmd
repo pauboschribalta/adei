@@ -1,0 +1,359 @@
+---
+title: "Case Study"
+author: "Daniel Villalobos"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: yes
+    toc_float: true
+    toc_depth: 4
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE, echo=FALSE}
+# Load Required Packages: to be increased over the course
+options(contrasts=c("contr.treatment","contr.treatment"))
+
+requiredPackages <- c("chemometrics","FactoMineR","car", "factoextra","knitr","missMDA")
+
+#use this function to check if each package is on the local machine
+#if a package is installed, it will be loaded
+#if any are not, the missing package(s) will be installed and loaded
+package.check <- lapply(requiredPackages, FUN = function(x) {
+  if (!require(x, character.only = TRUE)) {
+    install.packages(x, dependencies = TRUE)
+    library(x, character.only = TRUE)
+  }
+})
+```
+
+### Carrega inicial de les dades
+
+```{r}
+file_path = "/Users/danielvillalobostorrejon/Documents/Profe/ADEI/2022/segon_semestre/case_study/bank-additional-full.csv"
+df = read.csv2(file_path, header = T)
+```
+
+```{r}
+head(df)
+```
+
+### Mostra de les dades amb les que treballare
+
+```{r}
+set.seed(1)
+n <- 5000
+number_of_trues = as.integer(runif(1, min = 2400, max=2600))
+```
+
+```{r}
+df_yes = df[df$y=="yes",]
+df_yes = df_yes[sample(1:number_of_trues), ]
+
+df_no = df[df$y=="no",]
+df_no = df_no[sample(1:(n-number_of_trues)),]
+df = rbind(df_yes, df_no)
+```
+
+### Análisis Exploratori
+
+```{r}
+summary(df)
+str(df)
+```
+
+```{r}
+hist(df$age)
+```
+
+```{r}
+barplot(prop.table(table(df$job)))
+```
+
+```{r}
+barplot(100*prop.table(table(df$marital)))
+
+which(df$marital == "unknown")
+```
+
+```{r}
+barplot(100*prop.table(table(df$education)))
+```
+
+```{r}
+barplot(100*prop.table(table(df$housing)))
+```
+
+```{r}
+barplot(100*prop.table(table(df$loan)))
+
+```
+
+```{r}
+
+barplot(100*prop.table(table(df$contact)))
+```
+
+```{r}
+barplot(100*prop.table(table(df$month)))
+
+```
+
+```{r}
+barplot(100*prop.table(table(df$day_of_week)))
+
+```
+
+```{r}
+hist(df$duration) #MALA PINTA
+
+df[which(df$duration == 4918),]
+```
+
+```{r}
+hist(df$campaign)
+
+```
+
+```{r}
+hist(df$pdays) #ALTANTO 999 - DESDOBLAAAR! 
+
+```
+
+```{r}
+hist(df$previous)
+
+```
+
+```{r}
+barplot(table(df$poutcome))
+
+```
+
+```{r}
+hist(as.numeric(df$emp.var.rate))
+```
+
+```{r}
+table(df$emp.var.rate) #VARIACI? TREBALL TRIMESTRAL 
+
+```
+
+```{r}
+table(df$cons.price.idx) #IPC MENSUAL
+
+```
+
+```{r}
+
+table(df$cons.conf.idx) # INDEX CONFIAN?A CONSUMIDOR
+```
+
+```{r}
+
+table(df$euribor3m) #EURIBOR A TRES MESOS PER DIA
+```
+
+```{r}
+table(df$nr.employed) #TREBALLADOR PER TRIMESTRE
+```
+
+### Transformacions
+
+```{r}
+summary(df)
+```
+
+#### Factoritzar variables categoriques
+
+```{r}
+summary(df$job)
+df$job <- as.factor(df$job)
+summary(df$job)
+```
+
+```{r}
+levels(df$education)
+df$education <- as.factor(df$education)
+levels(df$education)
+```
+
+#### Manera eficient de fer-ho
+
+```{r}
+df[sapply(df, is.character)] <- lapply(df[sapply(df, is.character)], 
+                                       as.factor)
+summary(df)
+```
+
+#### Agrupar categories
+
+```{r}
+df$education_grouped <- df$education
+levels(df$education_grouped) <- c("basic", "basic","basic","high.school","illiterate", "professional.course", "university.degree", "unknown")
+levels(df$education_grouped)
+levels(df$education_grouped)[levels(df$education_grouped)=='unknown'] <- NA
+```
+
+```{r}
+summary(df$job)
+levels(df$job) <- c("admin.", "blue-collar", "entrepreneur", "housemaid", "management"," retired", "self-employed", "services", "student", "technician", "unemployed", NA)
+```
+
+```{r}
+levels(df$housing) <- c("no", NA, "yes")
+levels(df$loan) <- c("no", NA, "yes")
+```
+
+```{r}
+summary(df)
+```
+
+#### Factoritzar variables numériques
+
+```{r}
+summary(df$duration)
+df$duration_cuted <- cut(df$duration, breaks=c(3,172,477.1,685,4200), include.lowest = T)
+summary(df$duration_cuted)
+```
+
+```{r}
+df$emp.var.rate <- as.factor(df$emp.var.rate)
+df$emp.var.rate <- as.factor(df$cons.price.idx)
+df$emp.var.rate <- as.factor(df$cons.conf.idx)
+df$emp.var.rate <- as.factor(df$euribor3m)
+df$emp.var.rate <- as.factor(df$nr.employed)
+summary(df)
+```
+
+### missings
+
+```{r}
+df$marital[df$marital == 'unknown'] = NA
+levels(df$marital)
+summary(df$marital)
+
+levels(df$marital)[levels(df$marital)=='unknown'] <- NA
+summary(df$marital)
+```
+
+##### outliers
+
+```{r}
+boxplot(df$duration)
+treshold = quantile(df$duration, 0.75)*3
+out_ind <- which(df$duration > treshold)
+df[out_ind,]$duration <- NA
+summary(df$duration)
+```
+
+```{r}
+summary(df)
+```
+
+```{r}
+boxplot(df$campaign)
+treshold <- quantile(df$campaign, 0.75)*3
+out_ind <- which(df$campaign > treshold)
+df[out_ind,]$campaign <- NA
+summary(df$campaign)
+
+```
+
+### Imputacio de missings
+
+#### Variables numériques
+
+```{r}
+
+```
+
+```{r}
+summary(df)
+names(df)
+vars_con<-names(df)[c(1, 11:14)]
+vars_dis<-names(df)[c(2:10, 15:23)]
+vars_res<-names(df)[c(21)]
+```
+
+```{r}
+summary(df[,vars_con])
+res.impca<-imputePCA(df[,vars_con],ncp=3)
+summary(res.impca$completeObs)
+```
+
+```{r}
+par(mfrow=c(1,2))
+hist(df$duration)
+hist(res.impca$completeObs[,"duration"])
+```
+
+```{r}
+# We should apply a similar approach for other numeric variables.
+
+# Once you have validated the process:
+df[,vars_con ]<-res.impca$completeObs
+```
+
+#### Variables categoriques
+
+```{r}
+summary(df[,vars_dis])
+res.immca<-imputeMCA(df[,vars_dis],ncp=18)
+summary(res.immca$completeObs)
+
+df[,vars_dis ]<-res.immca$completeObs
+```
+
+```{r}
+summary(df[,vars_dis])
+```
+
+## Multivariate outliers
+
+```{r}
+summary(df[,vars_con])
+mout<-Moutlier(df[,c("age", "duration")],quantile = 0.995, plot = TRUE)
+
+# Guardem els indexos dels valors amb outliers multivariants
+ll<-which(mout$rd>mout$cutoff)
+Boxplot(mout$rd)
+df[ll,c(vars_res,vars_con)]
+# Creem nova varibale mout: Multivariate outliers
+df$mout <- 0
+# Asignem un 1 en aquells indexos on el registre es un valor atipic multivariant
+df$mout[ ll ]<-1
+# Reasignem els labels
+df$mout <- factor( df$mout, labels=c( "NoMOut","YesMOut"))
+table(df$mout)
+```
+
+## Profiling
+
+### Variables numériques
+```{r}
+summary(df$duration)
+# The "variable to describe cannot have NA ###################################
+res.condes<-condes(df,11, proba=0.05)
+
+res.condes$quanti  # Global association to numeric variables
+res.condes$quali # Global association to factors
+res.condes$category  # Partial association to significative levels in factors
+```
+
+### Variables Categoriques
+
+```{r}
+summary(df$y)
+# The "variable to describe cannot have NA ###################################
+res.catdes<-catdes(df,21, proba=0.05)
+
+res.catdes$test.chi2 # relació entre les variables y la variable resposta
+res.catdes$category 
+res.catdes$quanti  # Global association to numeric variables
+res.catdes$quali # Global association to factors
+```
+
