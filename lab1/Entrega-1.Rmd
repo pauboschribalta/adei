@@ -567,38 +567,38 @@ res.catdes$quanti  # Global association to numeric variables
 res.catdes$quali # Global association to factors
 ```
 
-Euribor3m: El tipus d'interès a tres mesos (Euribor3m) és la variable més fortament relacionada amb la variable target "y" segons el nostre analisi i tractament de variables. Si l'Euribor3m és baix, és més probable que el client contracti el dipòsit a termini. Si aquest és alt, també és l'influenciador més gran en què el resultat acabi sent negatiu.
+**Euribor3m**: El tipus d'interès a tres mesos (Euribor3m) és la variable més fortament relacionada amb la variable target "y" segons el nostre analisi i tractament de variables. Si l'Euribor3m és baix, és més probable que el client contracti el dipòsit a termini. Si aquest és alt, també és l'influenciador més gran en què el resultat acabi sent negatiu.
 
-Poutcome: La variable Poutcome (resultat de la campanya de màrqueting anterior) també està fortament relacionada amb la variable target "y". Si el resultat de la campanya anterior va ser exitós, és més probable que el client contracti el dipòsit a termini.
+**Poutcome**: La variable Poutcome (resultat de la campanya de màrqueting anterior) també està fortament relacionada amb la variable target "y". Si el resultat de la campanya anterior va ser exitós, és més probable que el client contracti el dipòsit a termini.
 
-Duration: També es veu altament relacionada amb el resultat. Això pot ser degut a que com més temps duri la trucada, és més probable que l'agent de vendes hagi tingut l'oportunitat de persuadir el client i fer-li una oferta més atractiva.
+**Duration**: També es veu altament relacionada amb el resultat. Això pot ser degut a que com més temps duri la trucada, és més probable que l'agent de vendes hagi tingut l'oportunitat de persuadir el client i fer-li una oferta més atractiva.
 
-Job: El tipus de treball del client també sembla estar relacionat amb la variable target "y". Els estudiants i els jubilats tenen més probabilitats de contractar el dipòsit a termini, mentre que els treballadors autònoms i els desocupats tenen menys probabilitats.
+**Job**: El tipus de treball del client també sembla estar relacionat amb la variable target "y". Els estudiants i els jubilats tenen més probabilitats de contractar el dipòsit a termini, mentre que els treballadors autònoms i els desocupats tenen menys probabilitats.
 
-Mes: El mes en què es va realitzar l'última campanya de màrqueting també sembla estar relacionat amb el resultat negatiu de la variable target "y". En particular, els mesos de maig i juny tenen una taxa de rebuig més alta que altres mesos, mentre que el març, septembre i octubre estan molt relacionats amb un resultat positiu.
+**Mes**: El mes en què es va realitzar l'última campanya de màrqueting també sembla estar relacionat amb el resultat negatiu de la variable target "y". En particular, els mesos de maig i juny tenen una taxa de rebuig més alta que altres mesos, mentre que el març, septembre i octubre estan molt relacionats amb un resultat positiu.
 
-Contact: La forma de contacte també està relacionada amb el resultat de la variable target "y". Els clients contactats per telèfon fix tenen més probabilitats de rebutjar el dipòsit a termini que aquells contactats per correu electrònic o per telèfon mòbil.
+**Contact**: La forma de contacte també està relacionada amb el resultat de la variable target "y". Els clients contactats per telèfon fix tenen més probabilitats de rebutjar el dipòsit a termini que aquells contactats per correu electrònic o per telèfon mòbil.
 
-Age: En general, els clients més joves tenen més probabilitats de rebutjar el dipòsit a termini que els clients més grans.
+**Age**: En general, els clients més joves tenen més probabilitats de rebutjar el dipòsit a termini que els clients més grans.
 
-Campaign: El nombre de contactes realitzats durant l'última campanya de màrqueting també està relacionat amb el resultat negatiu de la variable target "y". En general, com més contactes es realitzin, és més probable que el client rebutgi el dipòsit a termini.
+**Campaign**: El nombre de contactes realitzats durant l'última campanya de màrqueting també està relacionat amb el resultat negatiu de la variable target "y". En general, com més contactes es realitzin, és més probable que el client rebutgi el dipòsit a termini.
 
 ```{r}
 #duration
-res.catdes<-catdes(df,grep("^duration$", colnames(df)), proba=0.05)
-res.catdes$test.chi2 # relació entre les variables y la variable resposta
-res.catdes$category 
-res.catdes$quanti  # Global association to numeric variables
-res.catdes$quali # Global association to factors
+res.condes<-condes(df,grep("^duration$", colnames(df)), proba=0.05)
+res.condes$test.chi2 # relació entre les variables y la variable resposta
+res.condes$category 
+res.condes$quanti  # Global association to numeric variables
+res.condes$quali # Global association to factors
 ```
 
-Contacte: La forma de contacte utilitzada en l'última campanya de màrqueting té una alta correlació amb la durada de la trucada. En particular, els clients contactats per telèfon mòbil tendeixen a tenir trucades més curtes que aquells contactats per telèfon. La relació negativa entre "Duration" i "Contact" podria explicar-se pel fet que el correu electrònic i el telèfon mòbil són formes de contacte més breus i concises que una trucada telefònica.
+**Contacte**: La forma de contacte utilitzada en l'última campanya de màrqueting té una alta correlació amb la durada de la trucada. En particular, els clients contactats per telèfon mòbil tendeixen a tenir trucades més curtes que aquells contactats per telèfon. La relació negativa entre "Duration" i "Contact" podria explicar-se pel fet que el correu electrònic i el telèfon mòbil són formes de contacte més breus i concises que una trucada telefònica.
 
-Pdays: La variable "Pdays" representa el número de dies que han passat des que el client va ser contactat per última vegada per a una campanya de màrqueting anterior. Els clients que han estat contactats recentment (és a dir, menor valor en Pdays) tendeixen a tenir trucades més curtes en l'última campanya.
+**Pdays**: La variable "Pdays" representa el número de dies que han passat des que el client va ser contactat per última vegada per a una campanya de màrqueting anterior. Els clients que han estat contactats recentment (és a dir, menor valor en Pdays) tendeixen a tenir trucades més curtes en l'última campanya.
 
-Previous: La variable "Previous" representa el número de contactes realitzats abans de l'última campanya de màrqueting. En general, com més gran sigui el número de contactes, menor serà la durada de l'última trucada. La relació negativa entre "Duration" i "Previous" podria explicar-se per la possibilitat que l'agent de vendes hagi hagut de repetir informació prèviament proporcionada en trucades anteriors.
+**Previous**: La variable "Previous" representa el número de contactes realitzats abans de l'última campanya de màrqueting. En general, com més gran sigui el número de contactes, menor serà la durada de l'última trucada. La relació negativa entre "Duration" i "Previous" podria explicar-se per la possibilitat que l'agent de vendes hagi hagut de repetir informació prèviament proporcionada en trucades anteriors.
 
-Job: El tipus de treball del client també pot estar relacionat amb la durada de la trucada. En particular, els clients desocupats i els estudiants tendeixen a tenir trucades més curtes que altres tipus de treballadors. La relació negativa entre "Duration" i "Job" podria explicar-se pel fet que els clients desocupats i els estudiants poden tenir menys ingressos i, per tant, estar menys interessats en contractar un dipòsit a termini fix, el que es reflectiria en trucades més curtes.
+**Job**: El tipus de treball del client també pot estar relacionat amb la durada de la trucada. En particular, els clients desocupats i els estudiants tendeixen a tenir trucades més curtes que altres tipus de treballadors. La relació negativa entre "Duration" i "Job" podria explicar-se pel fet que els clients desocupats i els estudiants poden tenir menys ingressos i, per tant, estar menys interessats en contractar un dipòsit a termini fix, el que es reflectiria en trucades més curtes.
 
 ```{r}
 library(chemometrics)
