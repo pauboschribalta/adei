@@ -400,11 +400,13 @@ colSums(is.na(df))
 
 #### Nombre d'errors
 
-1- Que una persona tingui pdays de 999 i que previous sigui més gran que 0
+1- Que una persona tingui pdays de 999 i que previous "yes" és una contradicció
 
 ```{r}
 err_ind <- which(df$pdays == 999 & df$previous == "Yes")
 length(err_ind)
+df$previous[err_ind]<-NA
+df$pdays[err_ind]<-NA
 ```
 
 #### Nombre d'outliers
@@ -456,7 +458,14 @@ barplot(nas_per_var$num_nas,
         las = 2)
 ```
 
+
 ### Per individus
+
+Tornem a recuperar els valors de pdays i previous per no contar-los com a missings, sino com a errors.
+```{r}
+df$pdays[err_ind]<-999
+df$previous[err_ind]<-"Yes"
+```
 
 #### Afegim variable que conta els NA
 
@@ -473,22 +482,20 @@ table(n_missings)
 
 #### Nombre d'errors
 
-```{r}
-#n_missings <- rowSums(is.e)
-table(n_missings)
-```
-
-#### Nombre d'outliers
-
-```{r}
-#n_missings <- rowSums(is.e)
-table(n_missings)
-```
+Com que només hem detectat un error, que pdays sigui 999 i previous sigui "yes", sabem que tenim 193 combinacions de valors que compleixen l'error.
+Per tant, tindrem que 193 individus tenen 2 errors (1 a pdays i 1 a previous) i la resta (4807) no tenen cap error.
 
 Esborrarem la variable pdays ja que no ens aporta cap informació adicional.
 
 ```{r}
 df <- subset(df, select = -pdays)
+```
+
+#### Nombre d'outliers
+
+```{r}
+out_ind <- rowSums(cbind(as.numeric(df$duration %in% out_dur), as.numeric(df$campaign %in% out_camp)))
+table(out_ind)
 ```
 
 ### Imputació de missings
@@ -505,22 +512,33 @@ df$previous[err_ind]<-NA
 
 Imputem tots els NAs que tenim en el conjunt de variables categòriques (var_cat).
 
+Dades abans de imputar.
+
 ```{r}
-var_cat <- sapply(df, is.factor)
+var_cat <- c("age", "job", "marital", "education", "housing", "loan", "contact", "month", "day_of_week", "previous", "poutcome", "y") #Obviarem la variable "default" ja que té masses missings per imputar
 summary(df[,var_cat])
-res.immca<-imputeMCA(df[,var_cat],ncp = 12)
+```
+
+```{r}
+res.immca<-imputeMCA(df[,var_cat],ncp = length(var_cat)-1)
 summary(res.immca$completeObs)
-df[,var_cat ]<-res.immca$completeObs
+df[,var_cat]<-res.immca$completeObs
 ```
 
 #### Variables numèriques
 
 Imputem tots els NAs que tenim en el conjunt de variables numeriques (var_num).
 
+Dades abans de imputar.
+
 ```{r}
-var_num <- sapply(df, is.numeric)
+var_num <- c("duration", "campaign", "emp.var.rate", "cons.conf.idx", "cons.price.idx", "euribor3m", "nr.employed")
 summary(df[,var_num])
-df[var_num] <- lapply(df[var_num], as.numeric)
+```
+
+Imputació dels missings.
+
+```{r}
 res.impca<-imputePCA(df[,var_num],ncp = length(var_num)-1)
 summary(res.impca$completeObs)
 df[,var_num ]<-res.impca$completeObs
