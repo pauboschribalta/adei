@@ -110,6 +110,7 @@ Realitzem aquesta distinció pels següents motius:
 La variable passarà a ser categòrica.
 
 ```{r}
+df$age_num <- df$age
 df$age <- cut(df$age, 
               breaks = c(0, 25, 45, 65, max(df$age)),
               labels = c("Jove", "Jove-Adult", "Adult", "Gran"))
@@ -458,10 +459,10 @@ barplot(nas_per_var$num_nas,
         las = 2)
 ```
 
-
 ### Per individus
 
 Tornem a recuperar els valors de pdays i previous per no contar-los com a missings, sino com a errors.
+
 ```{r}
 df$pdays[err_ind]<-999
 df$previous[err_ind]<-"Yes"
@@ -482,8 +483,7 @@ table(n_missings)
 
 #### Nombre d'errors
 
-Com que només hem detectat un error, que pdays sigui 999 i previous sigui "yes", sabem que tenim 193 combinacions de valors que compleixen l'error.
-Per tant, tindrem que 193 individus tenen 2 errors (1 a pdays i 1 a previous) i la resta (4807) no tenen cap error.
+Com que només hem detectat un error, que pdays sigui 999 i previous sigui "yes", sabem que tenim 193 combinacions de valors que compleixen l'error. Per tant, tindrem que 193 individus tenen 2 errors (1 a pdays i 1 a previous) i la resta (4807) no tenen cap error.
 
 Esborrarem la variable pdays ja que no ens aporta cap informació adicional.
 
@@ -601,10 +601,17 @@ res.condes$quali # Global association to factors
 **Job**: El tipus de treball del client també pot estar relacionat amb la durada de la trucada. En particular, els clients desocupats i els estudiants tendeixen a tenir trucades més curtes que altres tipus de treballadors. La relació negativa entre "Duration" i "Job" podria explicar-se pel fet que els clients desocupats i els estudiants poden tenir menys ingressos i, per tant, estar menys interessats en contractar un dipòsit a termini fix, el que es reflectiria en trucades més curtes.
 
 ```{r}
-library(chemometrics)
-df_num <- df[, sapply(df, is.numeric)]
-# Identify multivariate outliers using the moutliers function
-outliers <- Moutlier(df_num, quantile=0.995)
-length(outliers$md)
-# View the outliers
+library(mvoutlier)
+library(MVN)
+
+# select only the factor variables from the dataset
+cat_vars <- c("age", "job", "marital", "education", "default", "housing", "loan", 
+              "contact", "month", "day_of_week", "poutcome", "y")
+df_cat <- df[, cat_vars]
+
+# perform multivariate outlier analysis
+outliers <- mvoutlier(df_cat)
+
+# create a new column to identify multivariate outliers
+df_cat$multivar_outlier <- ifelse(rownames(df_cat) %in% outliers, 1, 0)
 ```
