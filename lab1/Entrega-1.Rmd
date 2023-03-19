@@ -416,6 +416,7 @@ boxplot(df$duration, col = "blue4")
 treshold <- quantile(df$duration, 0.75)*3
 abline(h = treshold, col = "red", lty = "dashed")
 ```
+
 Trobem el nombre d'outliers
 
 ```{r}
@@ -462,7 +463,6 @@ barplot(nas_per_var$num_nas,
 ```{r}
 df$na_count <- apply(df, 1, function(x) sum(is.na(x)))
 ```
-
 
 #### Nombre de missings
 
