@@ -90,7 +90,7 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\setcounter{secnumdepth}{5}
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
@@ -99,16 +99,21 @@
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
   pdftitle={Entrega-1},
+  pdfauthor={Ivan Cala Mesa - Pau Bosch Ribalta},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 
 \title{Entrega-1}
-\author{}
-\date{\vspace{-2.5em}2023-02-20}
+\author{Ivan Cala Mesa - Pau Bosch Ribalta}
+\date{19/03/2023}
 
 \begin{document}
 \maketitle
 
+{
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
 Posada apunt i descarrega de paquets necessàris per a importar les
 funcions necessàries.
 
@@ -763,16 +768,6 @@ a missings, sino com a errors.
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{afegim-variable-que-conta-els-na}{%
-\paragraph{Afegim variable que conta els
-NA}\label{afegim-variable-que-conta-els-na}}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{df}\SpecialCharTok{$}\NormalTok{na\_count }\OtherTok{\textless{}{-}} \FunctionTok{apply}\NormalTok{(df, }\DecValTok{1}\NormalTok{, }\ControlFlowTok{function}\NormalTok{(x) }\FunctionTok{sum}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(x)))}
-\end{Highlighting}
-\end{Shaded}
-
 \hypertarget{nombre-de-missings-1}{%
 \paragraph{Nombre de missings}\label{nombre-de-missings-1}}
 
@@ -822,11 +817,12 @@ adicional.
 ## 4934   66
 \end{verbatim}
 
-\hypertarget{imputaciuxf3-de-missings}{%
-\subsubsection{Imputació de missings}\label{imputaciuxf3-de-missings}}
+\hypertarget{afegim-variable-que-conta-els-na}{%
+\paragraph{Afegim variable que conta els
+NA}\label{afegim-variable-que-conta-els-na}}
 
-Abans d'imputar els missings, passarem a NA's els index de les variables
-que hem trobat errors i outliers.
+Abans de contar els missings, passarem a NA's els index de les variables
+que hem trobat errors o outliers.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -835,6 +831,42 @@ que hem trobat errors i outliers.
 \NormalTok{df}\SpecialCharTok{$}\NormalTok{previous[err\_ind]}\OtherTok{\textless{}{-}}\ConstantTok{NA}
 \end{Highlighting}
 \end{Shaded}
+
+Creem la nova variable i contem els NA's
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df}\SpecialCharTok{$}\NormalTok{na\_count }\OtherTok{\textless{}{-}} \FunctionTok{apply}\NormalTok{(df, }\DecValTok{1}\NormalTok{, }\ControlFlowTok{function}\NormalTok{(x) }\FunctionTok{sum}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(x)))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{relaciuxf3-entre-grup-dedat-i-valors-atuxedpics}{%
+\paragraph{Relació entre grup d'edat i valors
+atípics}\label{relaciuxf3-entre-grup-dedat-i-valors-atuxedpics}}
+
+Respecte els grups d'edat que hem definit anteriorment, volem veure quin
+d'aquests grups és més propenç a tenir missings (dins dels missings hi
+ha outliers i errors).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missings\_edat }\OtherTok{\textless{}{-}} \FunctionTok{aggregate}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{na\_count, }\AttributeTok{by =} \FunctionTok{list}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{age), sum)}
+\NormalTok{missings\_edat }\OtherTok{\textless{}{-}}\NormalTok{ missings\_edat[}\FunctionTok{order}\NormalTok{(missings\_edat}\SpecialCharTok{$}\NormalTok{x, }\AttributeTok{decreasing =} \ConstantTok{TRUE}\NormalTok{), ]}
+\FunctionTok{names}\NormalTok{(missings\_edat) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Grup d\textquotesingle{}edat"}\NormalTok{, }\StringTok{"Missings"}\NormalTok{)}
+\NormalTok{missings\_edat}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Grup d'edat Missings
+## 2  Jove-Adult     1257
+## 3       Adult      758
+## 1        Jove       53
+## 4        Gran       13
+\end{verbatim}
+
+\hypertarget{imputaciuxf3-de-missings}{%
+\subsubsection{Imputació de missings}\label{imputaciuxf3-de-missings}}
 
 \hypertarget{variables-categuxf2riques}{%
 \paragraph{Variables categòriques}\label{variables-categuxf2riques}}
@@ -1114,8 +1146,8 @@ categòriques}\label{variables-categuxf2riques-1}}
 ## euribor3m       38.675184        4.8560696     4.100294   8.352458e-04
 ## emp.var.rate    37.512348        1.1000000     0.473680   0.000000e+00
 ## nr.employed     22.081559     5191.0000000  5177.923760   0.000000e+00
-## na_count        12.567328        0.4698609     0.362600   6.895805e-01
 ## age_num          6.658336       41.0641422    40.159000   8.885746e+00
+## na_count         6.469584        0.4741113     0.416200   6.947767e-01
 ## campaign        -3.462143        2.0011383     2.067662   1.294232e+00
 ## duration       -42.854275      243.9352241   464.790464   2.007280e+02
 ##                 Overall sd       p.value
@@ -1124,8 +1156,8 @@ categòriques}\label{variables-categuxf2riques-1}}
 ## euribor3m        1.4311845  0.000000e+00
 ## emp.var.rate     1.2228047 5.794591e-308
 ## nr.employed     43.3698783 4.754022e-108
-## na_count         0.6250770  3.193333e-36
 ## age_num          9.9560293  2.769453e-11
+## na_count         0.6555742  9.827295e-11
 ## campaign         1.4072408  5.358914e-04
 ## duration       377.4405914  0.000000e+00
 ## 
@@ -1133,8 +1165,8 @@ categòriques}\label{variables-categuxf2riques-1}}
 ##                    v.test Mean in category Overall mean sd in category
 ## duration        42.854275      701.7611779   464.790464    378.9391840
 ## campaign         3.462143        2.1390405     2.067662      1.5159317
+## na_count        -6.469584        0.3540630     0.416200      0.6045811
 ## age_num         -6.658336       39.1878109    40.159000     10.9058598
-## na_count       -12.567328        0.2475124     0.362600      0.5235875
 ## nr.employed    -22.081559     5163.8933665  5177.923760     59.3196912
 ## emp.var.rate   -37.512348       -0.1983416     0.473680      1.4923455
 ## euribor3m      -38.675184        3.2893702     4.100294      1.7249824
@@ -1143,8 +1175,8 @@ categòriques}\label{variables-categuxf2riques-1}}
 ##                 Overall sd       p.value
 ## duration       377.4405914  0.000000e+00
 ## campaign         1.4072408  5.358914e-04
+## na_count         0.6555742  9.827295e-11
 ## age_num          9.9560293  2.769453e-11
-## na_count         0.6250770  3.193333e-36
 ## nr.employed     43.3698783 4.754022e-108
 ## emp.var.rate     1.2228047 5.794591e-308
 ## euribor3m        1.4311845  0.000000e+00
@@ -1267,7 +1299,6 @@ més probable que el client rebutgi el dipòsit a termini.
 ## campaign        0.09357119 3.371081e-11
 ## nr.employed     0.05776931 4.364235e-05
 ## age_num        -0.05293015 1.808138e-04
-## na_count       -0.06924179 9.545085e-07
 ## emp.var.rate   -0.08878741 3.193708e-10
 ## euribor3m      -0.12017447 1.509610e-17
 ## cons.price.idx -0.18889226 2.199788e-41
@@ -1318,14 +1349,12 @@ outliers}\label{identify-individuals-considered-as-multivariate-outliers}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{library}\NormalTok{(chemometrics)}
-
 \CommentTok{\# Perform multivariate outlier analysis using Moutlier function}
 \NormalTok{outliers }\OtherTok{\textless{}{-}} \FunctionTok{Moutlier}\NormalTok{(df[, }\FunctionTok{c}\NormalTok{(}\StringTok{"age\_num"}\NormalTok{, }\StringTok{"duration"}\NormalTok{)], }\AttributeTok{quantile=} \FloatTok{0.995}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{Entrega-1_files/figure-latex/unnamed-chunk-50-1.pdf}
+\includegraphics{Entrega-1_files/figure-latex/unnamed-chunk-51-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1365,6 +1394,17 @@ destacar que siguin multivariate outliers són els següents:
 724 1951 2023 1581  566
 \end{verbatim}
 
-\includegraphics{images/multivariate.png}
+\hypertarget{exportaciuxf3}{%
+\subsection{Exportació}\label{exportaciuxf3}}
+
+Una vegada hem netejat i triat les nostres dades, exportarem el nou
+dataset amb el següent codi.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{write.csv}\NormalTok{(df, }\StringTok{"./bank{-}additional{-}clean.csv"}\NormalTok{, }\AttributeTok{row.names =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
 
 \end{document}
