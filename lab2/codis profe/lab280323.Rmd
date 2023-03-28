@@ -1,0 +1,124 @@
+---
+title: "Case Study"
+author: "Daniel Villalobos"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: yes
+    toc_float: true
+    toc_depth: 4
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE, echo=FALSE}
+# Load Required Packages: to be increased over the course
+options(contrasts=c("contr.treatment","contr.treatment"))
+
+requiredPackages <- c("chemometrics","FactoMineR","car", "factoextra","knitr","missMDA")
+
+#use this function to check if each package is on the local machine
+#if a package is installed, it will be loaded
+#if any are not, the missing package(s) will be installed and loaded
+package.check <- lapply(requiredPackages, FUN = function(x) {
+  if (!require(x, character.only = TRUE)) {
+    install.packages(x, dependencies = TRUE)
+    library(x, character.only = TRUE)
+  }
+})
+```
+
+## Carrega inicial de les dades
+```{r}
+setwd("/Users/danielvillalobostorrejon/Documents/Profe/ADEI/2022/segon_semestre/lab7")
+load("/Users/danielvillalobostorrejon/Documents/Profe/ADEI/2022/segon_semestre/lab4/BankMarketing-Clean.RData")
+```
+
+
+```{r}
+names(df)
+df$emp.var.rate <- as.numeric(df$emp.var.rate)
+df$cons.price.idx <- as.numeric(df$cons.price.idx)
+df$cons.conf.idx <- as.numeric(df$cons.conf.idx)
+df$euribor3m <- as.numeric(df$euribor3m)
+df$nr.employed <- as.numeric(df$nr.employed)
+df$pdays <- NULL
+vars_con <- c("age", "duration", "emp.var.rate", "cons.price.idx","cons.conf.idx","euribor3m", "nr.employed")
+vars_dis <- c("job", "marital", "education", "default", "day_of_week", "education_grouped", "duration_cuted", "mout")
+vars_res <- c("y")
+```
+
+
+```{r}
+par(mfrow=c(1,1))
+
+# df[,c("education_grouped", "marital")]
+
+tt<-table(df[,c("education_grouped", "marital")])
+tt
+res.ca<-CA(tt)
+# lines(res.ca$row$coord[,1],res.ca$row$coord[,2],lwd=2,col="blue")
+chisq.test(tt)
+
+names(res.ca)
+fviz_eig(res.ca) #Same outputs as PCA
+summary(res.ca,dig=2)
+
+plot( res.ca, cex=0.8, graph.type = "classic" )
+lines( res.ca$row$coord[,1], res.ca$row$coord[,2], col="blue", lwd = 2 )
+lines( res.ca$col$coord[,1], res.ca$col$coord[,2], col="red", lwd = 2 )
+fviz_ca_biplot(res.ca,repel=TRUE)+theme_bw() 
+
+tt<-table(df[,c("marital","month")])
+tt
+res.ca<-CA(tt)
+plot( res.ca, cex=0.8, graph.type = "classic" )
+lines( res.ca$row$coord[,1], res.ca$row$coord[,2], col="blue", lwd = 2 )
+lines( res.ca$col$coord[,1], res.ca$col$coord[,2], col="red", lwd = 2 )
+summary(res.ca)
+chisq.test(tt)
+```
+
+
+# MCA using multivariant
+
+```{r}
+llvout<-which(df$mout=="YesMOut");length(llvout) #Multivariate outliers
+
+summary( df[-llvout,c("y",vars_dis,"duration") ])
+res.mca<-MCA(df[,c(vars_dis[1:7],"y","duration") ],quali.sup=8,quanti.sup=9 , ind.sup=llvout)
+summary(res.mca,nbelements=50, nbind=0)
+mean(res.mca$eig[,1]) #All dimensions which eigenvalue is higher than the mean or 80% of explained variance - depending on the criteria which is used
+
+# Individual Representation
+plot.MCA(res.mca,choix=c("ind"),cex=0.8)
+plot.MCA(res.mca,choix=c("ind"),invisible=c("ind"),cex=0.8)
+
+# Representation of categories
+plot.MCA(res.mca,choix=c("ind"),invisible=c("ind"),axes=c(1,2), graph.type = "classic", cex = 0.5)
+lines(res.mca$var$coord[1:3,1],res.mca$var$coord[1:3,2],lwd=1,col="black") # Transmission
+names(res.mca)
+res.mca$var
+plot.MCA(res.mca,choix=c("ind"),invisible=c("ind"),axes=c(3,4))
+plot.MCA(res.mca,choix=c("var"),axes=c(3,4))
+
+# Use modern ggplot facilities
+names(res.mca)
+fviz_eig(res.mca)
+fviz_cos2(res.mca, choice = "var", axes = 1:2)+theme_bw()
+fviz_contrib(res.mca, choice = "var", axes = 1:2)+theme_bw()
+fviz_contrib(res.mca, choice = "var", axes = 1:2)+
+   theme(text = element_text(size = 7.5),
+         axis.title = element_text(size = 5),
+         axis.text = element_text(size = 5)
+         )
+
+fviz_mca_var(res.mca, col.var="contrib",repel=TRUE,labelsize = 2)+
+    scale_color_gradient2(low="green", mid="blue", 
+    high="red", midpoint=0.75)+theme_bw()
+
+fviz_mca_biplot(res.mca, invisible="ind",axes=1:2,repel=T,labelsize = 2)+theme_bw()
+#fviz_mca_biplot(res.mca, axes=1:2,repel=TRUE,arrows=c(TRUE,FALSE))+theme_bw()
+```

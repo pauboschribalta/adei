@@ -1,0 +1,144 @@
+---
+title: "Entrega-2"
+author: "Ivan Cala Mesa, Pau Bosch Ribalta"
+date: '2023-03-28'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load Required Packages: to be increased over the course
+options(contrasts=c("contr.treatment","contr.treatment"))
+
+requiredPackages <- c("chemometrics","FactoMineR","car","knitr","missMDA")
+
+package.check <- lapply(requiredPackages, FUN = function(x) {
+  for (x in requiredPackages) {
+    if (!require(x, character.only = TRUE)) {
+    install.packages(x, dependencies = TRUE)
+    library(x, character.only = TRUE)
+  }
+  }
+})
+```
+
+## R Markdown
+
+Obtenim les dades:
+
+```{r dataset, include=TRUE}
+df <- read.csv("./bank-additional-clean.csv")
+```
+
+## Anàlisis PCA
+
+
+```{r}
+names(df)
+vars_con
+vars_dis
+vars_res
+
+#res.pca<-PCA(df[,c(vars_res,vars_con)]) # Does not work: why? - All variables must be numeric. 
+res.pca<-PCA(df[,c(vars_con)])  # Not correct: Target should be supplementary
+c(vars_res, vars_dis,vars_con, "mout") #All variables
+summary( df[ , c(vars_res, vars_dis,vars_con, "mout") ] )
+res.pca<-PCA(df[,c(vars_res, vars_dis, vars_con)], quali.sup=c(1:19), quanti.sup= c(21)) 
+
+# Multivariant outliers should be included as supplementary observations
+ll <- which( df$mout == "YesMOut")
+res.pca<-PCA(df[,c(vars_res, vars_dis, vars_con)],quali.sup=c(1:19),quanti.sup= c(21), ind.sup = ll ) 
+
+plot.PCA(res.pca,choix=c("var"),invisible=c("quanti.sup"))
+plot.PCA(res.pca,choix=c("var"),invisible=c("var"))
+plot.PCA(res.pca,choix=c("var"),invisible=c("quanti.sup","var"))
+plot.PCA(res.pca,choix=c("ind"),invisible=c("ind"))
+```
+
+### 1. Eigenvalues and dominant axes. How many axes we have to interpret?
+```{r} 
+
+names(res.pca)
+
+summary(res.pca) # Customization is needed (All necessary outputs in one function in R)
+summary(res.pca,nb.dec=4,nbind=3,nbelements=3,ncp=2)
+
+round(res.pca$eig,2)
+barplot(res.pca$eig[,1],main="valors propis",names.arg=paste("dim",1:nrow(res.pca$eig)))
+sum(res.pca$eig[,1])
+```
+
+
+### 2.  Individuals point of view
+```{r}
+### Are they any individuals "too contributive"       ##############
+names(res.pca$ind)
+round(cbind(res.pca$ind$coord[,1:2],res.pca$ind$cos2[,1:2],res.pca$ind$contrib[,1:2]),2)
+# coord: coordinates of indiviudals/variables with respect to the axes
+# cos2: Quality of representation by each of the axes
+# contribution: How much have they contributed to the creation/estimation of an axes. 
+
+# To better understand the axes through the extreme individuals
+inds <- res.pca$ind$coord
+inds <- as.data.frame(inds)
+rang<-inds[order(inds$Dim.1, decreasing = TRUE),] #Most important indiviudals wrt dim 1
+rang
+
+rang[1,]
+res.pca$ind$coord["6861", 1]  # Access using row names: invariant
+res.pca$ind$coord[row.names(rang)[1:10],1]  # Access using row names: invariant
+res.pca$ind$coord[843,1] # Access using row number in current data.frame
+
+df[which(row.names(df)=="6861"),1:18]
+df[which(row.names(df) %in% row.names(res.pca$ind$coord[row.names(rang)[1:10],])),1:18]
+
+```
+
+### 3. Interpreting the axes:  Variables point of view
+
+```{r}
+round(cbind(res.pca$var$coord[,1:2],res.pca$var$cos2[,1:2],res.pca$var$contrib[,1:2]),2)
+round(cbind(res.pca$var$cos2[,1:2],res.pca$var$contrib[,1:2]),2)
+# dimdes easies this description from the variables
+res.des<-dimdesc(res.pca)
+###
+
+res.des$Dim.1$quanti
+
+### we can need more than 2 axes to have a good representation of the clouds
+?plot.PCA
+plot.PCA(res.pca,choix=c("ind"),cex=0.8)
+plot.PCA(res.pca,choix=c("ind"),invisible=c("quali"),axes=c(3,4))
+plot.PCA(res.pca,choix=c("var"),axes=c(3,4))
+```
+
+
+### 4. Perform a PCA taking into account also supplementary variables
+```{r}
+c(vars_res, vars_dis,vars_con)
+ll <- which( df$mout == "YesMOut")
+res.pca<-PCA(df[,c(vars_res, vars_con)],quali.sup=c(1),quanti.sup= c(3), ind.sup = ll) 
+plot(res.pca, choix="ind",invisible=c("ind","ind.sup"), cex=0.7, graph.type = "classic")
+# 
+lines(res.pca$quali.sup$coord[1:2,1],res.pca$quali.sup$coord[1:2,2],lwd=2,col="black") # Does not work unless graph.type "classic" is set
+
+# Manually producing the plot
+plot(res.pca$ind$coord[,1],res.pca$ind$coord[,2],pch=19,col="grey30")
+points(res.pca$quali.sup$coord[,1],res.pca$quali.sup$coord[,2],pch=15,col="magenta")
+# lines(res.pca$quali.sup$coord[7:10,1],res.pca$quali.sup$coord[7:10,2],lwd=2,lty=2,col="blue")
+text(res.pca$quali.sup$coord[,1],res.pca$quali.sup$coord[,2],labels=names(res.pca$quali.sup$coord[,1]),col="magenta",cex=0.8)
+
+res.pca$quali.sup$coord
+
+
+```
+
+## Clustering PCA
+
+## Anàlisis CA
+
+## Anàlisis MCA
+
+## Clustering MCA
+
+##Comparació de clustering PCA-MCA
