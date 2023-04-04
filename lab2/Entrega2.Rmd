@@ -176,9 +176,53 @@ res.pca$quali.sup$coord
 
 ### K-Means classification
 
+```{r}
+# Perform K-means clustering on the first two principal components
+kmeans_result <- kmeans(pca_result$ind$coord[, 1:2], centers = 3)
+
+# Visualize the results using a scatter plot
+fviz_cluster(kmeans_result, data = pca_result$ind$coord[, 1:2],
+             ellipse.type = "convex", palette = "jco",
+             geom = "point", ggtheme = theme_minimal())
+
+# Describe the clusters
+summary(kmeans_result$cluster)
+
+```
+
 ### Hierarchical clustering
 
+```{r}
+# Perform hierarchical clustering on the first two principal components
+hclust_result <- hclust(dist(pca_result$ind$coord[, 1:2]))
+
+# Visualize the results using a dendrogram
+#fviz_dend(hclust_result, cex = 0.5, k = 3)
+
+# Cut the dendrogram into three clusters
+cut_result <- cutree(hclust_result, k = 3)
+
+# Describe the clusters
+summary(cut_result)
+```
+
 ## Anàlisis CA
+
+```{r}
+# Convert the 'duration' variable to a factor with 7 levels
+df$duration_cat <- cut(df$duration, breaks = 7, labels = FALSE)
+
+
+
+# Perform Correspondence Analysis on the data
+ca_result <- CA(df_numeric, graph = FALSE, ncp = 2)
+
+# Visualize the results using a biplot
+fviz_ca_biplot(ca_result, repel = TRUE)
+
+# Describe the results
+summary(ca_result)
+```
 
 ## Anàlisis MCA
 
