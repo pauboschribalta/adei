@@ -32,7 +32,6 @@ df <- read.csv("./bank-additional-clean.csv")
 
 ## Anàlisis PCA
 
-
 ```{r}
 names(df)
 vars_con
@@ -56,7 +55,8 @@ plot.PCA(res.pca,choix=c("ind"),invisible=c("ind"))
 ```
 
 ### 1. Eigenvalues and dominant axes. How many axes we have to interpret?
-```{r} 
+
+```{r}
 
 names(res.pca)
 
@@ -68,8 +68,8 @@ barplot(res.pca$eig[,1],main="valors propis",names.arg=paste("dim",1:nrow(res.pc
 sum(res.pca$eig[,1])
 ```
 
+### 2. Individuals point of view
 
-### 2.  Individuals point of view
 ```{r}
 ### Are they any individuals "too contributive"       ##############
 names(res.pca$ind)
@@ -94,7 +94,7 @@ df[which(row.names(df) %in% row.names(res.pca$ind$coord[row.names(rang)[1:10],])
 
 ```
 
-### 3. Interpreting the axes:  Variables point of view
+### 3. Interpreting the axes: Variables point of view
 
 ```{r}
 round(cbind(res.pca$var$coord[,1:2],res.pca$var$cos2[,1:2],res.pca$var$contrib[,1:2]),2)
@@ -112,8 +112,8 @@ plot.PCA(res.pca,choix=c("ind"),invisible=c("quali"),axes=c(3,4))
 plot.PCA(res.pca,choix=c("var"),axes=c(3,4))
 ```
 
-
 ### 4. Perform a PCA taking into account also supplementary variables
+
 ```{r}
 c(vars_res, vars_dis,vars_con)
 ll <- which( df$mout == "YesMOut")
@@ -135,7 +135,12 @@ res.pca$quali.sup$coord
 
 ## Clustering PCA
 
+### K-Means classification
+
+### Hierarchical clustering
+
 ## Anàlisis CA
+
 
 ## Anàlisis MCA
 

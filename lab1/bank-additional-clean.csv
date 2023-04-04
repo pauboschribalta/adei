@@ -47,7 +47,7 @@
 "Jove-Adult","services","married","high.school","no","yes","no","cellular","may","wed",611,1,"No","failure",-1.8,92.893,-46.2,1.334,5099.1,"yes",31,1
 "Jove-Adult","services","married","high.school","no","yes","no","cellular","may","tue",737,3,"No","nonexistent",-1.8,92.893,-46.2,1.291,5099.1,"yes",33,0
 "Adult","admin.","divorced","high.school","no","yes","yes","telephone","jun","wed",967,2,"No","nonexistent",1.4,94.465,-41.8,4.959,5228.1,"yes",48,0
-"Adult","technician","married","professional.course","no","yes","no","telephone","jul","tue",616,2.60348402708638,"No","nonexistent",1.4,93.918,-42.7,4.961,5228.1,"yes",48,1
+"Adult","technician","married","professional.course","no","yes","no","telephone","jul","tue",616,2.6034840270864,"No","nonexistent",1.4,93.918,-42.7,4.961,5228.1,"yes",48,1
 "Jove-Adult","technician","married","professional.course","no","yes","yes","cellular","aug","wed",657,6,"No","nonexistent",1.4,93.444,-36.1,4.965,5228.1,"yes",39,0
 "Jove-Adult","blue-collar","married","basic","no","no","no","telephone","jun","fri",693,3,"No","nonexistent",1.4,94.465,-41.8,4.959,5228.1,"yes",38,0
 "Jove-Adult","blue-collar","married","basic","no","no","no","telephone","jun","thu",761,2,"No","nonexistent",1.4,94.465,-41.8,4.866,5228.1,"yes",34,0
@@ -78,7 +78,7 @@
 "Jove-Adult","admin.","single","high.school","no","no","no","cellular","apr","mon",785,1,"No","nonexistent",-1.8,93.075,-47.1,1.405,5099.1,"yes",26,0
 "Jove-Adult","self-employed","married","basic","no","no","yes","cellular","may","wed",482,2,"No","nonexistent",-1.8,92.893,-46.2,1.281,5099.1,"yes",38,0
 "Adult","blue-collar","married","basic","no","yes","no","telephone","may","fri",600,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"yes",47,0
-"Jove","services","single","high.school","no","yes","no","cellular","mar","tue",305,1.78054049446002,"No","nonexistent",-1.8,92.843,-50,1.799,5099.1,"yes",24,2
+"Jove","services","single","high.school","no","yes","no","cellular","mar","tue",305,1.78054049446001,"No","nonexistent",-1.8,92.843,-50,1.799,5099.1,"yes",24,2
 "Jove-Adult","technician","single","university.degree","no","no","no","telephone","oct","wed",676,1,"No","nonexistent",-0.1,93.798,-40.4,4.936,5195.8,"yes",30,0
 "Gran","unemployed","divorced","basic","no","yes","no","cellular","mar","mon",187,3,"No","nonexistent",-1.8,92.843,-50,1.811,5099.1,"yes",70,0
 "Jove-Adult","admin.","married","university.degree","no","yes","no","telephone","may","thu",1059,2,"No","nonexistent",1.1,93.994,-36.4,4.86,5191,"yes",37,0
@@ -105,14 +105,14 @@
 "Jove-Adult","management","married","university.degree","no","no","no","cellular","may","thu",647,1,"No","failure",-1.8,92.893,-46.2,1.327,5099.1,"yes",45,1
 "Jove-Adult","admin.","married","university.degree","no","yes","no","cellular","aug","wed",718,1,"No","nonexistent",1.4,93.444,-36.1,4.964,5228.1,"yes",29,0
 "Jove-Adult","services","divorced","high.school","no","yes","no","cellular","may","thu",533,1,"No","nonexistent",-1.8,92.893,-46.2,1.266,5099.1,"yes",44,0
-"Jove-Adult","admin.","married","university.degree","no","no","no","cellular","jul","tue",815.566837213148,1,"No","nonexistent",1.4,93.918,-42.7,4.961,5228.1,"yes",33,1
+"Jove-Adult","admin.","married","university.degree","no","no","no","cellular","jul","tue",815.56683721315,1,"No","nonexistent",1.4,93.918,-42.7,4.961,5228.1,"yes",33,1
 "Jove-Adult","admin.","married","university.degree","no","no","no","cellular","aug","tue",766,2,"No","nonexistent",1.4,93.444,-36.1,4.968,5228.1,"yes",41,0
 "Adult","admin.","married","basic","no","no","no","cellular","jul","wed",1171,2,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",52,0
 "Jove-Adult","blue-collar","married","basic",NA,"no","no","telephone","may","fri",745,2.07252029997689,"No","nonexistent",1.1,93.994,-36.4,4.864,5191,"yes",43,2
 "Jove-Adult","blue-collar","married","basic","no","yes","no","telephone","jun","mon",1036,1,"No","nonexistent",1.4,94.465,-41.8,4.865,5228.1,"yes",42,0
 "Adult","blue-collar","married","basic","no","yes","no","telephone","may","thu",697,3,"No","nonexistent",1.1,93.994,-36.4,4.86,5191,"yes",50,0
 "Jove-Adult","self-employed","married","basic",NA,"no","no","cellular","aug","fri",1000,1,"No","nonexistent",1.4,93.444,-36.1,4.966,5228.1,"yes",33,1
-"Jove-Adult","blue-collar","married","basic","no","no","yes","telephone","jun","tue",922.907634352467,2,"No","nonexistent",1.4,94.465,-41.8,4.864,5228.1,"yes",40,1
+"Jove-Adult","blue-collar","married","basic","no","no","yes","telephone","jun","tue",922.907634352469,2,"No","nonexistent",1.4,94.465,-41.8,4.864,5228.1,"yes",40,1
 "Adult","blue-collar","married","basic",NA,"yes","no","cellular","may","wed",659,1,"No","nonexistent",-1.8,92.893,-46.2,1.281,5099.1,"yes",53,1
 "Adult","unemployed","married","university.degree",NA,"yes","no","telephone","jun","thu",1012,1,"No","nonexistent",1.4,94.465,-41.8,4.961,5228.1,"yes",55,1
 "Jove-Adult","services","single","high.school","no","no","no","cellular","may","fri",293,2,"No","nonexistent",-1.8,92.893,-46.2,1.259,5099.1,"yes",31,0
@@ -214,7 +214,7 @@
 "Jove-Adult","technician","married","professional.course","no","no","no","cellular","may","thu",347,2,"No","failure",-1.8,92.893,-46.2,1.327,5099.1,"yes",27,1
 "Jove","blue-collar","single","basic","no","yes","no","telephone","may","wed",1681,1,"No","nonexistent",1.1,93.994,-36.4,4.858,5191,"yes",25,0
 "Jove-Adult","services","married","basic",NA,"yes","no","cellular","may","fri",679,1,"No","failure",-1.8,92.893,-46.2,1.25,5099.1,"yes",37,2
-"Jove-Adult","admin.","married","university.degree","no","no","no","cellular","jul","fri",743,2.61892277880735,"No","nonexistent",1.4,93.918,-42.7,4.962,5228.1,"yes",39,1
+"Jove-Adult","admin.","married","university.degree","no","no","no","cellular","jul","fri",743,2.61892277880736,"No","nonexistent",1.4,93.918,-42.7,4.962,5228.1,"yes",39,1
 "Jove-Adult","technician","divorced","professional.course","no","no","no","telephone","may","mon",1218,3,"No","nonexistent",1.1,93.994,-36.4,4.858,5191,"yes",33,0
 "Adult","blue-collar","married","basic",NA,"no","no","telephone","jun","thu",701,1,"No","nonexistent",1.4,94.465,-41.8,4.866,5228.1,"yes",59,3
 "Jove-Adult","technician","married","professional.course","no","yes","no","cellular","jul","thu",255,1,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",32,0
@@ -300,7 +300,7 @@
 "Adult","blue-collar","married","basic",NA,"no","no","telephone","jun","wed",586,1,"No","nonexistent",1.4,94.465,-41.8,4.959,5228.1,"yes",50,1
 "Jove-Adult","services","married","professional.course","no","yes","no","telephone","may","tue",1205,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"yes",42,0
 "Adult","blue-collar","married","basic",NA,"no","no","cellular","aug","wed",627,2,"No","nonexistent",1.4,93.444,-36.1,4.964,5228.1,"yes",48,1
-"Adult","admin.","married","university.degree","no","yes","no","cellular","aug","wed",1129,2.55443822720135,"No","nonexistent",1.4,93.444,-36.1,4.964,5228.1,"yes",47,1
+"Adult","admin.","married","university.degree","no","yes","no","cellular","aug","wed",1129,2.55443822720134,"No","nonexistent",1.4,93.444,-36.1,4.964,5228.1,"yes",47,1
 "Jove-Adult","blue-collar","single","basic","no","yes","no","telephone","jul","tue",1127,2.66811656143348,"No","nonexistent",1.4,93.918,-42.7,4.961,5228.1,"yes",44,1
 "Jove-Adult","admin.","married","university.degree","no","no","no","telephone","jun","wed",867,1,"No","nonexistent",1.4,94.465,-41.8,4.959,5228.1,"yes",37,0
 "Jove-Adult","self-employed","married","high.school","no","yes","yes","telephone","may","mon",642,2,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"yes",43,0
@@ -317,7 +317,7 @@
 "Jove-Adult","admin.","single","university.degree","no","yes","no","cellular","aug","wed",875,2,"No","nonexistent",1.4,93.444,-36.1,4.964,5228.1,"yes",29,0
 "Jove-Adult","blue-collar","single","basic",NA,"no","no","telephone","jun","mon",882,1,"No","nonexistent",1.4,94.465,-41.8,4.961,5228.1,"yes",30,1
 "Jove-Adult","technician","single","professional.course","no","yes","yes","cellular","aug","wed",952,1,"No","nonexistent",1.4,93.444,-36.1,4.967,5228.1,"yes",32,0
-"Jove-Adult","self-employed","single","university.degree","no","yes","no","telephone","jun","tue",873.526452659851,3,"No","nonexistent",1.4,94.465,-41.8,4.961,5228.1,"yes",30,1
+"Jove-Adult","self-employed","single","university.degree","no","yes","no","telephone","jun","tue",873.526452659852,3,"No","nonexistent",1.4,94.465,-41.8,4.961,5228.1,"yes",30,1
 "Jove-Adult","unemployed","single","university.degree","no","yes","no","telephone","apr","tue",300,3,"No","nonexistent",-1.8,93.075,-47.1,1.423,5099.1,"yes",26,0
 "Jove-Adult","technician","single","professional.course","no","no","no","cellular","may","tue",1221,2,"No","failure",-1.8,92.893,-46.2,1.344,5099.1,"yes",34,1
 "Jove","unemployed","single","high.school",NA,"no","no","cellular","may","fri",885,3,"No","nonexistent",-1.8,92.893,-46.2,1.25,5099.1,"yes",21,1
@@ -343,7 +343,7 @@
 "Adult","blue-collar","married","basic","no","no","no","cellular","nov","mon",1303,1,"No","nonexistent",-0.1,93.2,-42,4.191,5195.8,"yes",55,0
 "Adult","blue-collar","divorced","basic",NA,"no","no","telephone","may","thu",920,2,"No","nonexistent",1.1,93.994,-36.4,4.86,5191,"yes",49,1
 "Jove-Adult","admin.","single","high.school","no","yes","yes","cellular","jul","wed",652,1,"No","nonexistent",1.4,93.918,-42.7,4.957,5228.1,"yes",35,0
-"Jove-Adult","unemployed","married","university.degree","no","yes","yes","cellular","aug","thu",867.586611874313,3,"No","nonexistent",1.4,93.444,-36.1,4.962,5228.1,"yes",42,1
+"Jove-Adult","unemployed","married","university.degree","no","yes","yes","cellular","aug","thu",867.586611874314,3,"No","nonexistent",1.4,93.444,-36.1,4.962,5228.1,"yes",42,1
 "Jove-Adult","technician","single","university.degree","no","yes","no","telephone","apr","tue",847,2,"No","nonexistent",-1.8,93.075,-47.1,1.405,5099.1,"yes",31,0
 "Jove-Adult","admin.","married","university.degree",NA,"yes","no","cellular","jul","tue",874,1,"No","nonexistent",1.4,93.918,-42.7,4.961,5228.1,"yes",36,1
 "Jove-Adult","admin.","single","high.school","no","yes","no","telephone","jun","wed",1199,1,"No","nonexistent",1.4,94.465,-41.8,4.959,5228.1,"yes",32,0
@@ -364,7 +364,7 @@
 "Jove-Adult","admin.","married","university.degree","no","yes","no","cellular","apr","wed",135,1,"No","nonexistent",-1.8,93.075,-47.1,1.415,5099.1,"yes",37,0
 "Jove-Adult","technician","married","basic","no","yes","no","cellular","apr","thu",620,1,"No","nonexistent",-1.8,93.075,-47.1,1.365,5099.1,"yes",39,0
 "Jove-Adult","blue-collar","married","basic","no","no","no","cellular","may","fri",423,1,"No","nonexistent",-1.8,92.893,-46.2,1.313,5099.1,"yes",34,0
-"Jove-Adult","management","married","university.degree","no","no","no","cellular","jul","wed",777,2.62259866224205,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",36,1
+"Jove-Adult","management","married","university.degree","no","no","no","cellular","jul","wed",777,2.62259866224206,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",36,1
 "Jove-Adult","services","single","high.school","no","no","yes","cellular","jul","fri",616,5,"No","nonexistent",1.4,93.918,-42.7,4.962,5228.1,"yes",27,0
 "Jove-Adult","blue-collar","married","basic","no","no","no","cellular","may","tue",590,1,"No","nonexistent",-1.8,92.893,-46.2,1.291,5099.1,"yes",28,0
 "Jove-Adult","self-employed","married","university.degree","no","yes","no","cellular","mar","wed",95,4,"No","nonexistent",-1.8,92.843,-50,1.663,5099.1,"yes",29,0
@@ -468,7 +468,7 @@
 "Adult","unemployed","divorced","basic","no","yes","no","cellular","jul","tue",600,1,"No","nonexistent",1.4,93.918,-42.7,4.961,5228.1,"yes",60,0
 "Jove-Adult","admin.","married","university.degree","no","no","no","cellular","apr","fri",476,1,"No","nonexistent",-1.8,93.075,-47.1,1.405,5099.1,"yes",41,0
 "Adult","services","single","basic","no","no","no","telephone","jun","thu",835,3,"No","nonexistent",1.4,94.465,-41.8,4.961,5228.1,"yes",47,2
-"Jove","admin.","single","university.degree","no","no","no","telephone","jun","wed",922.907634352467,2,"No","nonexistent",1.4,94.465,-41.8,4.864,5228.1,"yes",25,2
+"Jove","admin.","single","university.degree","no","no","no","telephone","jun","wed",922.907634352469,2,"No","nonexistent",1.4,94.465,-41.8,4.864,5228.1,"yes",25,2
 "Jove-Adult","blue-collar","married","professional.course","no","no","no","cellular","may","thu",1071,2,"No","nonexistent",-1.8,92.893,-46.2,1.266,5099.1,"yes",26,0
 "Jove-Adult","technician","married","professional.course","no","no","yes","cellular","mar","thu",137,1,"No","nonexistent",-1.8,92.843,-50,1.757,5099.1,"yes",38,0
 "Jove-Adult","admin.","single","university.degree","no","no","no","cellular","mar","tue",325,2,"No","nonexistent",-1.8,92.843,-50,1.614,5099.1,"yes",34,0
@@ -517,7 +517,7 @@
 "Jove-Adult","technician","married","professional.course",NA,"yes","no","telephone","jun","wed",649,3,"No","nonexistent",1.4,94.465,-41.8,4.959,5228.1,"yes",41,1
 "Jove-Adult","technician","single","university.degree","no","no","no","telephone","jun","tue",1173,3,"No","nonexistent",1.4,94.465,-41.8,4.864,5228.1,"yes",26,0
 "Jove-Adult","blue-collar","single","high.school","no","yes","no","cellular","mar","tue",272,1,"No","nonexistent",-1.8,92.843,-50,1.687,5099.1,"yes",31,0
-"Gran","unemployed","married","basic","no","yes","no","cellular","apr","wed",512,1.84045064659534,"No","nonexistent",-1.8,93.075,-47.1,1.415,5099.1,"yes",66,1
+"Gran","unemployed","married","basic","no","yes","no","cellular","apr","wed",512,1.84045064659532,"No","nonexistent",-1.8,93.075,-47.1,1.415,5099.1,"yes",66,1
 "Adult","unemployed","married","high.school","no","yes","no","cellular","apr","thu",1260,2,"Yes","success",-1.8,93.075,-47.1,1.365,5099.1,"yes",60,0
 "Jove-Adult","management","married","university.degree","no","no","no","cellular","may","thu",597,3,"No","nonexistent",-1.8,92.893,-46.2,1.327,5099.1,"yes",35,0
 "Adult","management","married","university.degree","no","yes","no","cellular","apr","thu",387,1,"No","nonexistent",-1.8,93.075,-47.1,1.365,5099.1,"yes",49,0
@@ -597,8 +597,8 @@
 "Adult","unemployed","married","university.degree","no","yes","no","cellular","apr","wed",624,1,"No","nonexistent",-1.8,93.075,-47.1,1.445,5099.1,"yes",58,2
 "Jove-Adult","admin.","single","university.degree",NA,"no","no","cellular","jul","thu",863,1,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",35,1
 "Jove-Adult","admin.","married","high.school","no","yes","no","telephone","jun","mon",491,6,"No","nonexistent",1.4,94.465,-41.8,4.961,5228.1,"yes",34,0
-"Jove-Adult","unemployed","married","professional.course","no","yes","no","telephone","may","fri",296.774864104558,2,"No","nonexistent",1.1,93.994,-36.4,4.864,5191,"yes",37,1
-"Jove-Adult","blue-collar","married","professional.course","no","yes","no","telephone","jun","fri",862,2.39767170815102,"No","nonexistent",1.4,94.465,-41.8,4.967,5228.1,"yes",33,1
+"Jove-Adult","unemployed","married","professional.course","no","yes","no","telephone","may","fri",296.774864104559,2,"No","nonexistent",1.1,93.994,-36.4,4.864,5191,"yes",37,1
+"Jove-Adult","blue-collar","married","professional.course","no","yes","no","telephone","jun","fri",862,2.39767170815103,"No","nonexistent",1.4,94.465,-41.8,4.967,5228.1,"yes",33,1
 "Jove-Adult","self-employed","single","university.degree","no","no","no","cellular","apr","thu",394,1,"No","nonexistent",-1.8,93.075,-47.1,1.435,5099.1,"yes",32,0
 "Jove-Adult","unemployed","married","basic","no","no","no","cellular","may","wed",570,1,"No","nonexistent",-1.8,92.893,-46.2,1.281,5099.1,"yes",31,0
 "Jove-Adult","admin.","single","university.degree","no","yes","yes","telephone","apr","thu",874,2,"No","nonexistent",-1.8,93.075,-47.1,1.365,5099.1,"yes",30,0
@@ -606,7 +606,7 @@
 "Adult","management","married","university.degree","no","no","no","telephone","may","mon",460,5,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"yes",59,0
 "Jove-Adult","blue-collar","married","basic",NA,"yes","no","cellular","jul","fri",913,4,"No","nonexistent",1.4,93.918,-42.7,4.957,5228.1,"yes",34,1
 "Adult","admin.","married","high.school","no","no","no","telephone","mar","mon",163,2,"No","nonexistent",-1.8,92.843,-50,1.52,5099.1,"yes",62,0
-"Jove-Adult","self-employed","single","university.degree","no","yes","no","cellular","jul","wed",814.989760493411,1,"No","nonexistent",1.4,93.918,-42.7,4.962,5228.1,"yes",35,1
+"Jove-Adult","self-employed","single","university.degree","no","yes","no","cellular","jul","wed",814.989760493412,1,"No","nonexistent",1.4,93.918,-42.7,4.962,5228.1,"yes",35,1
 "Adult","self-employed","married","university.degree","no","no","yes","telephone","may","wed",1697,2,"No","nonexistent",1.1,93.994,-36.4,4.858,5191,"yes",56,0
 "Jove-Adult","blue-collar","married","basic",NA,"yes","no","telephone","jun","mon",1395,2,"No","nonexistent",1.4,94.465,-41.8,4.96,5228.1,"yes",43,1
 "Jove-Adult","services","married","professional.course","no","yes","no","telephone","may","thu",813,1,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"yes",42,0
@@ -639,7 +639,7 @@
 "Jove","unemployed","single","university.degree","no","yes","yes","cellular","apr","mon",206,1,"No","nonexistent",-1.8,93.075,-47.1,1.405,5099.1,"yes",19,1
 "Jove-Adult","services","single","high.school",NA,"yes","no","cellular","jul","tue",560,2,"No","nonexistent",1.4,93.918,-42.7,4.961,5228.1,"yes",33,1
 "Jove-Adult","admin.","single","university.degree","no","yes","no","cellular","mar","mon",364,3,"No","nonexistent",-1.8,92.843,-50,1.52,5099.1,"yes",32,0
-"Jove-Adult","management","single","university.degree","no","no","no","cellular","nov","thu",752.576590415102,3,"No","nonexistent",-0.1,93.2,-42,4.076,5195.8,"yes",33,1
+"Jove-Adult","management","single","university.degree","no","no","no","cellular","nov","thu",752.5765904151,3,"No","nonexistent",-0.1,93.2,-42,4.076,5195.8,"yes",33,1
 "Adult","blue-collar","married","basic","no","no","yes","telephone","may","fri",653,1,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"yes",51,0
 "Jove-Adult","technician","married","professional.course",NA,"no","no","cellular","apr","fri",1624,1,"No","failure",-1.8,93.075,-47.1,1.405,5099.1,"yes",38,2
 "Jove-Adult","technician","single","university.degree","no","yes","yes","cellular","may","wed",606,3,"No","nonexistent",-1.8,92.893,-46.2,1.334,5099.1,"yes",38,0
@@ -862,7 +862,7 @@
 "Jove-Adult","admin.","single","basic",NA,"yes","no","cellular","may","thu",661,1,"No","nonexistent",-1.8,92.893,-46.2,1.327,5099.1,"yes",26,1
 "Jove-Adult","blue-collar","married","basic","no","no","no","telephone","jun","wed",1060,5,"No","nonexistent",1.4,94.465,-41.8,4.962,5228.1,"yes",28,0
 "Jove-Adult","admin.","single","university.degree","no","no","no","cellular","aug","thu",505,1,"No","nonexistent",1.4,93.444,-36.1,4.964,5228.1,"yes",45,0
-"Adult","admin.","divorced","high.school","no","no","yes","cellular","apr","fri",544.953605325556,3,"No","nonexistent",-1.8,93.075,-47.1,1.405,5099.1,"yes",48,1
+"Adult","admin.","divorced","high.school","no","no","yes","cellular","apr","fri",544.953605325554,3,"No","nonexistent",-1.8,93.075,-47.1,1.405,5099.1,"yes",48,1
 "Jove-Adult","admin.","single","university.degree","no","no","yes","cellular","jul","thu",1027,1,"No","nonexistent",1.4,93.918,-42.7,4.958,5228.1,"yes",32,0
 "Jove","unemployed","single","high.school","no","no","no","cellular","may","fri",271,1,"No","failure",-1.8,92.893,-46.2,1.259,5099.1,"yes",18,1
 "Jove-Adult","admin.","married","university.degree","no","no","no","telephone","jun","wed",525,2,"No","nonexistent",1.4,94.465,-41.8,4.864,5228.1,"yes",32,0
@@ -879,7 +879,7 @@
 "Jove-Adult","technician","married","high.school","no","no","no","cellular","nov","thu",732,1,"No","nonexistent",-0.1,93.2,-42,4.076,5195.8,"yes",34,0
 "Adult","self-employed","married","basic","no","yes","no","cellular","jul","wed",1359,6,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",47,0
 "Jove","blue-collar","single","high.school","no","yes","no","cellular","may","fri",858,3,"No","nonexistent",-1.8,92.893,-46.2,1.25,5099.1,"yes",24,0
-"Jove-Adult","admin.","married","high.school","no","no","no","cellular","jul","thu",662,2.60493057982864,"No","nonexistent",1.4,93.918,-42.7,4.968,5228.1,"yes",32,1
+"Jove-Adult","admin.","married","high.school","no","no","no","cellular","jul","thu",662,2.60493057982865,"No","nonexistent",1.4,93.918,-42.7,4.968,5228.1,"yes",32,1
 "Jove-Adult","unemployed","divorced","high.school","no","yes","yes","cellular","apr","fri",715,2,"No","failure",-1.8,93.075,-47.1,1.405,5099.1,"yes",38,1
 "Adult","blue-collar","married","basic","no","yes","no","cellular","apr","wed",315,1,"No","nonexistent",-1.8,93.075,-47.1,1.405,5099.1,"yes",52,0
 "Adult","blue-collar","married","basic","no","no","no","cellular","may","thu",1180,1,"No","nonexistent",-1.8,92.893,-46.2,1.266,5099.1,"yes",52,1
@@ -891,7 +891,7 @@
 "Jove-Adult","unemployed","single","high.school","no","yes","no","cellular","may","wed",937,3,"No","nonexistent",-1.8,92.893,-46.2,1.281,5099.1,"yes",34,0
 "Jove-Adult","management","married","high.school","no","yes","no","cellular","jul","mon",599,1,"No","nonexistent",1.4,93.918,-42.7,4.96,5228.1,"yes",37,0
 "Jove-Adult","unemployed","single","university.degree","no","no","no","cellular","aug","mon",386,2,"No","nonexistent",1.4,93.444,-36.1,4.965,5228.1,"yes",35,0
-"Jove-Adult","admin.","single","high.school","no","yes","yes","cellular","apr","tue",510.658662656252,2,"No","nonexistent",-1.8,93.075,-47.1,1.453,5099.1,"yes",34,1
+"Jove-Adult","admin.","single","high.school","no","yes","yes","cellular","apr","tue",510.658662656251,2,"No","nonexistent",-1.8,93.075,-47.1,1.453,5099.1,"yes",34,1
 "Jove-Adult","services","married","high.school","no","no","no","cellular","jul","fri",1060,2,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",33,0
 "Jove-Adult","admin.","single","university.degree","no","no","yes","cellular","aug","wed",1471,7,"No","nonexistent",1.4,93.444,-36.1,4.967,5228.1,"yes",43,0
 "Adult","self-employed","married","basic",NA,"no","yes","telephone","jun","fri",381,2,"No","nonexistent",1.4,94.465,-41.8,4.967,5228.1,"yes",52,1
@@ -900,7 +900,7 @@
 "Adult","admin.","married","university.degree","no","no","no","telephone","jun","wed",1574,3,"No","nonexistent",1.4,94.465,-41.8,4.962,5228.1,"yes",60,0
 "Jove-Adult","admin.","single","university.degree","no","no","no","telephone","may","wed",819,1,"No","nonexistent",1.1,93.994,-36.4,4.858,5191,"yes",30,0
 "Adult","admin.","single","university.degree","no","no","no","telephone","may","mon",543,2,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"yes",58,0
-"Jove-Adult","services","married","professional.course",NA,"yes","no","cellular","aug","tue",885.641162080831,6,"No","nonexistent",1.4,93.444,-36.1,4.965,5228.1,"yes",29,2
+"Jove-Adult","services","married","professional.course",NA,"yes","no","cellular","aug","tue",885.641162080827,6,"No","nonexistent",1.4,93.444,-36.1,4.965,5228.1,"yes",29,2
 "Jove","unemployed","single","high.school","no","yes","yes","cellular","may","tue",131,2,"No","nonexistent",-1.8,92.893,-46.2,1.266,5099.1,"yes",22,0
 "Jove-Adult","self-employed","married","university.degree","no","yes","no","telephone","may","wed",1138,1,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"yes",41,0
 "Adult","admin.","divorced","university.degree",NA,"no","no","cellular","nov","fri",558,1,"No","nonexistent",-0.1,93.2,-42,4.021,5195.8,"yes",54,1
@@ -983,7 +983,7 @@
 "Jove-Adult","admin.","married","university.degree","no","yes","no","telephone","may","wed",615,2,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"yes",40,0
 "Jove-Adult","admin.","married","university.degree","no","yes","yes","cellular","jul","mon",1669,2,"No","nonexistent",1.4,93.918,-42.7,4.962,5228.1,"yes",36,0
 "Jove","services","single","basic","no","yes","no","cellular","jul","wed",509,1,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",25,0
-"Jove-Adult","technician","single","university.degree","no","no","no","telephone","apr","tue",207,1.80811869816248,"No","nonexistent",-1.8,93.075,-47.1,1.405,5099.1,"yes",31,1
+"Jove-Adult","technician","single","university.degree","no","no","no","telephone","apr","tue",207,1.80811869816247,"No","nonexistent",-1.8,93.075,-47.1,1.405,5099.1,"yes",31,1
 "Adult","admin.","single","high.school","no","no","no","cellular","apr","thu",1025,1,"No","nonexistent",-1.8,93.075,-47.1,1.41,5099.1,"yes",47,0
 "Jove-Adult","technician","married","professional.course","no","no","yes","cellular","apr","thu",667,1,"No","nonexistent",-1.8,93.075,-47.1,1.41,5099.1,"yes",33,0
 "Jove-Adult","management","divorced","university.degree","no","no","no","cellular","aug","mon",472,3,"No","nonexistent",1.4,93.444,-36.1,4.965,5228.1,"yes",35,0
@@ -1066,7 +1066,7 @@
 "Jove-Adult","unemployed","single","university.degree",NA,"yes","yes","telephone","jun","mon",444,2,"No","nonexistent",1.4,94.465,-41.8,4.865,5228.1,"yes",35,1
 "Jove-Adult","blue-collar","single","basic",NA,"no","yes","telephone","may","mon",788,2.08233068570213,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"yes",33,2
 "Adult","services","divorced","high.school","no","no","no","telephone","may","mon",579,5,"No","nonexistent",1.1,93.994,-36.4,4.858,5191,"yes",52,0
-"Adult","admin.","divorced","university.degree","no","yes","no","telephone","jun","fri",870.063992341428,3,"No","nonexistent",1.4,94.465,-41.8,4.967,5228.1,"yes",47,1
+"Adult","admin.","divorced","university.degree","no","yes","no","telephone","jun","fri",870.063992341429,3,"No","nonexistent",1.4,94.465,-41.8,4.967,5228.1,"yes",47,1
 "Adult","management","married","university.degree","no","no","no","cellular","aug","mon",1488,2,"No","nonexistent",1.4,93.444,-36.1,4.97,5228.1,"yes",52,0
 "Jove-Adult","services","single","basic","no","no","no","telephone","may","fri",1044,5,"No","nonexistent",1.1,93.994,-36.4,4.864,5191,"yes",31,0
 "Jove-Adult","admin.","single","university.degree","no","yes","no","cellular","aug","thu",686,4,"No","nonexistent",1.4,93.444,-36.1,4.963,5228.1,"yes",33,0
@@ -1100,7 +1100,7 @@
 "Jove-Adult","technician","single","university.degree","no","yes","no","cellular","aug","tue",439,3,"No","nonexistent",1.4,93.444,-36.1,4.966,5228.1,"yes",35,0
 "Adult","services","married","high.school","no","yes","no","cellular","aug","tue",836,1,"No","nonexistent",1.4,93.444,-36.1,4.968,5228.1,"yes",47,0
 "Jove-Adult","admin.","single","high.school","no","yes","no","cellular","mar","fri",300,1,"No","nonexistent",-1.8,92.843,-50,1.531,5099.1,"yes",28,0
-"Jove-Adult","admin.","single","university.degree","no","yes","no","cellular","aug","thu",1109,2.55315761815711,"No","nonexistent",1.4,93.444,-36.1,4.962,5228.1,"yes",30,1
+"Jove-Adult","admin.","single","university.degree","no","yes","no","cellular","aug","thu",1109,2.5531576181571,"No","nonexistent",1.4,93.444,-36.1,4.962,5228.1,"yes",30,1
 "Adult","admin.","divorced","university.degree","no","yes","no","telephone","may","wed",938,2,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"yes",52,0
 "Adult","management","married","university.degree","no","yes","no","cellular","jul","thu",1341,7,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",55,0
 "Jove-Adult","services","married","professional.course","no","no","no","cellular","jul","wed",782,7,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",33,0
@@ -1216,7 +1216,7 @@
 "Jove-Adult","admin.","single","professional.course","no","yes","no","cellular","jul","tue",1061,4,"No","nonexistent",1.4,93.918,-42.7,4.962,5228.1,"yes",27,0
 "Adult","technician","married","professional.course","no","no","no","cellular","aug","wed",976,7,"No","nonexistent",1.4,93.444,-36.1,4.964,5228.1,"yes",55,0
 "Adult","blue-collar","married","basic",NA,"no","yes","telephone","jun","tue",781,1,"No","nonexistent",1.4,94.465,-41.8,4.961,5228.1,"yes",51,1
-"Jove-Adult","services","married","university.degree","no","no","no","telephone","jul","mon",691,2.61359473121299,"No","nonexistent",1.4,93.918,-42.7,4.96,5228.1,"yes",32,1
+"Jove-Adult","services","married","university.degree","no","no","no","telephone","jul","mon",691,2.61359473121301,"No","nonexistent",1.4,93.918,-42.7,4.96,5228.1,"yes",32,1
 "Jove-Adult","self-employed","divorced","university.degree","no","no","no","telephone","may","fri",462,4,"No","nonexistent",-1.8,92.893,-46.2,1.25,5099.1,"yes",45,0
 "Jove-Adult","technician","single","university.degree",NA,"no","no","telephone","may","wed",857,1,"No","nonexistent",1.1,93.994,-36.4,4.858,5191,"yes",32,1
 "Adult","admin.","married","university.degree","no","yes","no","cellular","apr","fri",160,1,"No","nonexistent",-1.8,93.075,-47.1,1.4,5099.1,"yes",50,0
@@ -1264,7 +1264,7 @@
 "Jove-Adult","services","divorced","high.school","no","yes","yes","cellular","jul","mon",1169,1,"No","nonexistent",1.4,93.918,-42.7,4.962,5228.1,"yes",44,0
 "Jove-Adult","technician","single","professional.course","no","no","no","telephone","jun","thu",508,2,"No","nonexistent",1.4,94.465,-41.8,4.866,5228.1,"yes",28,0
 "Jove-Adult","admin.","single","university.degree","no","no","yes","cellular","mar","wed",96,2,"No","nonexistent",-1.8,92.843,-50,1.548,5099.1,"yes",28,0
-"Jove-Adult","admin.","married","university.degree",NA,"yes","no","cellular","aug","thu",583,2.48662784698964,"No","nonexistent",1.4,93.444,-36.1,4.962,5228.1,"yes",41,2
+"Jove-Adult","admin.","married","university.degree",NA,"yes","no","cellular","aug","thu",583,2.48662784698965,"No","nonexistent",1.4,93.444,-36.1,4.962,5228.1,"yes",41,2
 "Adult","unemployed","married","high.school","no","no","no","telephone","may","fri",924,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"yes",55,0
 "Jove-Adult","admin.","divorced","university.degree","no","no","no","cellular","nov","fri",549,2,"No","nonexistent",-0.1,93.2,-42,4.021,5195.8,"yes",34,0
 "Jove","unemployed","single","high.school","no","no","no","cellular","may","wed",669,1,"No","failure",-1.8,92.893,-46.2,1.281,5099.1,"yes",24,1
@@ -1279,7 +1279,7 @@
 "Adult","self-employed","married","university.degree","no","no","no","cellular","apr","tue",110,2,"No","nonexistent",-1.8,93.075,-47.1,1.405,5099.1,"yes",56,0
 "Jove-Adult","self-employed","married","university.degree","no","yes","no","telephone","may","fri",691,2.06569024742358,"No","nonexistent",1.1,93.994,-36.4,4.864,5191,"yes",41,1
 "Jove","services","single","high.school","no","no","no","cellular","jul","thu",1097,3,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",23,0
-"Jove-Adult","admin.","single","university.degree","no","no","no","cellular","aug","mon",724,2.50383735307629,"No","nonexistent",1.4,93.444,-36.1,4.963,5228.1,"yes",35,1
+"Jove-Adult","admin.","single","university.degree","no","no","no","cellular","aug","mon",724,2.50383735307628,"No","nonexistent",1.4,93.444,-36.1,4.963,5228.1,"yes",35,1
 "Adult","admin.","married","professional.course",NA,"yes","yes","telephone","nov","tue",514,2,"No","nonexistent",-0.1,93.2,-42,4.153,5195.8,"yes",55,1
 "Jove-Adult","technician","married","professional.course","no","no","no","telephone","oct","thu",171,1,"No","nonexistent",-0.1,93.798,-40.4,4.921,5195.8,"yes",39,0
 "Jove-Adult","blue-collar","married","basic","no","yes","yes","cellular","may","wed",686,2,"No","nonexistent",-1.8,92.893,-46.2,1.334,5099.1,"yes",33,0
@@ -1363,7 +1363,7 @@
 "Adult","self-employed","married","basic","no","no","yes","cellular","nov","wed",680,2,"No","failure",-0.1,93.2,-42,4.12,5195.8,"yes",56,1
 "Gran","unemployed","married","high.school","no","yes","no","cellular","apr","mon",194,1,"No","nonexistent",-1.8,93.075,-47.1,1.405,5099.1,"yes",68,0
 "Jove-Adult","admin.","married","professional.course","no","yes","no","telephone","nov","thu",90,1,"No","nonexistent",-0.1,93.2,-42,4.245,5195.8,"yes",42,0
-"Jove-Adult","self-employed","married","university.degree","no","yes","no","telephone","jul","thu",1088,2.658812105527,"No","nonexistent",1.4,93.918,-42.7,4.968,5228.1,"yes",42,1
+"Jove-Adult","self-employed","married","university.degree","no","yes","no","telephone","jul","thu",1088,2.65881210552701,"No","nonexistent",1.4,93.918,-42.7,4.968,5228.1,"yes",42,1
 "Jove-Adult","admin.","single","high.school","no","no","yes","cellular","apr","wed",319,1,"Yes","success",-1.8,93.075,-47.1,1.405,5099.1,"yes",29,0
 "Jove-Adult","admin.","single","university.degree","no","yes","no","cellular","apr","tue",295,5,"No","nonexistent",-1.8,93.075,-47.1,1.423,5099.1,"yes",28,0
 "Adult","blue-collar","married","basic","no","no","no","telephone","may","mon",607,1,"No","nonexistent",1.1,93.994,-36.4,4.858,5191,"yes",48,0
@@ -1393,10 +1393,10 @@
 "Jove-Adult","technician","married","university.degree","no","no","no","cellular","mar","tue",261,1,"No","nonexistent",-1.8,92.843,-50,1.687,5099.1,"yes",38,0
 "Jove-Adult","blue-collar","single","basic",NA,"no","no","telephone","jun","wed",878,3,"No","nonexistent",1.4,94.465,-41.8,4.959,5228.1,"yes",36,2
 "Adult","technician","single","professional.course","no","yes","no","cellular","nov","wed",1468,3,"No","nonexistent",-0.1,93.2,-42,4.12,5195.8,"yes",53,0
-"Jove-Adult","blue-collar","married","basic",NA,"no","no","cellular","jul","tue",1608,2.72895462213985,"No","nonexistent",1.4,93.918,-42.7,4.961,5228.1,"yes",31,3
+"Jove-Adult","blue-collar","married","basic",NA,"no","no","cellular","jul","tue",1608,2.72895462213984,"No","nonexistent",1.4,93.918,-42.7,4.961,5228.1,"yes",31,3
 "Jove-Adult","technician","married","professional.course","no","no","no","cellular","aug","mon",594,2,"No","nonexistent",1.4,93.444,-36.1,4.963,5228.1,"yes",35,0
 "Adult","unemployed","married","professional.course",NA,"yes","yes","cellular","jul","mon",494,4,"No","nonexistent",1.4,93.918,-42.7,4.96,5228.1,"yes",59,1
-"Jove-Adult","admin.","divorced","high.school","no","no","no","telephone","jun","mon",686,2.37978243629892,"No","nonexistent",1.4,94.465,-41.8,4.96,5228.1,"yes",41,1
+"Jove-Adult","admin.","divorced","high.school","no","no","no","telephone","jun","mon",686,2.37978243629894,"No","nonexistent",1.4,94.465,-41.8,4.96,5228.1,"yes",41,1
 "Jove-Adult","technician","single","professional.course","no","no","no","cellular","may","fri",153,2,"No","nonexistent",-1.8,92.893,-46.2,1.25,5099.1,"yes",32,0
 "Jove-Adult","blue-collar","married","basic","no","yes","no","telephone","jun","wed",1540,1,"No","nonexistent",1.4,94.465,-41.8,4.962,5228.1,"yes",43,0
 "Jove-Adult","admin.","single","university.degree","no","yes","no","cellular","may","mon",274,2,"No","nonexistent",-1.8,92.893,-46.2,1.354,5099.1,"yes",31,0
@@ -1468,7 +1468,7 @@
 "Jove-Adult","admin.","married","university.degree","no","yes","no","telephone","oct","mon",131,1,"No","nonexistent",-0.1,93.798,-40.4,4.912,5195.8,"yes",31,0
 "Jove-Adult","unemployed","single","university.degree","no","yes","no","cellular","may","tue",775,3,"No","nonexistent",-1.8,92.893,-46.2,1.291,5099.1,"yes",30,0
 "Jove-Adult","self-employed","single","university.degree","no","no","no","cellular","apr","thu",202,1,"No","nonexistent",-1.8,93.075,-47.1,1.365,5099.1,"yes",30,0
-"Jove-Adult","blue-collar","single","high.school","no","no","no","cellular","may","mon",622.486634520613,1,"No","nonexistent",-1.8,92.893,-46.2,1.244,5099.1,"yes",33,1
+"Jove-Adult","blue-collar","single","high.school","no","no","no","cellular","may","mon",622.486634520612,1,"No","nonexistent",-1.8,92.893,-46.2,1.244,5099.1,"yes",33,1
 "Jove-Adult","technician","married","university.degree","no","yes","no","cellular","aug","thu",1579,2,"No","nonexistent",1.4,93.444,-36.1,4.964,5228.1,"yes",35,2
 "Jove-Adult","services","married","university.degree","no","no","no","cellular","apr","thu",237,1,"No","nonexistent",-1.8,93.075,-47.1,1.365,5099.1,"yes",39,0
 "Adult","blue-collar","single","basic","no","no","no","cellular","apr","thu",309,1,"No","nonexistent",-1.8,93.075,-47.1,1.365,5099.1,"yes",47,0
@@ -1480,7 +1480,7 @@
 "Jove-Adult","management","single","university.degree","no","no","no","cellular","nov","thu",500,2,"No","failure",-0.1,93.2,-42,4.076,5195.8,"yes",32,1
 "Jove-Adult","admin.","divorced","high.school","no","yes","no","telephone","oct","tue",294,1,"No","nonexistent",-0.1,93.798,-40.4,4.968,5195.8,"yes",44,0
 "Jove-Adult","admin.","single","university.degree","no","no","no","cellular","jul","fri",536,1,"No","nonexistent",1.4,93.918,-42.7,4.957,5228.1,"yes",35,0
-"Jove","blue-collar","married","basic","no","yes","no","cellular","jul","wed",847.388984383222,6,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",21,1
+"Jove","blue-collar","married","basic","no","yes","no","cellular","jul","wed",847.388984383221,6,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",21,1
 "Jove-Adult","admin.","married","high.school","no","yes","no","cellular","may","thu",878,3,"No","failure",-1.8,92.893,-46.2,1.327,5099.1,"yes",42,3
 "Jove-Adult","technician","single","professional.course","no","no","no","cellular","may","wed",687,2,"No","failure",-1.8,92.893,-46.2,1.334,5099.1,"yes",28,1
 "Jove-Adult","self-employed","married","professional.course","no","yes","no","telephone","jun","tue",775,3,"No","nonexistent",1.4,94.465,-41.8,4.961,5228.1,"yes",30,0
@@ -1535,7 +1535,7 @@
 "Gran","unemployed","divorced","university.degree","no","yes","no","cellular","apr","tue",207,2,"No","nonexistent",-1.8,93.075,-47.1,1.423,5099.1,"yes",69,0
 "Adult","unemployed","single","professional.course","no","yes","no","cellular","apr","wed",1288,3,"No","nonexistent",-1.8,93.075,-47.1,1.405,5099.1,"yes",58,0
 "Jove-Adult","admin.","single","high.school","no","no","no","cellular","nov","wed",511,1,"No","nonexistent",-0.1,93.2,-42,4.12,5195.8,"yes",31,0
-"Adult","unemployed","married","high.school","no","yes","no","cellular","jul","fri",1448,2.7080929093645,"No","nonexistent",1.4,93.918,-42.7,4.962,5228.1,"yes",59,1
+"Adult","unemployed","married","high.school","no","yes","no","cellular","jul","fri",1448,2.70809290936449,"No","nonexistent",1.4,93.918,-42.7,4.962,5228.1,"yes",59,1
 "Jove","admin.","single","professional.course","no","yes","no","cellular","jul","wed",902,2,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",23,0
 "Jove-Adult","admin.","single","university.degree","no","no","no","telephone","jun","mon",498,2,"No","nonexistent",1.4,94.465,-41.8,4.958,5228.1,"yes",40,0
 "Adult","admin.","single","university.degree","no","yes","no","cellular","may","mon",801,5,"No","failure",-1.8,92.893,-46.2,1.244,5099.1,"yes",46,1
@@ -1577,7 +1577,7 @@
 "Jove-Adult","admin.","single","basic","no","no","no","cellular","jul","fri",978,1,"No","nonexistent",1.4,93.918,-42.7,4.957,5228.1,"yes",31,0
 "Jove-Adult","technician","married","high.school","no","yes","no","cellular","aug","fri",419,1,"No","nonexistent",1.4,93.444,-36.1,4.966,5228.1,"yes",40,0
 "Jove","admin.","single","professional.course","no","no","no","cellular","apr","mon",267,2,"No","nonexistent",-1.8,93.075,-47.1,1.405,5099.1,"yes",24,0
-"Jove-Adult","unemployed","married","basic",NA,"yes","no","cellular","apr","fri",538.358345203645,2,"No","nonexistent",-1.8,93.075,-47.1,1.405,5099.1,"yes",40,4
+"Jove-Adult","unemployed","married","basic",NA,"yes","no","cellular","apr","fri",538.358345203644,2,"No","nonexistent",-1.8,93.075,-47.1,1.405,5099.1,"yes",40,4
 "Jove-Adult","self-employed","single","university.degree","no","yes","no","telephone","oct","thu",248,1,"No","nonexistent",-0.1,93.798,-40.4,4.794,5195.8,"yes",36,0
 "Gran","unemployed","divorced","basic","no","yes","no","cellular","mar","wed",126,1,"No","nonexistent",-1.8,92.843,-50,1.663,5099.1,"yes",88,0
 "Jove-Adult","blue-collar","divorced","basic",NA,"yes","no","telephone","may","mon",1575,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"yes",41,1
@@ -1607,11 +1607,11 @@
 "Jove-Adult","blue-collar","single","professional.course","no","yes","no","cellular","apr","thu",652,2,"No","nonexistent",-1.8,93.075,-47.1,1.365,5099.1,"yes",33,0
 "Jove-Adult","admin.","single","university.degree","no","yes","no","cellular","jul","fri",614,2,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",33,0
 "Jove-Adult","technician","married","basic","no","no","no","cellular","may","tue",580,1,"No","nonexistent",-1.8,92.893,-46.2,1.291,5099.1,"yes",35,0
-"Jove-Adult","blue-collar","single","high.school","no","no","no","telephone","jul","tue",802,2.62700976365891,"No","nonexistent",1.4,93.918,-42.7,4.961,5228.1,"yes",31,1
+"Jove-Adult","blue-collar","single","high.school","no","no","no","telephone","jul","tue",802,2.62700976365892,"No","nonexistent",1.4,93.918,-42.7,4.961,5228.1,"yes",31,1
 "Adult","blue-collar","married","basic","no","yes","no","telephone","may","fri",1392,2,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"yes",46,0
 "Jove-Adult","blue-collar","single","basic","no","yes","no","telephone","jun","mon",662,2,"No","nonexistent",1.4,94.465,-41.8,4.958,5228.1,"yes",30,0
 "Adult","blue-collar","married","basic",NA,"yes","no","telephone","jun","fri",570,2,"No","nonexistent",1.4,94.465,-41.8,4.959,5228.1,"yes",58,1
-"Jove-Adult","admin.","single","high.school",NA,"yes","yes","telephone","jun","wed",524,2.41924620101877,"No","nonexistent",1.4,94.465,-41.8,4.864,5228.1,"yes",26,3
+"Jove-Adult","admin.","single","high.school",NA,"yes","yes","telephone","jun","wed",524,2.41924620101879,"No","nonexistent",1.4,94.465,-41.8,4.864,5228.1,"yes",26,3
 "Adult","blue-collar","married","basic",NA,"no","no","cellular","jul","tue",1545,1,"No","nonexistent",1.4,93.918,-42.7,4.961,5228.1,"yes",56,1
 "Jove-Adult","admin.","single","university.degree","no","no","yes","telephone","jul","mon",1130,8,"No","nonexistent",1.4,93.918,-42.7,4.96,5228.1,"yes",29,0
 "Jove-Adult","technician","married","professional.course","no","no","no","cellular","may","wed",550,1,"No","nonexistent",-1.8,92.893,-46.2,1.334,5099.1,"yes",28,0
@@ -1634,7 +1634,7 @@
 "Adult","services","married","high.school","no","yes","no","cellular","aug","thu",834,9,"No","nonexistent",1.4,93.444,-36.1,4.964,5228.1,"yes",54,0
 "Jove-Adult","self-employed","married","basic","no","yes","yes","cellular","jul","mon",782,1,"No","nonexistent",1.4,93.918,-42.7,4.96,5228.1,"yes",31,0
 "Adult","management","married","professional.course","no","yes","no","telephone","may","tue",709,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"yes",52,0
-"Adult","blue-collar","married","basic","no","yes","no","telephone","jun","mon",880.6987895015,4,"No","nonexistent",1.4,94.465,-41.8,4.96,5228.1,"yes",47,1
+"Adult","blue-collar","married","basic","no","yes","no","telephone","jun","mon",880.698789501499,4,"No","nonexistent",1.4,94.465,-41.8,4.96,5228.1,"yes",47,1
 "Jove-Adult","admin.","single","university.degree","no","no","no","cellular","apr","tue",344,1,"No","failure",-1.8,93.075,-47.1,1.423,5099.1,"yes",34,1
 "Jove-Adult","admin.","single","university.degree",NA,"yes","yes","telephone","may","tue",1201,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"yes",28,3
 "Jove-Adult","blue-collar","single","basic","no","no","no","cellular","may","wed",863,3,"No","nonexistent",-1.8,92.893,-46.2,1.281,5099.1,"yes",28,0
@@ -1781,7 +1781,7 @@
 "Jove-Adult","management","married","university.degree","no","no","no","telephone","jun","wed",973,1,"No","nonexistent",1.4,94.465,-41.8,4.962,5228.1,"yes",29,0
 "Jove-Adult","technician","single","university.degree","no","yes","no","cellular","apr","thu",527,3,"No","nonexistent",-1.8,93.075,-47.1,1.435,5099.1,"yes",33,2
 "Jove-Adult","services","divorced","high.school","no","yes","yes","cellular","may","fri",562,2,"No","nonexistent",-1.8,92.893,-46.2,1.25,5099.1,"yes",34,0
-"Jove-Adult","blue-collar","married","high.school","no","yes","yes","cellular","nov","thu",745.981330293193,2,"No","nonexistent",-0.1,93.2,-42,4.076,5195.8,"yes",30,1
+"Jove-Adult","blue-collar","married","high.school","no","yes","yes","cellular","nov","thu",745.981330293191,2,"No","nonexistent",-0.1,93.2,-42,4.076,5195.8,"yes",30,1
 "Adult","admin.","married","university.degree","no","no","no","cellular","mar","tue",269,3,"No","nonexistent",-1.8,92.843,-50,1.556,5099.1,"yes",46,0
 "Adult","blue-collar","married","basic","no","no","no","cellular","may","tue",309,1,"Yes","success",-1.8,92.893,-46.2,1.291,5099.1,"yes",48,0
 "Adult","unemployed","single","professional.course","no","yes","no","cellular","apr","tue",242,2,"No","nonexistent",-1.8,93.075,-47.1,1.405,5099.1,"yes",47,0
@@ -1887,7 +1887,7 @@
 "Jove-Adult","blue-collar","married","basic",NA,"no","no","cellular","jul","tue",690,1,"No","nonexistent",1.4,93.918,-42.7,4.961,5228.1,"yes",38,1
 "Jove-Adult","management","married","university.degree","no","no","no","telephone","oct","fri",615,1,"No","nonexistent",-0.1,93.798,-40.4,4.76,5195.8,"yes",42,0
 "Jove-Adult","management","divorced","university.degree","no","yes","yes","cellular","nov","thu",1258,2,"No","nonexistent",-0.1,93.2,-42,4.076,5195.8,"yes",34,0
-"Jove-Adult","admin.","single","university.degree","no","no","no","telephone","jun","mon",1055,2.42582994205511,"No","nonexistent",1.4,94.465,-41.8,4.961,5228.1,"yes",29,1
+"Jove-Adult","admin.","single","university.degree","no","no","no","telephone","jun","mon",1055,2.42582994205512,"No","nonexistent",1.4,94.465,-41.8,4.961,5228.1,"yes",29,1
 "Jove-Adult","technician","single","university.degree","no","yes","yes","cellular","may","wed",754,1,"No","nonexistent",-1.8,92.893,-46.2,1.334,5099.1,"yes",27,0
 "Jove-Adult","technician","married","professional.course","no","no","no","cellular","aug","fri",922,7,"No","nonexistent",1.4,93.444,-36.1,4.966,5228.1,"yes",33,0
 "Jove-Adult","admin.","single","basic",NA,"yes","no","cellular","may","thu",983,4,"No","nonexistent",-1.8,92.893,-46.2,1.327,5099.1,"yes",29,1
@@ -1905,7 +1905,7 @@
 "Jove-Adult","blue-collar","married","basic",NA,"no","no","cellular","may","wed",430,2,"No","nonexistent",-1.8,92.893,-46.2,1.334,5099.1,"yes",33,1
 "Jove","technician","single","high.school","no","yes","no","cellular","may","mon",841,4,"No","nonexistent",-1.8,92.893,-46.2,1.354,5099.1,"yes",24,0
 "Jove-Adult","blue-collar","married","basic","no","yes","yes","cellular","apr","thu",251,2,"No","nonexistent",-1.8,93.075,-47.1,1.41,5099.1,"yes",26,0
-"Adult","unemployed","married","basic","no","yes","no","telephone","jun","wed",859.758855696294,1,"No","nonexistent",1.4,94.465,-41.8,4.962,5228.1,"yes",59,1
+"Adult","unemployed","married","basic","no","yes","no","telephone","jun","wed",859.758855696297,1,"No","nonexistent",1.4,94.465,-41.8,4.962,5228.1,"yes",59,1
 "Jove-Adult","technician","married","professional.course",NA,"yes","no","cellular","aug","tue",731,7,"No","nonexistent",1.4,93.444,-36.1,4.965,5228.1,"yes",33,1
 "Jove-Adult","unemployed","married","basic","no","no","no","telephone","may","thu",646,3,"No","nonexistent",1.1,93.994,-36.4,4.86,5191,"yes",35,0
 "Jove-Adult","admin.","married","university.degree","no","no","no","cellular","aug","thu",395,1,"No","nonexistent",1.4,93.444,-36.1,4.968,5228.1,"yes",38,0
@@ -2114,10 +2114,10 @@
 "Adult","unemployed","married","professional.course","no","yes","no","cellular","apr","wed",387,2,"No","nonexistent",-1.8,93.075,-47.1,1.498,5099.1,"yes",63,0
 "Jove-Adult","admin.","married","university.degree","no","yes","no","cellular","aug","wed",1842,1,"No","nonexistent",1.4,93.444,-36.1,4.965,5228.1,"yes",32,0
 "Jove-Adult","admin.","married","high.school","no","no","no","cellular","aug","thu",876,1,"No","nonexistent",1.4,93.444,-36.1,4.968,5228.1,"yes",32,0
-"Jove-Adult","self-employed","single","university.degree","no","yes","yes","cellular","mar","fri",350.477181889284,1,"No","nonexistent",-1.8,92.843,-50,1.64,5099.1,"yes",28,1
+"Jove-Adult","self-employed","single","university.degree","no","yes","yes","cellular","mar","fri",350.477181889283,1,"No","nonexistent",-1.8,92.843,-50,1.64,5099.1,"yes",28,1
 "Jove-Adult","admin.","single","high.school","no","yes","no","telephone","may","wed",1328,1,"No","nonexistent",1.1,93.994,-36.4,4.859,5191,"yes",27,0
 "Jove-Adult","blue-collar","single","basic","no","no","no","cellular","jul","thu",656,3,"No","nonexistent",1.4,93.918,-42.7,4.958,5228.1,"yes",27,0
-"Jove-Adult","admin.","single","university.degree","no","yes","no","telephone","jun","thu",541,2.36269152041831,"No","nonexistent",1.4,94.465,-41.8,4.958,5228.1,"yes",44,1
+"Jove-Adult","admin.","single","university.degree","no","yes","no","telephone","jun","thu",541,2.36269152041833,"No","nonexistent",1.4,94.465,-41.8,4.958,5228.1,"yes",44,1
 "Adult","technician","divorced","professional.course","no","yes","no","cellular","may","mon",268,3,"No","nonexistent",-1.8,92.893,-46.2,1.354,5099.1,"yes",61,0
 "Jove-Adult","technician","single","professional.course","no","yes","no","cellular","nov","tue",1132,1,"No","failure",-0.1,93.2,-42,4.153,5195.8,"yes",36,1
 "Adult","blue-collar","married","basic",NA,"no","no","telephone","jul","fri",1492,2,"No","nonexistent",1.4,93.918,-42.7,4.962,5228.1,"yes",52,1
@@ -2127,7 +2127,7 @@
 "Jove-Adult","services","divorced","high.school","no","no","no","cellular","jul","wed",532,2,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",36,0
 "Jove-Adult","management","single","university.degree","no","yes","no","cellular","apr","fri",271,2,"No","nonexistent",-1.8,93.075,-47.1,1.405,5099.1,"yes",39,0
 "Jove-Adult","blue-collar","married","basic","no","no","yes","telephone","jul","tue",1135,2,"No","nonexistent",1.4,93.918,-42.7,4.955,5228.1,"yes",40,0
-"Jove-Adult","blue-collar","married","high.school","no","yes","no","cellular","may","tue",787,1.97920473378463,"No","failure",-1.8,92.893,-46.2,1.291,5099.1,"yes",33,2
+"Jove-Adult","blue-collar","married","high.school","no","yes","no","cellular","may","tue",787,1.9792047337846,"No","failure",-1.8,92.893,-46.2,1.291,5099.1,"yes",33,2
 "Jove","unemployed","single","basic","no","yes","no","cellular","may","fri",491,1,"No","nonexistent",-1.8,92.893,-46.2,1.259,5099.1,"yes",19,0
 "Jove-Adult","blue-collar","married","basic",NA,"no","no","cellular","may","wed",951,3,"No","failure",-1.8,92.893,-46.2,1.281,5099.1,"yes",36,2
 "Jove-Adult","services","married","high.school","no","yes","yes","telephone","may","wed",521,3,"No","nonexistent",1.1,93.994,-36.4,4.858,5191,"yes",37,0
@@ -2148,7 +2148,7 @@
 "Jove-Adult","blue-collar","married","basic","no","no","no","cellular","may","thu",481,2,"No","nonexistent",-1.8,92.893,-46.2,1.327,5099.1,"yes",29,0
 "Jove-Adult","services","married","high.school","no","yes","no","telephone","oct","tue",144,1,"No","failure",-0.1,93.798,-40.4,4.968,5195.8,"yes",40,1
 "Adult","admin.","married","university.degree","no","no","no","cellular","nov","fri",808,2,"No","nonexistent",-0.1,93.2,-42,4.021,5195.8,"yes",56,0
-"Jove-Adult","unemployed","single","high.school","no","no","yes","telephone","may","fri",293.064987581335,1,"No","nonexistent",1.1,93.994,-36.4,4.859,5191,"yes",35,1
+"Jove-Adult","unemployed","single","high.school","no","no","yes","telephone","may","fri",293.064987581336,1,"No","nonexistent",1.1,93.994,-36.4,4.859,5191,"yes",35,1
 "Jove-Adult","blue-collar","married","basic",NA,"yes","no","cellular","may","tue",670,2,"No","failure",-1.8,92.893,-46.2,1.344,5099.1,"yes",33,2
 "Jove-Adult","admin.","married","high.school","no","yes","no","telephone","nov","wed",114,1,"No","failure",-0.1,93.2,-42,4.286,5195.8,"yes",36,1
 "Adult","technician","married","professional.course","no","no","no","cellular","apr","thu",618,2,"No","nonexistent",-1.8,93.075,-47.1,1.365,5099.1,"yes",49,0
@@ -2225,7 +2225,7 @@
 "Adult","admin.","divorced","university.degree","no","no","no","cellular","apr","thu",260,1,"No","nonexistent",-1.8,93.075,-47.1,1.365,5099.1,"yes",55,0
 "Jove-Adult","admin.","single","high.school","no","no","no","telephone","jun","wed",984,2,"No","nonexistent",1.4,94.465,-41.8,4.864,5228.1,"yes",35,0
 "Jove-Adult","admin.","married","high.school","no","no","no","telephone","jun","fri",1422,2.47349804297628,"No","nonexistent",1.4,94.465,-41.8,4.959,5228.1,"yes",43,1
-"Jove-Adult","admin.","married","university.degree","no","yes","no","telephone","jul","wed",860.579504627043,8,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",32,1
+"Jove-Adult","admin.","married","university.degree","no","yes","no","telephone","jul","wed",860.579504627039,8,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",32,1
 "Jove-Adult","blue-collar","married","basic","no","no","yes","cellular","jul","thu",880,1,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",42,0
 "Jove-Adult","admin.","single","university.degree","no","no","no","cellular","jul","wed",919,2,"No","nonexistent",1.4,93.918,-42.7,4.962,5228.1,"yes",27,0
 "Adult","blue-collar","divorced","basic","no","no","no","telephone","jun","thu",910,2,"No","nonexistent",1.4,94.465,-41.8,4.866,5228.1,"yes",52,0
@@ -2303,7 +2303,7 @@
 "Jove-Adult","blue-collar","married","high.school","no","no","no","cellular","nov","mon",540,2,"No","nonexistent",-0.1,93.2,-42,4.191,5195.8,"yes",35,0
 "Jove","admin.","single","university.degree","no","yes","no","telephone","apr","thu",712,2,"No","nonexistent",-1.8,93.075,-47.1,1.365,5099.1,"yes",25,1
 "Jove-Adult","self-employed","single","high.school","no","yes","no","cellular","jul","thu",1204,1,"No","nonexistent",1.4,93.918,-42.7,4.962,5228.1,"yes",41,0
-"Adult","blue-collar","married","basic",NA,"no","no","telephone","may","fri",1097,2.11704212402813,"No","nonexistent",1.1,93.994,-36.4,4.864,5191,"yes",56,2
+"Adult","blue-collar","married","basic",NA,"no","no","telephone","may","fri",1097,2.11704212402811,"No","nonexistent",1.1,93.994,-36.4,4.864,5191,"yes",56,2
 "Jove-Adult","self-employed","single","professional.course","no","yes","no","cellular","may","mon",775,5,"No","failure",-1.8,92.893,-46.2,1.354,5099.1,"yes",44,1
 "Jove-Adult","admin.","single","high.school","no","yes","yes","telephone","may","tue",618,1,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"yes",35,0
 "Jove-Adult","blue-collar","married","basic","no","yes","no","cellular","may","tue",253,1,"No","nonexistent",-1.8,92.893,-46.2,1.266,5099.1,"yes",41,0
@@ -2334,7 +2334,7 @@
 "Jove-Adult","blue-collar","married","basic","no","no","no","cellular","apr","wed",1217,3,"No","nonexistent",-1.8,93.075,-47.1,1.415,5099.1,"yes",42,0
 "Jove-Adult","management","married","basic","no","yes","yes","telephone","may","tue",568,4,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"yes",33,0
 "Jove","self-employed","divorced","university.degree","no","no","no","cellular","apr","mon",241,1,"No","nonexistent",-1.8,93.075,-47.1,1.405,5099.1,"yes",25,0
-"Jove-Adult","self-employed","married","university.degree",NA,"yes","no","cellular","nov","mon",679.617507523394,2,"No","nonexistent",-0.1,93.2,-42,4.191,5195.8,"yes",34,2
+"Jove-Adult","self-employed","married","university.degree",NA,"yes","no","cellular","nov","mon",679.617507523393,2,"No","nonexistent",-0.1,93.2,-42,4.191,5195.8,"yes",34,2
 "Jove-Adult","self-employed","married","university.degree","no","yes","no","cellular","jul","mon",766,3,"No","nonexistent",1.4,93.918,-42.7,4.962,5228.1,"yes",33,0
 "Adult","blue-collar","married","basic",NA,"yes","no","cellular","aug","wed",1357,3,"No","nonexistent",1.4,93.444,-36.1,4.967,5228.1,"yes",46,1
 "Jove-Adult","admin.","single","university.degree","no","yes","no","cellular","nov","fri",530,1,"No","nonexistent",-0.1,93.2,-42,4.021,5195.8,"yes",35,0
@@ -2404,7 +2404,7 @@
 "Jove-Adult","admin.","single","university.degree","no","yes","no","cellular","apr","mon",670,4,"Yes","success",-1.8,93.075,-47.1,1.405,5099.1,"yes",43,0
 "Jove-Adult","admin.","divorced","high.school","no","no","no","telephone","may","thu",1207,1,"No","nonexistent",1.1,93.994,-36.4,4.86,5191,"yes",31,0
 "Jove","blue-collar","married","high.school",NA,"yes","yes","telephone","may","mon",741,6,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"yes",25,1
-"Jove-Adult","technician","married","professional.course","no","no","no","cellular","jul","thu",814.412683773673,1,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",31,1
+"Jove-Adult","technician","married","professional.course","no","no","no","cellular","jul","thu",814.412683773675,1,"No","nonexistent",1.4,93.918,-42.7,4.963,5228.1,"yes",31,1
 "Jove-Adult","services","single","high.school","no","yes","no","cellular","apr","wed",1665,3,"No","nonexistent",-1.8,93.075,-47.1,1.445,5099.1,"yes",38,0
 "Jove-Adult","services","married","professional.course","no","yes","no","cellular","nov","wed",622,2,"No","nonexistent",-0.1,93.2,-42,4.12,5195.8,"yes",30,0
 "Jove-Adult","admin.","married","professional.course","no","yes","yes","cellular","apr","thu",700,5,"No","nonexistent",-1.8,93.075,-47.1,1.41,5099.1,"yes",37,0
@@ -2645,7 +2645,7 @@
 "Jove-Adult","technician","married","professional.course","no","no","no","telephone","may","fri",114,1,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",31,0
 "Jove-Adult","admin.","married","basic","no","yes","no","telephone","may","fri",164,8,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",42,0
 "Jove-Adult","blue-collar","married","basic",NA,"no","no","telephone","may","thu",170,1,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",35,1
-"Adult","unemployed","married","high.school",NA,"no","no","telephone","may","tue",119,1.99833844353864,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",54,2
+"Adult","unemployed","married","high.school",NA,"no","no","telephone","may","tue",119,1.99833844353866,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",54,2
 "Jove-Adult","services","single","high.school","no","yes","no","telephone","may","mon",425,2,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",29,0
 "Jove-Adult","unemployed","single","high.school",NA,"no","no","telephone","may","mon",57,8,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",29,1
 "Jove-Adult","blue-collar","married","basic","no","no","no","telephone","may","tue",189,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",41,0
@@ -2697,7 +2697,7 @@
 "Jove-Adult","admin.","single","university.degree","no","yes","no","telephone","may","fri",391,2,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",41,0
 "Jove-Adult","services","married","high.school","no","yes","no","telephone","may","tue",169,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",38,0
 "Adult","blue-collar","married","basic",NA,"yes","no","telephone","may","tue",185,3,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",50,3
-"Adult","services","married","high.school",NA,"no","yes","telephone","may","tue",69,1.9920143208041,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",47,2
+"Adult","services","married","high.school",NA,"no","yes","telephone","may","tue",69,1.99201432080411,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",47,2
 "Jove-Adult","blue-collar","married","basic","no","no","no","telephone","may","thu",207,1,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",44,1
 "Adult","unemployed","single","high.school","no","yes","yes","telephone","may","mon",507,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",57,0
 "Jove-Adult","admin.","married","high.school","no","yes","yes","telephone","may","tue",177,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",44,0
@@ -2820,7 +2820,7 @@
 "Jove-Adult","blue-collar","married","basic","no","no","yes","telephone","may","tue",60,1,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",32,0
 "Jove-Adult","admin.","married","high.school","no","yes","yes","telephone","may","fri",1087,2,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",40,0
 "Jove-Adult","blue-collar","married","basic","no","no","no","telephone","may","thu",352,3,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",42,0
-"Jove-Adult","self-employed","married","basic",NA,"yes","no","telephone","may","tue",307.986737984367,3,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",39,2
+"Jove-Adult","self-employed","married","basic",NA,"yes","no","telephone","may","tue",307.986737984368,3,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",39,2
 "Jove-Adult","blue-collar","married","basic",NA,"no","no","telephone","may","tue",114,2,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",42,1
 "Jove-Adult","services","married","high.school","no","no","no","telephone","may","mon",322,3,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",40,0
 "Adult","unemployed","married","basic",NA,"yes","no","telephone","may","mon",84,3,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",52,1
@@ -3009,7 +3009,7 @@
 "Jove-Adult","self-employed","married","basic","no","no","no","telephone","may","wed",128,3,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",40,0
 "Adult","unemployed","married","high.school","no","yes","no","telephone","may","tue",104,2,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",58,0
 "Adult","blue-collar","married","basic",NA,"yes","no","telephone","may","mon",152,5,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",50,1
-"Adult","technician","single","professional.course","no","yes","no","telephone","may","tue",69,1.9920143208041,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",48,4
+"Adult","technician","single","professional.course","no","yes","no","telephone","may","tue",69,1.99201432080411,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",48,4
 "Adult","blue-collar","married","basic",NA,"yes","no","telephone","may","tue",64,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",49,1
 "Jove-Adult","management","single","university.degree","no","no","no","telephone","may","fri",154,2,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",41,1
 "Jove-Adult","blue-collar","married","basic",NA,"yes","no","telephone","may","tue",334,2,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",45,1
@@ -3162,7 +3162,7 @@
 "Adult","admin.","single","university.degree",NA,"yes","yes","telephone","may","tue",410,2,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",47,2
 "Jove-Adult","admin.","married","basic","no","no","no","telephone","may","tue",175,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",34,0
 "Jove-Adult","self-employed","married","university.degree","no","yes","no","telephone","may","mon",59,4,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",36,0
-"Adult","management","married","university.degree","no","no","no","telephone","may","mon",236,2.0125123707127,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",58,1
+"Adult","management","married","university.degree","no","no","no","telephone","may","mon",236,2.01251237071271,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",58,1
 "Adult","blue-collar","married","basic","no","yes","no","telephone","may","thu",185,7,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",47,0
 "Jove","technician","single","professional.course","no","yes","yes","telephone","may","fri",156,2,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",25,0
 "Adult","self-employed","married","university.degree",NA,"no","no","telephone","may","tue",153,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",56,1
@@ -3578,7 +3578,7 @@
 "Jove-Adult","technician","single","high.school","no","no","yes","telephone","may","fri",213,2,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",33,0
 "Jove-Adult","admin.","married","high.school","no","yes","no","telephone","may","thu",191,2,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",38,0
 "Jove-Adult","technician","married","professional.course","no","no","no","telephone","may","tue",92,1,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",41,0
-"Adult","management","married","university.degree","no","no","no","telephone","may","mon",24,1.98569809031821,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",47,1
+"Adult","management","married","university.degree","no","no","no","telephone","may","mon",24,1.98569809031822,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",47,1
 "Jove-Adult","services","married","high.school","no","no","no","telephone","may","tue",168,2,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",36,0
 "Jove-Adult","blue-collar","married","basic",NA,"no","no","telephone","may","wed",408,3,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",45,1
 "Jove-Adult","admin.","married","high.school","no","yes","no","telephone","may","thu",672,3,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",33,0
@@ -3873,7 +3873,7 @@
 "Adult","admin.","married","university.degree","no","no","no","telephone","may","tue",172,2,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",54,0
 "Jove-Adult","admin.","single","high.school","no","no","no","telephone","may","thu",149,1,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",29,0
 "Adult","admin.","married","university.degree","no","no","yes","telephone","may","mon",327,2,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",48,0
-"Jove-Adult","admin.","married","high.school","no","yes","yes","telephone","may","fri",295.373294460285,1,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",26,1
+"Jove-Adult","admin.","married","high.school","no","yes","yes","telephone","may","fri",295.373294460286,1,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",26,1
 "Jove-Adult","technician","single","basic",NA,"yes","no","telephone","may","thu",58,2,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",30,1
 "Adult","blue-collar","married","basic","no","yes","no","telephone","may","wed",166,1,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",53,0
 "Adult","admin.","married","university.degree","no","no","no","telephone","may","fri",279,2,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",59,0
@@ -4042,7 +4042,7 @@
 "Jove-Adult","management","married","basic","no","no","no","telephone","may","fri",117,2,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",36,0
 "Adult","unemployed","single","high.school","no","yes","no","telephone","may","mon",342,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",55,0
 "Jove-Adult","admin.","single","university.degree","no","no","no","telephone","may","thu",342,1,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",33,0
-"Jove-Adult","admin.","married","high.school",NA,"yes","no","telephone","may","tue",101,1.99606175935421,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",31,2
+"Jove-Adult","admin.","married","high.school",NA,"yes","no","telephone","may","tue",101,1.99606175935422,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",31,2
 "Jove-Adult","technician","divorced","professional.course","no","no","no","telephone","may","mon",151,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",40,0
 "Jove-Adult","services","single","professional.course","no","no","no","telephone","may","thu",182,1,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",33,0
 "Jove-Adult","unemployed","married","professional.course","no","no","no","telephone","may","thu",140,1,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",37,0
@@ -4109,7 +4109,7 @@
 "Jove-Adult","services","divorced","high.school","no","no","no","telephone","may","mon",398,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",38,0
 "Adult","admin.","divorced","university.degree","no","yes","no","telephone","may","wed",184,2,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",46,0
 "Jove-Adult","blue-collar","married","high.school","no","no","no","telephone","may","thu",268,1,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",36,0
-"Adult","blue-collar","married","basic","no","yes","no","telephone","may","tue",133,2.00010919790432,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",47,1
+"Adult","blue-collar","married","basic","no","yes","no","telephone","may","tue",133,2.00010919790433,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",47,1
 "Jove-Adult","services","married","high.school","no","yes","no","telephone","may","mon",88,5,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",35,0
 "Jove-Adult","technician","married","professional.course","no","no","no","telephone","may","tue",252,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",30,0
 "Adult","blue-collar","married","basic","no","yes","no","telephone","may","tue",145,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",46,0
@@ -4485,7 +4485,7 @@
 "Jove-Adult","admin.","single","basic",NA,"no","no","telephone","may","mon",95,3,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",35,1
 "Adult","blue-collar","married","basic","no","no","no","telephone","may","mon",136,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",56,0
 "Jove-Adult","blue-collar","married","basic",NA,"no","no","telephone","may","mon",49,2,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",44,1
-"Adult","admin.","married","basic",NA,"no","no","telephone","may","mon",10,1.98392733595254,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",56,2
+"Adult","admin.","married","basic",NA,"no","no","telephone","may","mon",10,1.98392733595255,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",56,2
 "Adult","admin.","married","high.school",NA,"no","yes","telephone","may","thu",95,1,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",48,1
 "Jove-Adult","self-employed","married","high.school","no","yes","no","telephone","may","thu",175,5,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",39,0
 "Jove-Adult","blue-collar","divorced","professional.course","no","yes","no","telephone","may","thu",176,1,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",31,0
@@ -4698,7 +4698,7 @@
 "Jove-Adult","services","single","basic","no","no","no","telephone","may","tue",329,1,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",35,0
 "Adult","blue-collar","divorced","high.school",NA,"no","yes","telephone","may","mon",200,2,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",50,1
 "Jove-Adult","services","married","high.school","no","yes","yes","telephone","may","tue",108,2,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",34,0
-"Adult","blue-collar","married","professional.course",NA,"yes","no","telephone","may","tue",15,1.98518426825078,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",47,2
+"Adult","blue-collar","married","professional.course",NA,"yes","no","telephone","may","tue",15,1.9851842682508,"No","nonexistent",1.1,93.994,-36.4,4.856,5191,"no",47,2
 "Jove-Adult","services","divorced","university.degree","no","no","no","telephone","may","fri",208,1,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",36,0
 "Adult","technician","married","professional.course","no","yes","no","telephone","may","mon",220,2,"No","nonexistent",1.1,93.994,-36.4,4.857,5191,"no",51,0
 "Jove-Adult","technician","married","professional.course","no","yes","no","telephone","may","fri",210,3,"No","nonexistent",1.1,93.994,-36.4,4.855,5191,"no",26,0
