@@ -1,0 +1,263 @@
+---
+title: "Case Study"
+author: "Daniel Villalobos"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: yes
+    toc_float: true
+    toc_depth: 4
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE, echo=FALSE}
+# Load Required Packages: to be increased over the course
+options(contrasts=c("contr.treatment","contr.treatment"))
+
+requiredPackages <- c("chemometrics","FactoMineR","car", "factoextra","knitr","missMDA")
+
+#use this function to check if each package is on the local machine
+#if a package is installed, it will be loaded
+#if any are not, the missing package(s) will be installed and loaded
+package.check <- lapply(requiredPackages, FUN = function(x) {
+  if (!require(x, character.only = TRUE)) {
+    install.packages(x, dependencies = TRUE)                                                        
+    library(x, character.only = TRUE)
+  }
+})
+```
+
+### Carrega inicial de les dades
+```{r}
+setwd("/Users/danielvillalobostorrejon/Documents/Profe/ADEI/2022/segon_semestre/lab8")
+load("/Users/danielvillalobostorrejon/Documents/Profe/ADEI/2022/segon_semestre/lab4/BankMarketing-Clean.RData")
+```
+
+```{r, include=FALSE}
+names(df)
+df$emp.var.rate <- as.numeric(df$emp.var.rate)
+df$cons.price.idx <- as.numeric(df$cons.price.idx)
+df$cons.conf.idx <- as.numeric(df$cons.conf.idx)
+df$euribor3m <- as.numeric(df$euribor3m)
+df$nr.employed <- as.numeric(df$nr.employed)
+df$pdays <- NULL
+vars_con <- c("age", "duration", "emp.var.rate", "cons.price.idx","cons.conf.idx","euribor3m", "nr.employed")
+vars_dis <- c("job", "marital", "education", "default", "day_of_week", "education_grouped", "duration_cuted", "mout")
+vars_res <- c("y")
+```
+
+
+
+### Clustering PCA i kmeans: (Variables numériques)
+
+
+```{r}
+# Primer un PCA
+ll <- which( df$mout == "YesMOut")
+res.pca<-PCA(df[,c(vars_res, vars_con)],quali.sup=c(1),quanti.sup= c(3), ind.sup = ll) 
+```
+
+
+```{r}
+# Seguidament fem el HCPC
+res.hcpc<-HCPC(res.pca,order=TRUE, nb.clust = -1)
+names(res.hcpc)
+summary(res.hcpc$data.clust)
+```
+
+
+### A. The description of the clusters by the variables
+```{r}
+### desc.var ###
+names(res.hcpc$desc.var)
+
+### desc.var$test.chi2 ###
+### A.1. The categorical variables which characterizes the clusters ###
+res.hcpc$desc.var$test.chi2
+
+### desc.var$category ###
+### A.2. The description of each cluster by the categories ##
+res.hcpc$desc.var$category
+
+### desc.var$quanti.var ###
+### A.3. The quantitative variables which characterizes the clusters ###
+res.hcpc$desc.var$quanti.var
+
+### desc.var$quanti ###
+### A.4. The description of each cluster by the quantitative variables ###
+res.hcpc$desc.var$quanti
+```
+
+### B. The description of the clusters by the axes
+```{r}
+### desc.axes ###
+names(res.hcpc$desc.axes)
+res.hcpc$desc.axes$quanti.var
+res.hcpc$desc.axes$quanti
+```
+
+### C. The description of the clusters by the individuals
+```{r}
+### desc.ind ###
+names(res.hcpc$desc.ind)
+res.hcpc$desc.ind$para
+res.hcpc$desc.ind$dist
+
+# Load HCPC cluster in df dataset (multivariant outliers have an specific class)
+
+df$claHC<-5
+names(res.hcpc$call$t)
+res.hcpc$call$t$inert.gain[1:10]
+res.hcpc$call$t$quot
+res.hcpc$call$t$within[1:10]
+(res.hcpc$call$t$within[1]-res.hcpc$call$t$within[4])/res.hcpc$call$t$within[1]
+df[ row.names(res.hcpc$data.clust), "claHC" ]<-res.hcpc$data.clust$clust
+df$claHC<-factor(df$claHC)
+levels( df$claHC ) <- paste0("claHCPC-",levels( df$claHC ) )
+
+fviz_cluster(res.hcpc, geom = "point", main = "Factor map")
+```
+
+### K-means (PCA)
+
+```{r}
+ppcc<-res.pca$ind$coord[,1:2]
+dim(ppcc)
+
+dist<-dist(ppcc)
+
+kc<-kmeans(dist,4, iter.max = 30, trace=T)
+#?kmeans
+
+df$claKM<-5
+df[ -ll, "claKM" ]<-kc$cluster
+df$claKM<-factor(df$claKM)
+summary(df$claKM)
+# levels( df$claKM ) <- paste0("claKMPC-",levels( df$claKM ) )
+
+kc$betweenss/kc$totss
+
+names(df)
+catdes(df,20)
+
+# Confusion table
+
+table(df$claHC,df$claKM)
+
+df$claKM<-factor(df$claKM,levels=c(2,4,1,5,3),labels=c("kKM-2","kKM-4","kKM-1","kKM-5","kKM-3"))
+tt<-table(df$claHC,df$claKM)
+tt
+sum(diag(tt)/sum(tt))
+
+dist_intra <- res.hcpc$call$t$within[1:6]
+plot(c(1:6), dist_intra, xlab = "N clusters", ylab = "WithinSS")
+
+```
+
+
+### Clustering MCA: (Variables categóriques)
+```{r}
+###
+### Clustering the individuals
+### Before, you have to perform a MCA with the number of axes 
+### that you have decided to take into account (indicated through ncp=)
+#?HCPC
+llvout<-which(df$mout=="YesMOut");length(llvout) #Multivariate outliers
+res.mca<-MCA(df[,c(vars_dis[1:7],"y","duration") ],quali.sup=8,quanti.sup=9 , ind.sup=llvout)
+mean(res.mca$eig[,1]) 
+res.mca$eig
+# Escollim 11 dimensions, quin criteri hem utitlitzat?
+```
+
+
+
+```{r}
+res.hcmc<-HCPC(res.mca,nb.clust=-1,order=TRUE)
+names(res.hcmc)
+```
+
+```{r}
+names(res.hcmc$call$t)
+res.hcmc$call$t$within[1:15]
+(res.hcmc$call$t$within[1]-res.hcmc$call$t$within[1:5])/res.hcmc$call$t$within[1]
+```
+
+```{r}
+df$claHCMC<-5
+df[row.names(res.hcmc$data.clust),"claHCMC"]<-res.hcmc$data.clust$clust
+df$claHCMC<-factor(df$claHCMC)
+levels( df$claHCMC ) <- paste0( "f.claHCMC-",levels( df$claHCMC ))
+summary(res.hcmc$data.clust$clust)
+table(df$claHCMC)
+```
+
+
+### A. The description of the clusters by the variables
+```{r}
+### desc.var ###
+
+names(res.hcmc$desc.var)
+res.hcmc$desc.var
+### desc.var$test.chi2 ###
+### A.1. The categorical variables which characterizes the clusters ###
+res.hcmc$desc.var$test.chi2
+
+### desc.var$category ###
+### A.2. The description of each cluster by the categories ##
+res.hcmc$desc.var$category
+
+### desc.var$quanti.var ###
+### A.3. The quantitative variables which characterizes the clusters ###
+res.hcmc$desc.var$quanti.var
+
+### desc.var$quanti ###
+### A.4. The description of each cluster by the quantitative variables ###
+res.hcmc$desc.var$quanti
+```
+
+### B. The description of the clusters by the axes
+```{r}
+### desc.axes ###
+names(res.hcmc$desc.axes)
+res.hcmc$desc.axes
+res.hcmc$desc.axes$quanti.var
+res.hcmc$desc.axes$quanti
+```
+
+### C. The description of the clusters by the individuals
+```{r}
+### desc.ind ###
+names(res.hcmc$desc.ind)
+res.hcmc$desc.ind$para
+res.hcmc$desc.ind$dist
+```
+
+### Others
+```{r}
+# Dendrogram
+fviz_dend(res.hcmc, show_labels = FALSE)
+# Individuals factor map
+fviz_cluster(res.hcmc, geom = "point", main = "Factor map")
+```
+
+
+### K-Means (MCA)
+```{r}
+res.mca<-res.mca<-MCA(df[,c(vars_dis[1:7],"y","duration") ],quali.sup=8,quanti.sup=9 , ind.sup=llvout, ncp = 11)
+summary(res.mca)
+ppcc<-res.mca$ind$coord[,1:11]
+dim(ppcc)
+k = 6
+kc<-kmeans(dist(ppcc),k, iter.max = 30, trace=T)
+
+df[-llvout,"claKMMC"]<-kc$cluster
+df[llvout,"claKMMC"]<-k + 1
+df$claKMMC <- factor(df$claKMMC)
+catdes(df, 20)
+
+kc$betweenss/kc$totss
+```
+
