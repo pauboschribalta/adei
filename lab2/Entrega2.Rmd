@@ -1,8 +1,17 @@
 ---
 title: "Entrega-2"
 author: "Ivan Cala Mesa, Pau Bosch Ribalta"
-date: '2023-03-28'
-output: pdf_document
+date: \today
+output:
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+geometry: left=1.9cm,right=1.9cm,top=1.25cm,bottom=1.52cm
+fontsize: 18pt
+classoption: a4paper
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -24,19 +33,21 @@ package.check <- lapply(requiredPackages, FUN = function(x) {
 
 ## R Markdown
 
-Obtenim les dades:
+Obtenim les dades i les classifiquem:
 
 ```{r dataset, include=TRUE}
 df <- read.csv("./bank-additional-clean.csv")
 ```
 
+```{r}
+var_dis <- c("age", "job", "marital", "education", "default", "housing", "loan", "contact", "month", "day_of_week", "previous", "poutcome", "y")
+var_con<- c("age_num", "duration", "campaign", "emp.var.rate", "cons.conf.idx", "cons.price.idx", "euribor3m", "nr.employed")
+var_res<- c("y")
+```
+
 ## Anàlisis PCA
 
 ```{r}
-names(df)
-vars_con
-vars_dis
-vars_res
 
 #res.pca<-PCA(df[,c(vars_res,vars_con)]) # Does not work: why? - All variables must be numeric. 
 res.pca<-PCA(df[,c(vars_con)])  # Not correct: Target should be supplementary
@@ -141,8 +152,92 @@ res.pca$quali.sup$coord
 
 ## Anàlisis CA
 
-
 ## Anàlisis MCA
+
+```{r}
+res.mca<-MCA(df[,c(var_dis,"y","duration") ],quali.sup=8,quanti.sup=9)
+```
+
+### 1. Eigenvalues and dominant axes. How many axes we have to consider for next Hierarchical Classification stage?
+
+```{r}
+
+names(res.mca)
+
+summary(res.mca) # Customization is needed (All necessary outputs in one function in R)
+summary(res.mca,nb.dec=4,nbind=3,nbelements=3,ncp=2)
+
+round(res.mca$eig,2)
+barplot(res.mca$eig[,1],main="valors propis",names.arg=paste("dim",1:nrow(res.mca$eig)))
+sum(res.mca$eig[,1])
+```
+
+### 2. Individuals point of view
+
+```{r}
+### Are they any individuals "too contributive"       ##############
+names(res.mca$ind)
+round(cbind(res.mca$ind$coord[,1:2],res.mca$ind$cos2[,1:2],res.mca$ind$contrib[,1:2]),2)
+# coord: coordinates of indiviudals/variables with respect to the axes
+# cos2: Quality of representation by each of the axes
+# contribution: How much have they contributed to the creation/estimation of an axes. 
+
+# To better understand the axes through the extreme individuals
+inds <- res.mca$ind$coord
+inds <- as.data.frame(inds)
+rang<-inds[order(inds$`Dim 1`, decreasing = TRUE),] #Most important indiviudals wrt dim 1
+rang
+
+rang[1,]
+res.mca$ind$coord["6861", 1]  # Access using row names: invariant
+res.mca$ind$coord[row.names(rang)[1:10],1]  # Access using row names: invariant
+res.mca$ind$coord[843,1] # Access using row number in current data.frame
+
+df[which(row.names(df)=="6861"),1:18]
+df[which(row.names(df) %in% row.names(res.mca$ind$coord[row.names(rang)[1:10],])),1:18]
+
+```
+
+### 3. Interpreting map of categories
+
+### 4. Interpreting the axes association to factor map
+
+```{r}
+round(cbind(res.pca$var$coord[,1:2],res.pca$var$cos2[,1:2],res.pca$var$contrib[,1:2]),2)
+round(cbind(res.pca$var$cos2[,1:2],res.pca$var$contrib[,1:2]),2)
+# dimdes easies this description from the variables
+res.des<-dimdesc(res.pca)
+###
+
+res.des$Dim.1$quanti
+
+### we can need more than 2 axes to have a good representation of the clouds
+?plot.PCA
+plot.PCA(res.pca,choix=c("ind"),cex=0.8)
+plot.PCA(res.pca,choix=c("ind"),invisible=c("quali"),axes=c(3,4))
+plot.PCA(res.pca,choix=c("var"),axes=c(3,4))
+```
+
+### 5. Perform a MCA taking into account also supplementary variables
+
+```{r}
+c(vars_res, vars_dis,vars_con)
+ll <- which( df$mout == "YesMOut")
+res.pca<-PCA(df[,c(vars_res, vars_con)],quali.sup=c(1),quanti.sup= c(3), ind.sup = ll) 
+plot(res.pca, choix="ind",invisible=c("ind","ind.sup"), cex=0.7, graph.type = "classic")
+# 
+lines(res.pca$quali.sup$coord[1:2,1],res.pca$quali.sup$coord[1:2,2],lwd=2,col="black") # Does not work unless graph.type "classic" is set
+
+# Manually producing the plot
+plot(res.pca$ind$coord[,1],res.pca$ind$coord[,2],pch=19,col="grey30")
+points(res.pca$quali.sup$coord[,1],res.pca$quali.sup$coord[,2],pch=15,col="magenta")
+# lines(res.pca$quali.sup$coord[7:10,1],res.pca$quali.sup$coord[7:10,2],lwd=2,lty=2,col="blue")
+text(res.pca$quali.sup$coord[,1],res.pca$quali.sup$coord[,2],labels=names(res.pca$quali.sup$coord[,1]),col="magenta",cex=0.8)
+
+res.pca$quali.sup$coord
+
+
+```
 
 ## Clustering MCA
 
