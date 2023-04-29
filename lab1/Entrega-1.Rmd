@@ -626,6 +626,10 @@ outliers <- Moutlier(df[, c("age_num", "duration")], quantile= 0.995)
 top5 <- order(outliers$md, decreasing=TRUE)[1:5]
 print(top5)
 outliers$cutoff
+
+llmout <- which((outliers$md > outliers$cutoff) & (outliers$rd > outliers$cutoff))
+df$mout <- "No"
+df[llmout, "mout"] <- "Yes"
 ```
 
 A la nostra execució final, hem determinat que els nostres individus a destacar que siguin multivariate outliers són els que tenen els identificadors següents:
@@ -637,5 +641,5 @@ A la nostra execució final, hem determinat que els nostres individus a destacar
 Una vegada hem netejat i triat les nostres dades, exportarem el nou dataset amb el següent codi, que ens guarda el nou conjunt de dades en el directori actual.
 
 ```{r}
-write.csv(df, "./bank-additional-clean.csv", row.names = FALSE)
+save(df, file = "./bank-additional-clean.RData")
 ```
