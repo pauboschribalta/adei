@@ -1,16 +1,20 @@
 ---
 title: "Entrega-2"
 author: "Ivan Cala Mesa - Pau Bosch Ribalta"
-date: \today
+date: "\today"
 output:
   pdf_document:
     number_sections: yes
     toc: yes
     toc_depth: 4
+  html_document:
+    toc: yes
+    toc_depth: '4'
+    df_print: paged
 geometry: left=1.9cm,right=1.9cm,top=1.25cm,bottom=1.52cm
 fontsize: 18pt
 classoption: a4paper
-editor_options: 
+editor_options:
   chunk_output_type: console
 ---
 
@@ -19,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Load Required Packages: to be increased over the course
 options(contrasts=c("contr.treatment","contr.treatment"))
 
-requiredPackages <- c("chemometrics","FactoMineR","car","knitr","missMDA")
+requiredPackages <- c("chemometrics","FactoMineR","car","knitr","missMDA", "ggplot2", "factoextra")
 
 package.check <- lapply(requiredPackages, FUN = function(x) {
   for (x in requiredPackages) {
@@ -36,70 +40,97 @@ package.check <- lapply(requiredPackages, FUN = function(x) {
 Obtenim les dades i les classifiquem:
 
 ```{r dataset, include=TRUE}
+setwd("/home/pau/Escriptori/adei/lab2")
 load("./bank-additional-clean.RData")
 ```
 
 ```{r}
-var_dis <- c("age", "job", "marital", "education", "default", "housing", "loan", "contact", "month", "day_of_week", "previous", "poutcome", "mout")
+var_dis <- c("age", "job", "marital", "education", "housing", "loan", "contact", "month", "day_of_week", "previous", "poutcome", "mout")
 var_con<- c("age_num", "duration", "campaign", "emp.var.rate", "cons.conf.idx", "cons.price.idx", "euribor3m", "nr.employed", "na_count")
 var_res<- c("y")
+df$default <- NULL
 ```
 
 ## Anàlisis MCA
 
 ```{r}
 llvout<-which(df$mout=="Yes")
-res.mca<-MCA(df[,c(var_res, var_con[1:8], var_dis[1:12]) ], quali.sup=1, quanti.sup = c(2:9), ind.sup=llvout)
+res.mca<-MCA(df[,c(var_res, var_dis[1:11]) ], quali.sup=1, ind.sup=llvout, graph = F)
 ```
 
 ### 1. Eigenvalues and dominant axes. How many axes we have to consider for next Hierarchical Classification stage?
 
+Dimensions a agafar respecte regla de Kaiser agafant el mean.
 ```{r}
+summary(res.mca, nbelements = 12, nbind = 0)
+mm <- mean(res.mca$eig[,1])
+ll<- which(as.data.frame(res.mca$eig[,1])>mm)
+length(ll) #Número dimensions
+res.mca$eig[length(ll),3]
 
-names(res.mca)
-
-summary(res.mca) # Customization is needed (All necessary outputs in one function in R)
-summary(res.mca,nb.dec=4,nbind=3,nbelements=3,ncp=2)
-
-round(res.mca$eig,2)
-barplot(res.mca$eig[,1],main="valors propis",names.arg=paste("dim",1:nrow(res.mca$eig)))
-sum(res.mca$eig[,1])
+barplot(res.mca$eig[,1],
+        main="valors propis",
+        names.arg=paste("dim",1:nrow(res.mca$eig)),
+        las = 2,
+        ylim = c(0, 0.25))
+abline(h = mm, col = "red")
 ```
+
+Per la regla de Kaiser ens surten `r length(ll)` dimensions però el percentatge explicat és `r res.mca$eig[length(ll),3]`, un percentatge que considerem baix. Per aquest motiu realitzarem l'anàlisis amb la regla del colze:
+
+Regla del colze
+```{r}
+res.mca$eig
+fviz_screeplot(res.mca, ylim = c(0, 8), ncp = 33)
+```
+
+Podem veure que la primera dimensió que té un percentatge acomulat de variança més gran de 85% és la dimensió 24.
+
 
 ### 2. Individuals point of view
 
 ```{r}
-### Are they any individuals "too contributive"       ##############
-names(res.mca$ind)
-round(cbind(res.mca$ind$coord[,1:2],res.mca$ind$cos2[,1:2],res.mca$ind$contrib[,1:2]),2)
-# coord: coordinates of indiviudals/variables with respect to the axes
-# cos2: Quality of representation by each of the axes
-# contribution: How much have they contributed to the creation/estimation of an axes. 
-
-# To better understand the axes through the extreme individuals
-inds <- res.mca$ind$coord
-inds <- as.data.frame(inds)
-rang<-inds[order(inds$`Dim 1`, decreasing = TRUE),] #Most important indiviudals wrt dim 1
-rang
-
-rang[1,]
-res.mca$ind$coord["6861", 1]  # Access using row names: invariant
-res.mca$ind$coord[row.names(rang)[1:10],1]  # Access using row names: invariant
-res.mca$ind$coord[843,1] # Access using row number in current data.frame
-
-df[which(row.names(df)=="6861"),1:18]
-df[which(row.names(df) %in% row.names(res.mca$ind$coord[row.names(rang)[1:10],])),1:18]
-
+plot(res.mca, choix = c("ind"), invisible = c("var", "quali.sup"), cex = 1)
 ```
 
+Podem veure dos grups diferenciats d'individuus i un grup petit entre els dos grups. Tal i com veiem a la gràfica, un dels grups té una contribució molt superior als altres tan en la dimensió 1 com en la 2.
+
+```{r}
+inds <- res.mca$ind$coord
+inds <- as.data.frame(inds)
+rang<-inds[order(inds$`Dim 1`, decreasing = TRUE),]
+res.mca$ind$coord[row.names(rang)[1:10],1]
+df[which(row.names(df) %in% row.names(res.mca$ind$coord[row.names(rang)[1:10],])),1:20]
+```
+
+Los 10 primeros individuos más contributivos en la dimension 1
+
+```{r}
+rang<-inds[order(inds$`Dim 2`, decreasing = TRUE),]
+res.mca$ind$coord[row.names(rang)[1:10],2]
+df[which(row.names(df) %in% row.names(res.mca$ind$coord[row.names(rang)[1:10],])),1:20]
+```
+
+Els 10 primers individuus més contributius en la dimensió 2
+
+A la següent gràfica podrem veure sobre el pla quins individus son els més contributius (marcats en vermell)
+
+Com podrem veure en el següent punt, les categories més representatives en les dues dimensions són succes i yes en gran mesura. Això ho podem veure en els individus més representatius, que comparteixen valors.
+
 ### 3. Interpreting map of categories
+
+```{r}
+fviz_mca_var(res.mca, alpha.var="contrib", cex = 0.8)
+```
+
+Les categories més contributives en ambdos dimensions és "success" i "yes", la resta de categories no són tan determinants.
 
 ### 4. Interpreting the axes association to factor map
 
 ```{r}
 round(cbind(res.pca$var$coord[,1:2],res.pca$var$cos2[,1:2],res.pca$var$contrib[,1:2]),2)
 round(cbind(res.pca$var$cos2[,1:2],res.pca$var$contrib[,1:2]),2)
-# dimdes easies this description from the variables
+#dimdes easies this description from the variables
 res.des<-dimdesc(res.pca)
 ###
 
@@ -115,22 +146,25 @@ plot.PCA(res.pca,choix=c("var"),axes=c(3,4))
 ### 5. Perform a MCA taking into account also supplementary variables
 
 ```{r}
+llvout<-which(df$mout=="Yes")
+res.mca<-MCA(df[,c(var_res, var_con[1:8], var_dis[1:11]) ], quali.sup=1, quanti.sup = c(2:9), ind.sup=llvout, graph = F)
+```
+
+```{r}
 c(vars_res, vars_dis,vars_con)
 ll <- which( df$mout == "YesMOut")
 res.pca<-PCA(df[,c(vars_res, vars_con)],quali.sup=c(1),quanti.sup= c(3), ind.sup = ll) 
 plot(res.pca, choix="ind",invisible=c("ind","ind.sup"), cex=0.7, graph.type = "classic")
-# 
+ 
 lines(res.pca$quali.sup$coord[1:2,1],res.pca$quali.sup$coord[1:2,2],lwd=2,col="black") # Does not work unless graph.type "classic" is set
-
+ 
 # Manually producing the plot
 plot(res.pca$ind$coord[,1],res.pca$ind$coord[,2],pch=19,col="grey30")
 points(res.pca$quali.sup$coord[,1],res.pca$quali.sup$coord[,2],pch=15,col="magenta")
-# lines(res.pca$quali.sup$coord[7:10,1],res.pca$quali.sup$coord[7:10,2],lwd=2,lty=2,col="blue")
+lines(res.pca$quali.sup$coord[7:10,1],res.pca$quali.sup$coord[7:10,2],lwd=2,lty=2,col="blue")
 text(res.pca$quali.sup$coord[,1],res.pca$quali.sup$coord[,2],labels=names(res.pca$quali.sup$coord[,1]),col="magenta",cex=0.8)
-
+ 
 res.pca$quali.sup$coord
-
-
 ```
 
 ## Clustering MCA
