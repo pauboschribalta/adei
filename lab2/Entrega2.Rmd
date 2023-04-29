@@ -110,9 +110,10 @@ ggplot(data = data.frame(ind_coord, habillage), aes(x = Dim.1, y = Dim.2, color 
   geom_point() +
   ggtitle("PCA: Individuals Point of View")
 ```
-- This plot shows the positions of the individuals in the first two principal components. Each individual is represented by a point, and the color of the point represents the value of the categorical target variable.
-- The x-axis represents the first principal component, and the y-axis represents the second principal component. These two components together explain the most variance in the data.
-- The plot can help identify patterns or clusters of individuals in the data. For example, if individuals with the same value of the target variable tend to cluster together, this could indicate a relationship between the target variable and the principal components.
+
+-   This plot shows the positions of the individuals in the first two principal components. Each individual is represented by a point, and the color of the point represents the value of the categorical target variable.
+-   The x-axis represents the first principal component, and the y-axis represents the second principal component. These two components together explain the most variance in the data.
+-   The plot can help identify patterns or clusters of individuals in the data. For example, if individuals with the same value of the target variable tend to cluster together, this could indicate a relationship between the target variable and the principal components.
 
 ```{r}
 # Plot the extreme individuals on the first two axes
@@ -121,8 +122,9 @@ ggplot(data = data.frame(ind_coord), aes(x = Dim.1, y = Dim.2)) +
   geom_point(data = data.frame(extreme_ind), color = "red", size = 3) +
   ggtitle("Extreme Individuals")
 ```
-- This plot shows the positions of the extreme individuals (those with coordinates greater than 3 on either axis) on the first two principal components. Each extreme individual is represented by a red point, and the non-extreme individuals are represented by black points.
-- The plot can help identify individuals that are outliers in the data or have extreme values on one or more of the principal components. These individuals may have a large influence on the PCA results and should be examined further to understand their characteristics and potential impact on the analysis.
+
+-   This plot shows the positions of the extreme individuals (those with coordinates greater than 3 on either axis) on the first two principal components. Each extreme individual is represented by a red point, and the non-extreme individuals are represented by black points.
+-   The plot can help identify individuals that are outliers in the data or have extreme values on one or more of the principal components. These individuals may have a large influence on the PCA results and should be examined further to understand their characteristics and potential impact on the analysis.
 
 ```{r}
 # Detect multivariate outliers
@@ -145,7 +147,9 @@ dimdesc_result <- dimdesc(pca_result)
 
 # Print the dimension description results
 print(dimdesc_result)
+```
 
+```{r}
 # Representation of clouds
 fviz_pca_var(pca_result, col.var = "cos2", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
              repel = TRUE, ggtheme = theme_classic())
@@ -154,20 +158,20 @@ fviz_pca_var(pca_result, col.var = "cos2", gradient.cols = c("#00AFBB", "#E7B800
 ### 4. Perform a PCA taking into account also supplementary variables
 
 ```{r}
-c(vars_res, vars_dis,vars_con)
-ll <- which( df$mout == "YesMOut")
-res.pca<-PCA(df[,c(vars_res, vars_con)],quali.sup=c(1),quanti.sup= c(3), ind.sup = ll) 
-plot(res.pca, choix="ind",invisible=c("ind","ind.sup"), cex=0.7, graph.type = "classic")
+#c(vars_res, vars_dis,vars_con)
+#ll <- which( df$mout == "YesMOut")
+#res.pca<-PCA(df[,c(vars_res, vars_con)],quali.sup=c(1),quanti.sup= c(3), ind.sup = ll) 
+#plot(res.pca, choix="ind",invisible=c("ind","ind.sup"), cex=0.7, graph.type = "classic")
 # 
-lines(res.pca$quali.sup$coord[1:2,1],res.pca$quali.sup$coord[1:2,2],lwd=2,col="black") # Does not work unless graph.type "classic" is set
+#lines(res.pca$quali.sup$coord[1:2,1],res.pca$quali.sup$coord[1:2,2],lwd=2,col="black") # Does not work unless graph.type "classic" is set
 
 # Manually producing the plot
-plot(res.pca$ind$coord[,1],res.pca$ind$coord[,2],pch=19,col="grey30")
-points(res.pca$quali.sup$coord[,1],res.pca$quali.sup$coord[,2],pch=15,col="magenta")
+#plot(res.pca$ind$coord[,1],res.pca$ind$coord[,2],pch=19,col="grey30")
+#points(res.pca$quali.sup$coord[,1],res.pca$quali.sup$coord[,2],pch=15,col="magenta")
 # lines(res.pca$quali.sup$coord[7:10,1],res.pca$quali.sup$coord[7:10,2],lwd=2,lty=2,col="blue")
-text(res.pca$quali.sup$coord[,1],res.pca$quali.sup$coord[,2],labels=names(res.pca$quali.sup$coord[,1]),col="magenta",cex=0.8)
+#text(res.pca$quali.sup$coord[,1],res.pca$quali.sup$coord[,2],labels=names(res.pca$quali.sup$coord[,1]),col="magenta",cex=0.8)
 
-res.pca$quali.sup$coord
+#res.pca$quali.sup$coord
 
 
 ```
@@ -219,7 +223,9 @@ ca_result <- CA(df_numeric, graph = FALSE, ncp = 2)
 
 # Visualize the results using a biplot
 fviz_ca_biplot(ca_result, repel = TRUE)
+```
 
+```{r}
 # Describe the results
 summary(ca_result)
 ```
