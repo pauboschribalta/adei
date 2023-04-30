@@ -29,7 +29,16 @@ package.check <- lapply(requiredPackages, FUN = function(x) {
 Obtenim les dades:
 
 ```{r dataset, include=TRUE}
-df <- read.csv("./bank-additional-clean.csv")
+df <- read.csv("./bank-add```{r}
+names(res.hcpc$desc.var)
+res.hcpc$desc.var$test.chi2   # categorical variables which characterizes the clusters
+```
+We start wit the description of the categorical variables that characterize the clusters, so in this output we do not have dimensions because it is the total association. We can see the intensity of the variables, in our case the variables that affect more to the clustering are **period** and **Trip_distance_range** because are the one with the smallest p.value. The variables associated to the clusters are the ones that appear on the output.
+
+Next, we want to see for each cluster which are the categories that characterize them.The clusters that contain more individuals are the first, the second and the fourth one. Cluster number 4 has less individuals. We proceed to analyze them.
+```{r}
+res.hcpc$desc.var$category    # description of each cluster by the categories
+```itional-clean.csv")
 ```
 
 ## Anàlisis PCA
@@ -267,6 +276,13 @@ The interpretation of the first dimension suggests a strong link between economi
 
 On the other hand, the second dimension is mainly driven by the variable duration and target variable y, which show high positive correlation, while the economic indicators have a much lower correlation. This suggests that duration and y are important features for distinguishing the data points along the second dimension, which could be interpreted as a behavioral indicator.
 
+The first dimension appears to capture the economic aspects of the data,
+while the second dimension reflects the behavioral aspect. Although the
+first dimension explains more variance, the second dimension is also
+important as it captures different aspects of the data that are not
+captured by the first dimension. Therefore, considering both dimensions
+is crucial for a comprehensive understanding of the dataset.
+
 ```{r}
 
 
@@ -279,7 +295,7 @@ On the other hand, the second dimension is mainly driven by the variable duratio
 
 ```{r}
 # Representation of clouds
-fviz_pca_var(pca_result, axes = c(2,3), col.var = "cos2", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+fviz_pca_var(pca_result, axes = c(1,2 ), col.var = "cos2", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
              repel = TRUE, ggtheme = theme_classic())
 ```
 
@@ -310,23 +326,29 @@ fviz_pca_var(pca_result, axes = c(2,3), col.var = "cos2", gradient.cols = c("#00
 
 ```{r}
 # Perform K-means clustering on the first two principal components
-kmeans_result <- kmeans(pca_result$ind$coord[, 1:2], centers = 2)
+#kmeans_result <- kmeans(pca_result$ind$coord[, 1:2], centers = 2)
+
+
 
 # Visualize the results using a scatter plot
-fviz_cluster(kmeans_result, data = pca_result$ind$coord[, 1:2],
-             ellipse.type = "convex", palette = "jco",
-             geom = "point", ggtheme = theme_minimal())
+#fviz_cluster(kmeans_result, data = pca_result$ind$coord[, 1:2],
+#             ellipse.type = "convex", palette = "jco",
+#             geom = "point", ggtheme = theme_minimal())
 
 # Describe the clusters
-summary(kmeans_result$cluster)
+#summary(kmeans_result$cluster)
 
+```
+
+```{r}
+kmeans_result$
 ```
 
 ### Hierarchical clustering
 
 ```{r}
 # Perform hierarchical clustering on the first two principal components
-hclust_result <- hclust(dist(pca_result$ind$coord[, 1:2]))
+#hclust_result <- hclust(dist(pca_result$ind$coord[, 1:2]))
 
 # Visualize the results using a dendrogram
 #fviz_dend(hclust_result, cex = 0.5, k = 2)
@@ -336,6 +358,18 @@ hclust_result <- hclust(dist(pca_result$ind$coord[, 1:2]))
 
 # Describe the clusters
 #summary(cut_result)
+
+res.hcpc <- HCPC(pca_result,nb.clust = 3, order = TRUE)
+table(res.hcpc$data.clust$clust)
+barplot(table(res.hcpc$data.clust$clust), col="darkslateblue", border="darkslateblue", main="[hierarchical] #observations/cluster")
+```
+```{r}
+  # categorical variables which characterizes the clusters
+```
+
+```{r}
+res.hcpc$desc.var$quanti.var    # description of each cluster by the categories
+res.hcpc$desc.var$quanti
 ```
 
 ## Anàlisis CA
