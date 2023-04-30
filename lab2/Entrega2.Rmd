@@ -1,8 +1,10 @@
 ---
 title: "Entrega-2"
 author: "Ivan Cala Mesa, Pau Bosch Ribalta"
-date: '2023-03-28'
-output: pdf_document
+date: "2023-03-28"
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -35,11 +37,22 @@ df <- read.csv("./bank-additional-clean.csv")
 ```{r}
 # Load the required packages
 library(dplyr)
+library(factoextra)
+library(FactoMineR)
 
-# Select only the numeric variables from the modified dataset
-df_numeric <- df %>% select_if(is.numeric)
-df_scaled <- scale(df_numeric)
-pca_result <- PCA(df_scaled, graph = FALSE)
+# Select numeric variables
+df_numeric <- select(df, which(sapply(df, is.numeric)))
+
+# Remove na_count variable
+df_numeric <- df_numeric[, -which(names(df_numeric) == "na_count")]
+
+# Create data frame for supplementary variables
+df_numeric$y <- ifelse(df$y == "yes", 1, 0)
+
+# Perform PCA with y as a supplementary variable
+pca_result <- PCA(df_numeric, quanti.sup = c(8), graph = FALSE)
+
+
 ```
 
 Multivariant outliers should be included as supplementary observations ll \<- which( df\$mout == "YesMOut") res.pca\<-PCA(df[,c(vars_res, vars_dis, vars_con)],quali.sup=c(1:19),quanti.sup= c(21), ind.sup = ll ) W plot.PCA(res.pca,choix=c("var"),invisible=c("quanti.sup")) plot.PCA(res.pca,choix=c("var"),invisible=c("var")) plot.PCA(res.pca,choix=c("var"),invisible=c("quanti.sup","var")) plot.PCA(res.pca,choix=c("ind"),invisible=c("ind"))
@@ -54,30 +67,37 @@ library(factoextra)
 # extract the eigenvalues
 # Extract the eigenvalues and dominant axes
 eigenvalues <- pca_result$eig
-total_var <- sum(eigenvalues)
-prop_var <- eigenvalues / total_var
-cum_var <- cumsum(prop_var)
-elbow_num_axes <- sum(cum_var <= 0.9)
-kaiser_num_axes <- sum(eigenvalues > 1)
-
+eigenvalues
+eigenvalues[1:8,1]
+kaiser_num_axes = length(which(eigenvalues[1:8,1]>1))
 # print the results
 cat("Number of axes to interpret using Kaiser's rule:", kaiser_num_axes, "\n")
-cat("Number of axes to interpret using the elbow rule:", elbow_num_axes, "\n")
+
+```
+
+According to Kaiser's rule, only 2 axes should be considered for the analysis.
+
+```{r}
+#dev.off()  # Close any previous plot windows
+#fviz_pca_biplot(pca_result, col.var = "contrib", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+                #show.points = TRUE, show.labels = FALSE, label.size = 0)
+
 ```
 
 ```{r}
 # creates a scree plot that shows the proportion of variance explained by each axis.
-fviz_eig(pca_result, addlabels = TRUE)
+fviz_eig(pca_result, addlabels = TRUE) +
+  ggtitle("PCA: Scree Plot of Eigenvalues") +
+  scale_shape_manual(values = c(16, 17, 15)) +
+  scale_color_manual(values = c("#FFA500", "#008000", "#0000FF"))
+
 ```
 
 The scree plot created by fviz_eig() function shows the proportion of variance explained by each axis. The x-axis represents the axis number, and the y-axis represents the proportion of variance explained by that axis. In general, we want to retain as many axes as necessary to explain a reasonable proportion of the variance in the data. We can use Kaiser's rule or the elbow rule to determine the number of axes to retain.
 
-```{r}
-# creates a variance plot that shows the contribution of each variable to each axis, and a contribution plot that shows the most contributing variables to each axis.
-fviz_contrib(pca_result, choice = "var", axes = 1:2)
-```
+It can be observed a significant change in slope from dimension 2 onward, which, according to the elbow rule, means that for this analysis we should consider only the first 2 dimensions.
 
-The variance plot and contribution plot created by fviz_contrib() function show the contribution of each variable to each axis. In the variance plot, the x-axis represents the axis number, and the y-axis represents the contribution of each variable to that axis. In the contribution plot, the x-axis represents the variable name, and the y-axis represents the contribution of each variable to each axis. The contribution of each variable to each axis is measured by the squared correlation between the variable and the axis. We can use these plots to identify the variables that are most strongly associated with each axis.
+Both rules suggest that only the first 2 axes are to be considered.
 
 ```{r}
 # creates a correlation circle plot that shows the correlation between each variable and each axis.
@@ -95,13 +115,58 @@ ind_coord <- get_pca_ind(pca_result)$coord
 ind_dist <- get_pca_ind(pca_result)$cos2
 
 # Plot the individual coordinates on the first two axes
-fviz_pca_ind(pca_result, axes = 1:2)
+fviz_pca_ind(pca_result, axes = 1:2, show.labels = FALSE, labelsize = 0) +
+  ggtitle("PCA: Individual Coordinates on PC1 and PC2") +
+  theme(text = element_text(size = 14)) +
+  scale_shape_manual(values = c(16, 17, 15)) +
+  scale_color_gradient2(low="darkslateblue", mid="white",
+                      high="red", midpoint=0.5)
+  
+```
 
-# Identify extreme individuals
-extreme_ind <- ind_coord[which(abs(ind_coord[,1]) > 3 | abs(ind_coord[,2]) > 3),]
+#### In dimension 1:
+
+```{r}
+rang<-order(pca_result$ind$coord[,1])
+contrib.extremes<-c(row.names(df)[rang[1]], row.names(df)[rang[length(rang)]])
+contrib.extremes<-c(row.names(df)[rang[1:10]], row.names(df)[rang[(length(rang)-10):length(rang)]])
+fviz_pca_ind(pca_result, select.ind = list(names=contrib.extremes))
+```
+
+We can now have a look at them:
+
+```{r}
+df[which(row.names(df) %in% row.names(df)[rang[length(rang)]]), 1:length(df)]
+df[which(row.names(df) %in% row.names(df)[rang[1]]),1:length(df)]
+```
+
+#### In dimension 2:
+
+```{r}
+# Select the 100 most extreme individuals based on the first principal component
+rang1 <- order(pca_result$ind$coord[, 1])
+contrib.extremes1 <- c(row.names(df)[rang1[1:50]], row.names(df)[rang1[(length(rang1) - 49):length(rang1)]])
+
+# Select the 10 most extreme individuals based on the second principal component
+rang2 <- order(pca_result$ind$coord[, 2])
+contrib.extremes2 <- row.names(df)[rang2[1:10]]
+
+# Combine the two sets of extreme individuals
+contrib.extremes <- unique(c(contrib.extremes1, contrib.extremes2))
+
+# Plot the extreme individuals
+fviz_pca_ind(pca_result, select.ind = list(names = contrib.extremes))
+```
+
+We can now have a look at them:
+
+```{r}
+df[which(row.names(df) %in% row.names(df)[rang[length(rang)]]), 1:length(df)]
+df[which(row.names(df) %in% row.names(df)[rang[1]]),1:length(df)]
 ```
 
 ```{r}
+
 # Create a factor variable for the color-coded target variable
 habillage <- factor(df$y)
 
@@ -116,14 +181,16 @@ ggplot(data = data.frame(ind_coord, habillage), aes(x = Dim.1, y = Dim.2, color 
 -   The plot can help identify patterns or clusters of individuals in the data. For example, if individuals with the same value of the target variable tend to cluster together, this could indicate a relationship between the target variable and the principal components.
 
 ```{r}
+# Identify extreme individuals
+extreme_ind <- ind_coord[which(row.names(ind_coord) %in% contrib.extremes), ]
 # Plot the extreme individuals on the first two axes
 ggplot(data = data.frame(ind_coord), aes(x = Dim.1, y = Dim.2)) +
   geom_point() +
-  geom_point(data = data.frame(extreme_ind), color = "red", size = 3) +
+  geom_point(data = data.frame(extreme_ind), color = "red", size = 3)
   ggtitle("Extreme Individuals")
 ```
 
--   This plot shows the positions of the extreme individuals (those with coordinates greater than 3 on either axis) on the first two principal components. Each extreme individual is represented by a red point, and the non-extreme individuals are represented by black points.
+-   This plot shows the positions of the extreme individuals on the first two principal components. Each extreme individual is represented by a red point, and the non-extreme individuals are represented by black points.
 -   The plot can help identify individuals that are outliers in the data or have extreme values on one or more of the principal components. These individuals may have a large influence on the PCA results and should be examined further to understand their characteristics and potential impact on the analysis.
 
 ```{r}
@@ -141,17 +208,78 @@ print(outliers)
 
 ### 3. Interpreting the axes: Variables point of view
 
+The variance plot and contribution plot created by fviz_contrib() function show the contribution of each variable to each axis. In the variance plot, the x-axis represents the axis number, and the y-axis represents the contribution of each variable to that axis. In the contribution plot, the x-axis represents the variable name, and the y-axis represents the contribution of each variable to each axis. The contribution of each variable to each axis is measured by the squared correlation between the variable and the axis. We can use these plots to identify the variables that are most strongly associated with each axis.
+
 ```{r}
 # Dimension description
 dimdesc_result <- dimdesc(pca_result)
 
 # Print the dimension description results
-print(dimdesc_result)
+print(dimdesc_result$Dim.1)
+# creates a variance plot that shows the contribution of each variable to each axis, and a contribution plot that shows the most contributing variables to each axis.
+fviz_contrib(pca_result, choice = "var", axes = 1) +
+  ggtitle("PCA: Contributions of Variables to PC1") +
+  theme(text = element_text(size = 14)) +
+  scale_shape_manual(values = c(16, 17, 15)) +
+  scale_color_manual(values = c("#FFA500", "#008000", "#0000FF"))
+```
+
+The output shows the correlation coefficients and p-values between the variables and the continuous variables in the first dimension of the PCA analysis.
+
+The most important correlations in the first dimension are:
+
+-   The negative correlation between the target variable "y" and the first dimension (-0.695), which means that this variable is strongly associated with the opposite direction of the first principal component.
+
+-   The negative correlation between "duration" and the first dimension (-0.256), indicating that longer call durations are associated with the opposite direction of the first principal component.
+
+-   The positive correlations between "euribor3m" (0.976), "emp.var.rate" (0.973), "cons.price.idx" (0.932), "cons.conf.idx" (0.925), and "nr.employed" (0.884) with the first dimension, which suggests that these economic indicators are associated with the same direction of the first principal component.
+
+The small p-values (all are 0.000) indicate that these correlations are statistically significant. The age of the customer ("age_num") and the number of contacts performed during the current campaign ("campaign") also show some correlation with the first dimension, although to a lesser extent than the other variables.
+
+```{r}
+# Print the dimension description results
+print(dimdesc_result$Dim.2)
+# creates a variance plot that shows the contribution of each variable to each axis, and a contribution plot that shows the most contributing variables to each axis.
+fviz_contrib(pca_result, choice = "var", axes = 2) +
+  ggtitle("PCA: Contributions of Variables to PC2") +
+  theme(text = element_text(size = 14)) +
+  scale_shape_manual(values = c(16, 17, 15)) +
+  scale_color_manual(values = c("#FFA500", "#008000", "#0000FF"))
+```
+
+This output shows the link between the variables and the continuous variables in terms of the R-square correlation and p-value. The most important correlations for the second dimension are:
+
+-   Duration: this variable has the highest correlation with the second dimension, meaning that it contributes the most to the definition of this axis.
+
+-   y: this variable also has a significant correlation with the second dimension, indicating that it is relevant for the analysis of this axis.
+
+-   nr.employed and campaign: these variables have a moderate correlation with the second dimension, suggesting that they are also relevant to some extent.
+
+-   emp.var.rate and euribor3m: these variables have a weaker correlation with the second dimension, but still contribute to its definition.
+
+-   cons.price.idx, age_num, and cons.conf.idx: these variables have a negligible correlation with the second dimension, meaning that they do not play an important role in the analysis of this axis.
+
+Overall, this output indicates that the second dimension is mostly defined by the duration variable, followed by other variables related to the campaign and employment, while other variables have a minor influence on this dimension.
+
+So, in this case, we have run PCA on a dataset and extracted the first and second principal components, which explain 62% and 18.6% of the total variance, respectively.
+
+The interpretation of the first dimension suggests a strong link between economic indicators, such as euribor3m, emp.var.rate, cons.price.idx, cons.conf.idx, and nr.employed, and the target variable y, as they show high positive correlation. Conversely, the variable duration shows negative correlation, which suggests that it has an inverse relationship with the economic indicators and y. In this sense, the first dimension can be interpreted as an economic indicator.
+
+On the other hand, the second dimension is mainly driven by the variable duration and target variable y, which show high positive correlation, while the economic indicators have a much lower correlation. This suggests that duration and y are important features for distinguishing the data points along the second dimension, which could be interpreted as a behavioral indicator.
+
+```{r}
+
+
+```
+
+```{r}
+
+
 ```
 
 ```{r}
 # Representation of clouds
-fviz_pca_var(pca_result, col.var = "cos2", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+fviz_pca_var(pca_result, axes = c(2,3), col.var = "cos2", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
              repel = TRUE, ggtheme = theme_classic())
 ```
 
@@ -182,7 +310,7 @@ fviz_pca_var(pca_result, col.var = "cos2", gradient.cols = c("#00AFBB", "#E7B800
 
 ```{r}
 # Perform K-means clustering on the first two principal components
-kmeans_result <- kmeans(pca_result$ind$coord[, 1:2], centers = 3)
+kmeans_result <- kmeans(pca_result$ind$coord[, 1:2], centers = 2)
 
 # Visualize the results using a scatter plot
 fviz_cluster(kmeans_result, data = pca_result$ind$coord[, 1:2],
@@ -201,13 +329,13 @@ summary(kmeans_result$cluster)
 hclust_result <- hclust(dist(pca_result$ind$coord[, 1:2]))
 
 # Visualize the results using a dendrogram
-#fviz_dend(hclust_result, cex = 0.5, k = 3)
+#fviz_dend(hclust_result, cex = 0.5, k = 2)
 
 # Cut the dendrogram into three clusters
-cut_result <- cutree(hclust_result, k = 3)
+#cut_result <- cutree(hclust_result, k = w)
 
 # Describe the clusters
-summary(cut_result)
+#summary(cut_result)
 ```
 
 ## Anàlisis CA
@@ -219,15 +347,15 @@ df$duration_cat <- cut(df$duration, breaks = 7, labels = FALSE)
 
 
 # Perform Correspondence Analysis on the data
-ca_result <- CA(df_numeric, graph = FALSE, ncp = 2)
+#ca_result <- CA(df_numeric, graph = FALSE, ncp = 2)
 
 # Visualize the results using a biplot
-fviz_ca_biplot(ca_result, repel = TRUE)
+#fviz_ca_biplot(ca_result, repel = TRUE)
 ```
 
 ```{r}
 # Describe the results
-summary(ca_result)
+#summary(ca_result)
 ```
 
 ## Anàlisis MCA
