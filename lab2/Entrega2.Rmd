@@ -4,7 +4,6 @@ author: "Ivan Cala Mesa - Pau Bosch Ribalta"
 date: "\today"
 output:
   pdf_document:
-    number_sections: yes
     toc: yes
     toc_depth: 4
   html_document:
@@ -23,7 +22,8 @@ knitr::opts_chunk$set(echo = TRUE)
 # Load Required Packages: to be increased over the course
 options(contrasts=c("contr.treatment","contr.treatment"))
 
-requiredPackages <- c("chemometrics","FactoMineR","car","knitr","missMDA", "ggplot2", "factoextra")
+requiredPackages <- c("chemometrics","FactoMineR","car","knitr","missMDA",
+                      "ggplot2", "factoextra")
 
 package.check <- lapply(requiredPackages, FUN = function(x) {
   for (x in requiredPackages) {
@@ -45,8 +45,11 @@ load("./bank-additional-clean.RData")
 ```
 
 ```{r}
-var_dis <- c("age", "job", "marital", "education", "housing", "loan", "contact", "month", "day_of_week", "previous", "poutcome", "mout")
-var_con<- c("age_num", "duration", "campaign", "emp.var.rate", "cons.conf.idx", "cons.price.idx", "euribor3m", "nr.employed", "na_count")
+var_dis <- c("age", "job", "marital", "education", "housing", "loan",
+             "contact", "month", "day_of_week", "previous", "poutcome", 
+             "mout")
+var_con<- c("age_num", "duration", "campaign", "emp.var.rate", "cons.conf.idx", 
+            "cons.price.idx", "euribor3m", "nr.employed", "na_count")
 var_res<- c("y")
 df$default <- NULL
 ```
@@ -54,13 +57,19 @@ df$default <- NULL
 ## Anàlisis MCA
 
 ```{r}
-llvout<-which(df$mout=="Yes")
-res.mca<-MCA(df[,c(var_res, var_dis[1:11]) ], quali.sup=1, ind.sup=llvout, graph = F)
+llmout<-which(df$mout=="Yes")
+res.mca<-MCA(df[,c(var_res, var_dis[1:11]) ], quali.sup=1, ind.sup=llmout,
+             graph = F)
 ```
 
 ### 1. Eigenvalues and dominant axes. How many axes we have to consider for next Hierarchical Classification stage?
 
-Dimensions a agafar respecte regla de Kaiser agafant el mean.
+En aquest primer punt haurem d'escollir les dimensions que agafem per fer l'anàlisis a partir dels eigenvalues. Per a triar les dimensions durem a terme dos mètodes, el de Kaiser i el de la regla del colze:
+
+#### Regla de Kaiser
+
+La regla de Kaiser ens diu que haurem d'agafar totes aquelles dimensions amb el valor del eigenvalue superior al de la mitjana d'eigenvalues de totes les dimensions.
+
 ```{r}
 summary(res.mca, nbelements = 12, nbind = 0)
 mm <- mean(res.mca$eig[,1])
@@ -72,101 +81,366 @@ barplot(res.mca$eig[,1],
         main="valors propis",
         names.arg=paste("dim",1:nrow(res.mca$eig)),
         las = 2,
-        ylim = c(0, 0.25))
-abline(h = mm, col = "red")
+        ylim = c(0, 0.25),
+        col = "blue4")
+
+abline(h = mm,
+       col = "red",
+       lty = "dashed")
 ```
 
-Per la regla de Kaiser ens surten `r length(ll)` dimensions però el percentatge explicat és `r res.mca$eig[length(ll),3]`, un percentatge que considerem baix. Per aquest motiu realitzarem l'anàlisis amb la regla del colze:
+Per la regla de Kaiser ens surten `r length(ll)` dimensions, però el percentatge explicat és `r res.mca$eig[length(ll),3]`%, un percentatge que considerem baix.
 
-Regla del colze
+#### Regla del colze
+
+La regla del colze ens diu que hem d'agafar la dimensió la qual fa variar la corva de la gràfica que ens indica el valor propi de cada dimensió:
+
 ```{r}
 res.mca$eig
-fviz_screeplot(res.mca, ylim = c(0, 8), ncp = 33)
+fviz_screeplot(res.mca,
+               ylim = c(0, 8),
+               ncp = 33)
 ```
 
-Podem veure que la primera dimensió que té un percentatge acomulat de variança més gran de 85% és la dimensió 24.
-
+En el nostre cas, agafarem la primera dimensió que té un percentatge acomulat de variança més gran de 85%, la dimensió 24. Podem veure gràficament com aquesta dimensió és la última que manté una corva de valor propi constant i que ens explica suficient variança, a partir de la dimensió 25 la corva canvia la seva linealitat.
 
 ### 2. Individuals point of view
 
 ```{r}
-plot(res.mca, choix = c("ind"), invisible = c("var", "quali.sup"), cex = 1)
+plot(res.mca, choix = c("ind"),
+     invisible = c("var", "quali.sup"),
+     cex = 1)
 ```
 
-Podem veure dos grups diferenciats d'individuus i un grup petit entre els dos grups. Tal i com veiem a la gràfica, un dels grups té una contribució molt superior als altres tan en la dimensió 1 com en la 2.
+Podem distingir dos grups diferenciats d'individus, un a l'origen de coordenades i l'altre al primer quadrant, i un grup molt petit d'individus entre ells. Tal i com veiem a la gràfica, el grup del primer quadrant té una contribució molt superior als altres tan en la dimensió 1 com en la 2.
+
+A continuació veurem els 10 individus que més contribueixen a explicar la primera dimensió i quins valors tenen en les diferents variables:
 
 ```{r}
 inds <- res.mca$ind$coord
 inds <- as.data.frame(inds)
 rang<-inds[order(inds$`Dim 1`, decreasing = TRUE),]
 res.mca$ind$coord[row.names(rang)[1:10],1]
-df[which(row.names(df) %in% row.names(res.mca$ind$coord[row.names(rang)[1:10],])),1:20]
+df[which(row.names(df) %in% row.names(res.mca$ind$coord
+                                      [row.names(rang)[1:10],])),1:20]
 ```
 
-Los 10 primeros individuos más contributivos en la dimension 1
+Seguidament veurem la mateixa informació però per la segona dimensió:
 
 ```{r}
 rang<-inds[order(inds$`Dim 2`, decreasing = TRUE),]
 res.mca$ind$coord[row.names(rang)[1:10],2]
-df[which(row.names(df) %in% row.names(res.mca$ind$coord[row.names(rang)[1:10],])),1:20]
+df[which(row.names(df) %in% row.names(res.mca$ind$coord
+                                      [row.names(rang)[1:10],])),1:20]
 ```
 
-Els 10 primers individuus més contributius en la dimensió 2
+A la següent gràfica podrem veure sobre sobre el pla quins individus son els més contributius (marcats en vermell) i els menys (en groc).
 
-A la següent gràfica podrem veure sobre el pla quins individus son els més contributius (marcats en vermell)
+```{r}
+# A l'hora de fer les gràfiques per individus i categories,
+# posarem com a invisible els individus suplementaris per no tenir-los en
+# compte (individus amb outliers multivariants)
 
-Com podrem veure en el següent punt, les categories més representatives en les dues dimensions són succes i yes en gran mesura. Això ho podem veure en els individus més representatius, que comparteixen valors.
+fviz_mca_ind(
+  res.mca,
+  geom=c("point"),
+  col.ind="contrib",
+  invisible=c("ind.sup"),
+  gradient.cols=c("yellow2", "red")
+)
+```
 
 ### 3. Interpreting map of categories
 
 ```{r}
-fviz_mca_var(res.mca, alpha.var="contrib", cex = 0.8)
+fviz_mca_var(res.mca,
+             choice="mca.cor",
+             repel = T)
 ```
 
-Les categories més contributives en ambdos dimensions és "success" i "yes", la resta de categories no són tan determinants.
+Podem veure que contribueixen en gran mesura les variables previous i poutcome per ambdues dimensions, mentres que per la dimensió 1 també contribuieixen month i contact. Education i job tenen una contribució en les dues dimensions en menor mesura de les mencionades anteriorment.
+
+```{r}
+fviz_mca_var(res.mca,
+             alpha.var="contrib",
+             repel = T)
+```
+
+Les categories més contributives en ambdues dimensions són "success" (categoria de "poutcome", variable que hem vist que contribuia en les dues dimensions) i "yes" (categoria de previous que també contribuia en les dues dimensions), la resta de categories no són tan determinants.
+
+Representarem les categories de les variables més representatives: poutcome, month i contact (com que poutcome i previous estan relacionades, sols imprimirem la més significativa, és a dir, poutcome).
+
+```{r}
+# A l'hora de fer les gràfiques per individus i categories, posarem
+# com a invisible els individus suplementaris per no tenir-los en compte
+# (individus amb outliers multivariants)
+fviz_mca_ind(res.mca,
+             label="none",
+             invisible=c("ind.sup"),
+             geom = c("point"),
+             habillage="poutcome")
+
+fviz_mca_ind(res.mca,
+             label="none",
+             invisible=c("ind.sup"),
+             geom = c("point"),
+             habillage="contact")
+
+fviz_mca_ind(res.mca,
+             label="none",
+             invisible=c("ind.sup"),
+             geom = c("point"),
+             habillage="month")
+```
+
+En els tres gràfics anteriors, podem veure com les categories formen grups diferenciats, sobretot en les dues primeres. A la última gràfica les categories no estan tan marcades, tot i que es veu una tendència semblant entre categories.
 
 ### 4. Interpreting the axes association to factor map
 
+Per auquest punt durem a terme una descripció de dimensions a través de la funció dimdesc per poder veure les variables i categories més relacionades amb cada dimensió. Realitzarem l'anàlisis amb profunditat de les tres primeres dimensions ja que són les més rellevants.
+
 ```{r}
-round(cbind(res.pca$var$coord[,1:2],res.pca$var$cos2[,1:2],res.pca$var$contrib[,1:2]),2)
-round(cbind(res.pca$var$cos2[,1:2],res.pca$var$contrib[,1:2]),2)
-#dimdes easies this description from the variables
-res.des<-dimdesc(res.pca)
-###
-
-res.des$Dim.1$quanti
-
-### we can need more than 2 axes to have a good representation of the clouds
-?plot.PCA
-plot.PCA(res.pca,choix=c("ind"),cex=0.8)
-plot.PCA(res.pca,choix=c("ind"),invisible=c("quali"),axes=c(3,4))
-plot.PCA(res.pca,choix=c("var"),axes=c(3,4))
+res.des <- dimdesc(res.mca)
 ```
+
+#### Dimensió 1
+
+```{r}
+res.des$`Dim 1`$quali
+```
+
+Les variables que més ens representan la primera dimensió són les variables següents:
+
+-   contact (0.528)
+
+-   month (0.488)
+
+-   poutcome (0.384)
+
+Aquestes tres variables són les que hem vist que estaven més relacionades anteriorment de forma gràfica.
+
+```{r}
+res.des$`Dim 1`$category
+```
+
+Les categories que més representen la primera dimensió són les següents:
+
+-   success de poutcome (1.175)
+
+-   Yes de previous (1.01)
+
+-   apr de month (0.647)
+
+Tot i que hi hagi contribucions negatives amb valors més destacats, no els tenim en compte ja que són categories contràries a les que tenim en positiu.
+
+Aquestes tres categories són les que hem vist que estaven més relacionades anteriorment de forma gràfica.
+
+#### Dimensió 2
+
+```{r}
+res.des$`Dim 2`$quali
+```
+
+Les variables que més ens representan la segona dimensió són les variables següents:
+
+-   poutcome (0.6062)
+
+-   previous (0.5940)
+
+-   education (0.215)
+
+Aquestes tres variables són les que hem vist que estaven més relacionades anteriorment de forma gràfica.
+
+```{r}
+res.des$`Dim 2`$category
+```
+
+Les categories que més representen la segona dimensió són les següents:
+
+-   success de poutcome (1.734)
+
+-   Yes de previous (1.226)
+
+-   basic de education (0.318)
+
+Aquestes tres categories són les que hem vist que estaven més relacionades anteriorment de forma gràfica.
+
+#### Dimensió 3
+
+```{r}
+res.des$`Dim 3`$quali
+```
+
+Les variables que més ens representan la segona dimensió són les variables següents:
+
+-   job (0.458)
+
+-   education (0.427)
+
+-   age (0.234)
+
+```{r}
+res.des$`Dim 3`$category
+```
+
+Les categories que més representen la segona dimensió són les següents:
+
+-   Gran de age (1.289)
+
+-   illiterate de education (1.068)
+
+-   oct de month (-0.649)
 
 ### 5. Perform a MCA taking into account also supplementary variables
 
+Realitzarem el nou anàlisis MCA amb les variables continues com a suplementàries. Per a realitzar el nou model obviarem la variable "age_num", ja que la tenim en compte a la variable "age" i ens alteraria els resultats incloure-la dues vegades.
+
 ```{r}
-llvout<-which(df$mout=="Yes")
-res.mca<-MCA(df[,c(var_res, var_con[1:8], var_dis[1:11]) ], quali.sup=1, quanti.sup = c(2:9), ind.sup=llvout, graph = F)
+res.mca_sup<-MCA(df[,c(var_res, var_con[2:8], var_dis[1:11]) ], quali.sup=1,
+                 quanti.sup = c(2:8), ind.sup=llmout, graph = F)
+```
+
+Igual que hem fet a l'apartat anterior, realitzarem una nova descripció de dimensions per veure les variacions.
+
+```{r}
+res.des_sup <- dimdesc(res.mca_sup)
 ```
 
 ```{r}
-c(vars_res, vars_dis,vars_con)
-ll <- which( df$mout == "YesMOut")
-res.pca<-PCA(df[,c(vars_res, vars_con)],quali.sup=c(1),quanti.sup= c(3), ind.sup = ll) 
-plot(res.pca, choix="ind",invisible=c("ind","ind.sup"), cex=0.7, graph.type = "classic")
- 
-lines(res.pca$quali.sup$coord[1:2,1],res.pca$quali.sup$coord[1:2,2],lwd=2,col="black") # Does not work unless graph.type "classic" is set
- 
-# Manually producing the plot
-plot(res.pca$ind$coord[,1],res.pca$ind$coord[,2],pch=19,col="grey30")
-points(res.pca$quali.sup$coord[,1],res.pca$quali.sup$coord[,2],pch=15,col="magenta")
-lines(res.pca$quali.sup$coord[7:10,1],res.pca$quali.sup$coord[7:10,2],lwd=2,lty=2,col="blue")
-text(res.pca$quali.sup$coord[,1],res.pca$quali.sup$coord[,2],labels=names(res.pca$quali.sup$coord[,1]),col="magenta",cex=0.8)
- 
-res.pca$quali.sup$coord
+res.des_sup
 ```
+
+Per cada dimensió podem veure les correlacions que hi ha amb les variables continues, la majoria d'aquestes són índex econòmics que contribueixen de forma negativa a les dimensions.
+
+Tant per variables com per categories, el fet d'incloure les variables continues com a suplementàries no ha variat el seu resultat ni contribució.
 
 ## Clustering MCA
 
-## Comparació de clustering PCA-MCA
+### Description of clusters
+
+Per a relitzar la descripció dels grups d'individus, hem de realitzar una agrupació jeràrquica dels components principals (HCPC).
+
+```{r}
+# Posem nb.clust = -1 perquè utilitzi el numero de clusters que ens recomana
+res.hcpc_mca<-HCPC(res.mca, nb.clust = -1, order=TRUE, graph = F)
+```
+
+Agafem `r res.hcpc_mca$call$t$nb.clust` clusters, ja que són els que ens indica el propi HCPC que hem d'incloure degut a la inèrcia acumulada d'aquests.
+
+A la següent gràfica es pot veure les inèrcies per cada parella de clusters. Veiem que les més significatives són de la 1 a la 4 (les que ens recomanava agafar el HCPC).
+
+```{r}
+#fviz_dend(res.hcpc_mca, show_labels = FALSE)
+plot(res.hcpc_mca, choice = "bar")
+```
+
+A continuació imprimirem en un factor map tots els individus agrupats amb els diferents clusters que tenim. Podem veure com el cluster 1, 3 i 4 estan completament difgerenciats, però el cluster 2 està dispers amb el primer i tercer. També observem com els clusters 3 i 4 tenen punts molt desviats que provoquen que abarquin molta superfície sense individus.
+
+```{r}
+fviz_cluster(res.hcpc_mca, geom = "point")
+```
+
+A continuació durem a terme la descripció de clusters envers les variables i categories més rellevants en ells.
+
+Primer de tot veiem les variables més relacionades amb tots els clusters:
+
+```{r}
+res.hcpc_mca$desc.var$test.chi2
+```
+
+Les següents variables són les que ens aporten més informació per representar els clusters. Són totes variables discretes ja que es tracta d'un anàlisis MCA:
+
+-   job
+-   education
+-   poutcome
+-   month
+
+Seguidament podem veure, per cadascun dels 4 clusters escollits, les categories que els conformen. Aquests valors els relacionarem amb les variables que hem vist que estan més relacionades per veure'n les seves categories exactes:
+
+```{r}
+res.hcpc_mca$desc.var$category
+```
+
+-   Cluster 1
+
+    -   job
+
+        1.  blue.collar (51,45%)
+
+        2.  services (17,87%)
+
+        3.  admin (11.92%)
+
+    -   education
+
+        1.  basic (66,56%)
+
+        2.  high.school (31,7%)
+
+    -   month
+
+        1.  may (85,33%)
+
+Com a informació addicional, comentar que cap dels individus dins del cluster ha estat contactat previament (previous=no), això provoca que hi hagi un 0% de poutcome=success.
+
+-   Cluster 2
+
+Pel segon cluster, tenim que les categories de education professional.course i university.degree són les més representatives, tot i que aquesta segona de forma negativa. Això ens mostra que dins d'aquest cluster, la majoria de persones tenen estudis superiors, professional.course (67.67%) i university.degree (15.23%).
+
+Pel que fa a job, la categoria amb més força dins del cluster és technician (77.21%), la resta tenen menys importància.
+
+-   Cluster 3
+
+En el tercer cluster, tenim que les categories més representatives per education són university.degree (68.14%) i high.school (21.89%).
+
+Pel que fa a la variable job, les categories més significatives són admin (47,91%), management (17,13) i self-employed (12,03%). Aquestes tres categories estan bastant relacionades amb el tipus de feina que són, ja que feines administratives, de control i d'autònom són similars.
+
+-   Cluster 4
+
+En aquest últim cluster, com que tenen un gran pes previous i poutcome, les variables job i education no són representatives. En el cas de previous, la categoria més significant és yes (100%) i de poutcome és success (96,51%). Destacar també que tots els poutcome=success es troben en aquest cluster.
+
+-   Cut quality
+
+La qualitat de la partició amb 4 clusters és del `r (res.hcpc_mca$call$t$within[1]- res.hcpc_mca$call$t$within[4])/res.hcpc_mca$call$t$within[1]*100`.
+
+### Parangons and class-specific individuals
+
+```{r}
+res.hcpc_mca$desc.ind$para
+```
+
+En les taules anteriors podem veure els 5 parangons més cercans als centroides per cadascún dels clusters.
+
+```{r}
+res.hcpc_mca$desc.ind$dist
+```
+
+En les taules anteriors podem veure els 5 parangons més allunyats als centroides per cadascún dels clusters.
+
+```{r}
+res.hcpc_mca$data.clust[which(rownames(res.hcpc_mca$data.clust)%in%names
+                              (res.hcpc_mca$desc.ind$para[[1]])),]
+res.hcpc_mca$data.clust[which(rownames(res.hcpc_mca$data.clust)%in%names
+                              (res.hcpc_mca$desc.ind$dist[[1]])),]
+
+res.hcpc_mca$data.clust[which(rownames(res.hcpc_mca$data.clust)%in%names
+                              (res.hcpc_mca$desc.ind$para[[2]])),]
+res.hcpc_mca$data.clust[which(rownames(res.hcpc_mca$data.clust)%in%names
+                              (res.hcpc_mca$desc.ind$dist[[2]])),]
+
+res.hcpc_mca$data.clust[which(rownames(res.hcpc_mca$data.clust)%in%names
+                              (res.hcpc_mca$desc.ind$para[[3]])),]
+res.hcpc_mca$data.clust[which(rownames(res.hcpc_mca$data.clust)%in%names
+                              (res.hcpc_mca$desc.ind$dist[[3]])),]
+
+res.hcpc_mca$data.clust[which(rownames(res.hcpc_mca$data.clust)%in%names
+                              (res.hcpc_mca$desc.ind$para[[4]])),]
+res.hcpc_mca$data.clust[which(rownames(res.hcpc_mca$data.clust)%in%names
+                              (res.hcpc_mca$desc.ind$dist[[4]])),]
+```
+
+En les taules anteriors hem pogut veure els valors de les variables que tenen els individus més propers i llunyans de cada cluster. D'això podem treure unes quantes conclusions:
+
+-   Els individus més propers, tenen valors de les variables corresponents amb les categories vistes a la descripció de clusters, per tant, té sentit que siguin els individus més propers al centroide.
+
+-   Els individus més llunyans, tenen valors de les variables contraris amb les categories vistes a la descripció de clusters, per tant, té sentit que siguin els individus més llunyans al centroide.

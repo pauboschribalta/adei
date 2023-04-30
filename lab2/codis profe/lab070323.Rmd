@@ -123,7 +123,7 @@ plot.PCA(res.pca,choix=c("var"),axes=c(3,4))
 ```{r}
 c(vars_res, vars_dis,vars_con)
 ll <- which( df$mout == "YesMOut")
-res.pca<-PCA(df[,c(vars_res, vars_con)],quali.sup=c(1),quanti.sup= c(3), ind.sup = ll) 
+res.pca<-PCA(df[,c(vars_res, vars_con)],quali.sup=c(1),quanti.sup= c(3), ind.sup = ll)
 plot(res.pca, choix="ind",invisible=c("ind","ind.sup"), cex=0.7, graph.type = "classic")
 # 
 lines(res.pca$quali.sup$coord[1:2,1],res.pca$quali.sup$coord[1:2,2],lwd=2,col="black") # Does not work unless graph.type "classic" is set
