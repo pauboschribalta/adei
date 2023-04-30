@@ -54,6 +54,93 @@ var_res<- c("y")
 df$default <- NULL
 ```
 
+## Anàlisis CA
+
+### Transformació de la variable duration
+
+```{r}
+df$duration_fact <- cut(df$duration, 
+              breaks = c(0, 10, 30, 60, 300, 900, 1800, max(df$duration)),
+              labels = c("extr.curt", "molt.curta", "curta",
+                         "normal", "llarga", "molt.llarga", "extr.llarga"))
+df$duration_fact <- as.factor(df$duration_fact)
+
+summary(df$duration_fact)
+```
+
+### Eigenvalues and dominant axes analysis
+
+Realitzarem l'anàlisis per la target (duration_fact) i per les variables categòriques job i education
+
+#### Duration_fact - job
+
+
+Realitzem la taula que relaciona les dues variables i fem l'anàlisis de correspondència (CA).
+
+```{r}
+tab1 <- table(df[,c("duration_fact", "job")])
+tab1
+res.ca1 <- CA(tab1, graph = F)
+```
+
+Seguidament triarem les dimensions que hem d'agafar gràficament i a partir dels eigenvalues.
+
+```{r}
+fviz_eig(res.ca1)
+
+mm <- mean(res.ca1$eig[,1])
+ll<- which(as.data.frame(res.ca1$eig[,1])>mm)
+length(ll) #Número dimensions
+res.ca1$eig[length(ll),3]
+```
+
+Gràficament, per la regla del colze, veiem que la dimensió on hi ha un canvi important de la corva és la 2. A més, per Kaiser, agafem totes les dimensions amb els eigenvalues els quals superin la mitjana de tots els eigenvalues, i també ens surten dues dimensions.
+
+Amb dues dimensions representem un `r res.ca1$eig[length(ll),3]`%, un percentatge prou considerable.
+
+```{r}
+plot( res.ca1, cex=0.8, graph.type = "classic" )
+lines( res.ca1$row$coord[,1], res.ca1$row$coord[,2], col="blue", lwd = 2 )
+lines( res.ca1$col$coord[,1], res.ca1$col$coord[,2], col="red", lwd = 2 )
+```
+
+
+#### Duration_fact - Education
+
+
+Igual que amb la parella anterior, realitzem la taula que relaciona les dues variables i fem l'anàlisis de correspondència (CA).
+
+```{r}
+df$education <- factor(df$education, levels = c( "illiterate", "basic",
+                                                 "high.school", 
+                                                 "professional.course", 
+                                                 "university.degree"))
+tab2 <- table(df[,c("duration_fact", "education")])
+tab2
+res.ca2 <- CA(tab2, graph = F)
+```
+
+Seguidament triarem les dimensions que hem d'agafar gràficament i a partir dels eigenvalues.
+
+```{r}
+fviz_eig(res.ca2)
+
+mm <- mean(res.ca2$eig[,1])
+ll<- which(as.data.frame(res.ca2$eig[,1])>mm)
+length(ll) #Número dimensions
+res.ca2$eig[length(ll),3]
+```
+
+Gràficament, per la regla del colze, veiem que la dimensió on hi ha un canvi important de la corva és la 1. A més, per Kaiser, agafem totes les dimensions amb els eigenvalues els quals superin la mitjana de tots els eigenvalues, i també ens surt una sola dimensió.
+
+Amb aquesta dimensions representem un `r res.ca2eig[length(ll),3]`%, de nou un percentatge prou considerable.
+
+```{r}
+plot( res.ca2, cex=0.8, graph.type = "classic" )
+lines( res.ca2$row$coord[,1], res.ca2$row$coord[,2], col="blue", lwd = 2 )
+lines( res.ca2$col$coord[,1], res.ca2$col$coord[,2], col="red", lwd = 2 )
+```
+
 ## Anàlisis MCA
 
 ```{r}
@@ -369,7 +456,7 @@ res.hcpc_mca$desc.var$category
 
         2.  services (17,87%)
 
-        3.  admin (11.92%)
+        3.  admin (11.92%) (de forma negativa)
 
     -   education
 
@@ -385,37 +472,84 @@ Com a informació addicional, comentar que cap dels individus dins del cluster h
 
 -   Cluster 2
 
-Pel segon cluster, tenim que les categories de education professional.course i university.degree són les més representatives, tot i que aquesta segona de forma negativa. Això ens mostra que dins d'aquest cluster, la majoria de persones tenen estudis superiors, professional.course (67.67%) i university.degree (15.23%).
+    -   job
 
-Pel que fa a job, la categoria amb més força dins del cluster és technician (77.21%), la resta tenen menys importància.
+        1.  technician (77.21%)
+
+    -   education
+
+        1.  professional.course (67.67%): Veiem una clara relació entre aquests nivells d'estudis i la categoria technician de la variable job: la majoria de fp estan destinades a feines tècniques.
+
+        2.  university.degree (15.23%) (de forma negativa)
+
+    -   month
+
+        1.  aug (10,69%)
+        
+        2.  apr (4,53%) (de forma negativa)
+        
+        En aquest cluster la variable té molt poc pes.
+
 
 -   Cluster 3
 
-En el tercer cluster, tenim que les categories més representatives per education són university.degree (68.14%) i high.school (21.89%).
+    -   job
 
-Pel que fa a la variable job, les categories més significatives són admin (47,91%), management (17,13) i self-employed (12,03%). Aquestes tres categories estan bastant relacionades amb el tipus de feina que són, ja que feines administratives, de control i d'autònom són similars.
+        1.  admin (47,91%)
+
+        2.  management (17,13%)
+
+        3.  self-employed (12,03%)
+        
+        Aquestes tres categories estan bastant relacionades amb el tipus de feina que són, ja que feines administratives, de control i d'autònom són similars.
+        
+    -   education
+
+        1.  university.degree (68.14%): Aquesta categoria esta bastant relacionada amb els nivells de job descrits anteriorment, ja que són posicions de feina altes i aquí es descriu el nivell més alt d'estudis registrat.
+
+        2.  high.school (21.89%) (de forma negativa)
+        
+    -   month
+
+        1.  may (44,01%) (de forma negativa)
+        
+        2.  apr (19,31%) 
+        
+        3.  jul (11,29%)
+        
+        4.  aug (8,31%)
+
 
 -   Cluster 4
+
+    -   month
+    
+        1.  may (53,49%) (de forma negativa)
+
+        2.  apr (40,70%)
 
 En aquest últim cluster, com que tenen un gran pes previous i poutcome, les variables job i education no són representatives. En el cas de previous, la categoria més significant és yes (100%) i de poutcome és success (96,51%). Destacar també que tots els poutcome=success es troben en aquest cluster.
 
 -   Cut quality
 
-La qualitat de la partició amb 4 clusters és del `r (res.hcpc_mca$call$t$within[1]- res.hcpc_mca$call$t$within[4])/res.hcpc_mca$call$t$within[1]*100`.
+La qualitat de la partició amb 4 clusters és del `r (res.hcpc_mca$call$t$within[1]- res.hcpc_mca$call$t$within[4])/res.hcpc_mca$call$t$within[1]*100`%.
 
 ### Parangons and class-specific individuals
+
+En aquest apartat podem observar els individus més cercans i més allunyats dels centroides de cada cluster.
+
+A la taula següent podem veure, per cada cluster, els 5 individus més cercans als centroides amb les respectives distàncies:
 
 ```{r}
 res.hcpc_mca$desc.ind$para
 ```
 
-En les taules anteriors podem veure els 5 parangons més cercans als centroides per cadascún dels clusters.
+A la taula següent podem veure, per cada cluster, els 5 individus més distants als centroides amb les respectives distàncies:
 
 ```{r}
 res.hcpc_mca$desc.ind$dist
 ```
 
-En les taules anteriors podem veure els 5 parangons més allunyats als centroides per cadascún dels clusters.
 
 ```{r}
 res.hcpc_mca$data.clust[which(rownames(res.hcpc_mca$data.clust)%in%names
@@ -439,8 +573,8 @@ res.hcpc_mca$data.clust[which(rownames(res.hcpc_mca$data.clust)%in%names
                               (res.hcpc_mca$desc.ind$dist[[4]])),]
 ```
 
-En les taules anteriors hem pogut veure els valors de les variables que tenen els individus més propers i llunyans de cada cluster. D'això podem treure unes quantes conclusions:
+En les taules anteriors hem pogut veure els valors de les variables que tenen els individus més propers i llunyans de cada cluster. D'aquí podem treure les següents conclusions:
 
--   Els individus més propers, tenen valors de les variables corresponents amb les categories vistes a la descripció de clusters, per tant, té sentit que siguin els individus més propers al centroide.
+-   Els individus més propers, tenen valors de les variables corresponents amb les categories vistes a la descripció de clusters, per tant, té sentit que siguin els individus més cercans al centroide.
 
--   Els individus més llunyans, tenen valors de les variables contraris amb les categories vistes a la descripció de clusters, per tant, té sentit que siguin els individus més llunyans al centroide.
+-   Els individus més llunyans, tenen valors de les variables contraris amb les categories vistes a la descripció de clusters, per tant, té sentit que siguin els individus més distants al centroide.
