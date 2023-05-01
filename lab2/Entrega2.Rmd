@@ -294,6 +294,7 @@ We now procceed to save in the data frame the number of clusters.
 df_numeric$claKM<-0
 df_numeric$claKM<-kc$cluster
 df_numeric$claKM<-factor(df_numeric$claKM)
+df$claKM = df_numeric$claKM
 barplot(table(df$claKM),col="darkslateblue",border="darkslateblue",main="[k-means]#observations/cluster")
 ```
 ```{r}
@@ -915,6 +916,32 @@ En les taules anteriors hem pogut veure els valors de les variables que tenen el
 -   Els individus més llunyans, tenen valors de les variables contraris amb les categories vistes a la descripció de clusters, per tant, té sentit que siguin els individus més distants al centroide.
 
 ## Comparison of clusters
+
+```{r}
+temp_df = 
+df$hcpckMCA<-res.hcpc_mca$data.clust$clust
+# With Hierarchical Clustering (PCA)
+table(df$hcpck,df$hcpckMCA)
+df$hcpckMCA_hcpck<-factor(
+  df$hcpckMCA,
+  levels=c(4,3,2,1,5),
+  labels=c("kHPmca-4","kHPmca-3","kHPmca-2","kHPmca-1","kHPmca-5")
+)
+tt1<-table(df$hcpck,df$hcpckMCA_hcpck); tt1
+100*sum(diag(tt1)/sum(tt1))
+```
+
+```{r}
+# With k-means (PCA)
+table(df$claKM, df$hcpckMCA)
+df$hcpckMCA_claKM<-factor(
+  df$hcpckMCA,
+  levels=c(2,3,1,4,5),
+  labels=c("kHPmca-2","kHPmca-3","kHPmca-1","kHPmca-4","kHPmca-5")
+)
+tt2<-table(df$claKM,df$hcpckMCA_claKM); tt
+100*sum(diag(tt2)/sum(tt2))
+```
 
 ### Target (y)
 
