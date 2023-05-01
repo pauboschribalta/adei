@@ -29,16 +29,7 @@ package.check <- lapply(requiredPackages, FUN = function(x) {
 Obtenim les dades:
 
 ```{r dataset, include=TRUE}
-df <- read.csv("./bank-add```{r}
-names(res.hcpc$desc.var)
-res.hcpc$desc.var$test.chi2   # categorical variables which characterizes the clusters
-```
-We start wit the description of the categorical variables that characterize the clusters, so in this output we do not have dimensions because it is the total association. We can see the intensity of the variables, in our case the variables that affect more to the clustering are **period** and **Trip_distance_range** because are the one with the smallest p.value. The variables associated to the clusters are the ones that appear on the output.
-
-Next, we want to see for each cluster which are the categories that characterize them.The clusters that contain more individuals are the first, the second and the fourth one. Cluster number 4 has less individuals. We proceed to analyze them.
-```{r}
-res.hcpc$desc.var$category    # description of each cluster by the categories
-```itional-clean.csv")
+df <- read.csv("./bank-additional-clean.csv")
 ```
 
 ## Anàlisis PCA
@@ -325,24 +316,44 @@ fviz_pca_var(pca_result, axes = c(1,2 ), col.var = "cos2", gradient.cols = c("#0
 ### K-Means classification
 
 ```{r}
-# Perform K-means clustering on the first two principal components
-#kmeans_result <- kmeans(pca_result$ind$coord[, 1:2], centers = 2)
-
-
-
-# Visualize the results using a scatter plot
-#fviz_cluster(kmeans_result, data = pca_result$ind$coord[, 1:2],
-#             ellipse.type = "convex", palette = "jco",
-#             geom = "point", ggtheme = theme_minimal())
-
-# Describe the clusters
-#summary(kmeans_result$cluster)
-
+prc<-pca_result$ind$coord[,1:3] # 3 components principals (kaiser)
+dim(prc)
 ```
+### Classification
 
 ```{r}
-kmeans_result$
+dist<-dist(prc)  # coordenates are real - Euclidean metric
+kc<-kmeans(dist, 5, iter.max=30, trace=TRUE) #caclulate the distances, it turns into a matrix
 ```
+We see from the output that in 4 iterations it has converged.
+We now procceed to save in the data frame the number of clusters.
+```{r}
+df_numeric$claKM<-0
+df_numeric$claKM<-kc$cluster
+df_numeric$claKM<-factor(df_numeric$claKM)
+barplot(table(df$claKM),col="darkslateblue",border="darkslateblue",main="[k-means]#observations/cluster")
+```
+```{r}
+dim(df_numeric)
+cat.res <-catdes(df_numeric,grep("^claKM$", colnames(df_numeric)))
+
+```
+The output shows the results of a cluster analysis based on the K-means algorithm. The analysis was carried out using eight quantitative variables and a categorical variable 'y' representing whether or not the client subscribed to a product.
+
+The first table shows the Eta squared value and p-value for each variable in relation to the cluster variable. The Eta squared value indicates the proportion of variance explained by the cluster variable, and the p-value indicates the statistical significance of the relationship between the variables. All variables showed a significant relationship with the cluster variable except for age_num.
+
+The second table provides a detailed description of each cluster based on the quantitative variables. The analysis resulted in five distinct clusters.
+
+Cluster 1 is characterized by a high duration of calls, low number of campaigns, high consumer confidence, low consumer price index, low consumer confidence index, and low number of employees and employment variation rate. This group represents a small proportion of customers, but stands out for its high call duration, which may indicate a high-quality interaction between the customer and the company.
+
+Cluster 2 is characterized by an extremely high call duration, high employment rate, high employment variation rate, high euribor value, positive employment variation rate, and high subscription rate to the product. This group is also an attractive target for advertising campaigns.
+
+Cluster 3 is characterized by low call duration, low product subscription rate, high consumer confidence index, high consumer price index, and high number of employees. This group represents the majority of customers. The low call duration and low number of subscriptions may suggest that this group is less receptive to advertising campaigns, although their high consumer confidence index may be an opportunity for brand building and customer loyalty.
+
+Cluster 4 is characterized by a high subscription rate to the product and low values of employment variation rate, consumer confidence index, consumer price index, and euribor. This group may represent loyal customers or customers with a high level of satisfaction with the product or service.
+
+Cluster 5 is characterized by high subscription rates to the product, high employment rate, high call duration, high euribor value, high employment variation rate, and high consumer price index. This group may represent a high-value target for advertising campaigns due to their high subscription rate and favorable economic indicators.
+
 
 ### Hierarchical clustering
 
@@ -359,7 +370,7 @@ kmeans_result$
 # Describe the clusters
 #summary(cut_result)
 
-res.hcpc <- HCPC(pca_result,nb.clust = 3, order = TRUE)
+res.hcpc <- HCPC(pca_result,nb.clust = -1, order = TRUE)
 table(res.hcpc$data.clust$clust)
 barplot(table(res.hcpc$data.clust$clust), col="darkslateblue", border="darkslateblue", main="[hierarchical] #observations/cluster")
 ```
@@ -371,6 +382,40 @@ barplot(table(res.hcpc$data.clust$clust), col="darkslateblue", border="darkslate
 res.hcpc$desc.var$quanti.var    # description of each cluster by the categories
 res.hcpc$desc.var$quanti
 ```
+
+Per a relitzar la descripció dels grups d'individus, hem de realitzar una agrupació jeràrquica dels components principals (HCPC).
+
+Agafem `r res.hcpc$call$t$nb.clust` clusters, ja que són els que ens indica el propi HCPC que hem d'incloure degut a la inèrcia acumulada d'aquests.
+
+A la següent gràfica es pot veure les inèrcies per cada parella de clusters. Veiem que les més significatives són de la 1 a la 2 i en menor mesura la 3 (les que ens recomanava agafar el HCPC).
+
+```{r}
+#fviz_dend(res.hcpc, show_labels = FALSE)
+plot(res.hcpc, choice = "bar")
+```
+
+A continuació imprimirem en un factor map tots els individus agrupats amb els diferents clusters que tenim. Podem veure com el cluster 1 esta completament difgerenciat de la resta, i el cluster 2 està disper i te punts desviats que provoquen que abarquin molta superfície sense individus.
+
+```{r}
+fviz_cluster(res.hcpc, geom = "point")
+```
+
+A continuació durem a terme la descripció de clusters envers les variables i categories més rellevants en ells.
+
+Primer de tot veiem les variables més relacionades amb tots els clusters:
+
+```{r}
+res.hcpc$desc.var
+```
+The analysis is based on a cluster analysis and its description in terms of quantitative variables. In this case, eight variables have been used for the analysis. The table describes the link between the cluster variable and the quantitative variables, followed by the description of each cluster individually.
+
+The variable "y" (customer subscription to the product) has a very strong relationship with the cluster variables in all three groups, with an Eta2 relationship of 98%, 98%, and 98% respectively. This indicates that customer subscription is an important factor in the separation of clusters.
+
+Cluster 1 is described by a high level of call duration, a low number of campaigns, high consumer confidence, a low consumer price index, low consumer confidence index, and a low number of employees and employment rate variation. This group represents a small proportion of customers but stands out for its high call duration, which may indicate high-quality interaction between the customer and the company.
+
+Cluster 2 is characterized by an extremely high call duration, a high employment rate, high employment rate variation, high euribor value, and positive employment rate variation. This group also has a high product subscription rate, indicating that this group is an attractive target for advertising campaigns.
+
+Cluster 3 is described by low call duration, low product subscription rate, high consumer confidence index, high consumer price index, and high number of employees. This group represents the majority of customers. The low call duration and low number of subscriptions may suggest that this group is less receptive to advertising campaigns, although their high consumer confidence may be an opportunity for brand building and customer loyalty.
 
 ## Anàlisis CA
 
