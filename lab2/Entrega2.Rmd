@@ -40,7 +40,7 @@ package.check <- lapply(requiredPackages, FUN = function(x) {
 Obtenim les dades i les classifiquem:
 
 ```{r dataset, include=TRUE}
-#setwd("/home/pau/Escriptori/adei/lab2")
+setwd("/home/pau/Escriptori/adei/lab2")
 load("./bank-additional-clean.RData")
 ```
 
@@ -51,6 +51,9 @@ var_dis <- c("age", "job", "marital", "education", "housing", "loan",
 var_con<- c("age_num", "duration", "campaign", "emp.var.rate", "cons.conf.idx", 
             "cons.price.idx", "euribor3m", "nr.employed", "na_count")
 var_res<- c("y")
+
+llmout<-which(df$mout=="Yes")
+
 df$default <- NULL
 ```
 
@@ -75,7 +78,7 @@ df_numeric <- df_numeric[, -which(names(df_numeric) == "na_count")]
 df_numeric$y <- ifelse(df$y == "yes", 1, 0)
 
 # Perform PCA with y as a supplementary variable
-pca_result <- PCA(df_numeric, quanti.sup = c(8), graph = FALSE)
+pca_result <- PCA(df_numeric, quanti.sup = c(8), graph = FALSE, ind.sup=llmout)
 
 
 ```
@@ -189,9 +192,8 @@ df[which(row.names(df) %in% row.names(df)[rang[1]]),1:length(df)]
 ```
 
 ```{r}
-
 # Create a factor variable for the color-coded target variable
-habillage <- factor(df$y)
+habillage <- factor(df[-c(llmout),"y"])
 
 # Plot the individuals with color-coded target variable
 ggplot(data = data.frame(ind_coord, habillage), aes(x = Dim.1, y = Dim.2, color = habillage)) +
@@ -215,19 +217,6 @@ ggplot(data = data.frame(ind_coord), aes(x = Dim.1, y = Dim.2)) +
 
 -   This plot shows the positions of the extreme individuals on the first two principal components. Each extreme individual is represented by a red point, and the non-extreme individuals are represented by black points.
 -   The plot can help identify individuals that are outliers in the data or have extreme values on one or more of the principal components. These individuals may have a large influence on the PCA results and should be examined further to understand their characteristics and potential impact on the analysis.
-
-```{r}
-# Detect multivariate outliers
-outliers <- which(rowSums(ind_dist) > mean(rowSums(ind_dist)) + 3 * sd(rowSums(ind_dist)))
-
-# Print the extreme individuals and multivariate outliers
-cat("Extreme individuals:\n")
-print(extreme_ind)
-cat("\n")
-
-cat("Multivariate outliers:\n")
-print(outliers)
-```
 
 ### 3. Interpreting the axes: Variables point of view
 
@@ -254,10 +243,20 @@ fviz_contrib(pca_result, choice = "var", axes = 1) +
 ### 4. Perform a PCA taking into account also supplementary variables
 
 ```{r}
+temp_cont = c("duration","campaign","emp.var.rate","cons.price.idx","cons.conf.idx","euribor3m","nr.employed","age_num")
+temp_dis = var_dis[2:11]
+pca_result2 = PCA(df[,c(temp_dis, var_res, temp_cont)], quali.sup = 1:11, graph = FALSE)
+fviz_pca_var(pca_result2, col.var = "cos2", col.ind = "black")
 
 
-
+fviz_eig(pca_result2, addlabels = TRUE) +
+  ggtitle("PCA: Scree Plot of Eigenvalues") +
+  scale_shape_manual(values = c(16, 17, 15)) +
+  scale_color_manual(values = c("#FFA500", "#008000", "#0000FF"))
 ```
+
+As it can be observed, there is a slight change in the weight of contributions from different dimensions, as well as from some variables, as subtly appreciated in the first plot. Throughout the process, various tests were performed, such as modifying the way the 'y' variable is presented, such as passing it as a supplementary continuous (boolean) variable instead of a categorical one, resulting in some changes, although not very significant.
+In conclusion, there have been changes in the weights, although not significant enough to significantly alter the workflow dynamics.
 
 ## Clustering PCA
 
@@ -267,6 +266,7 @@ fviz_contrib(pca_result, choice = "var", axes = 1) +
 prc<-pca_result$ind$coord[,1:3] # 3 components principals (kaiser)
 dim(prc)
 ```
+
 ### Classification
 
 ```{r}
@@ -276,13 +276,14 @@ kc<-kmeans(dist, 5, iter.max=30, trace=TRUE) #caclulate the distances, it turns 
 We see from the output that in 4 iterations it has converged.
 We now procceed to save in the data frame the number of clusters.
 ```{r}
+df$claKM = df_numeric$claKM
+
+df_numeric <- df_numeric[-c(llmout),]
+
 df_numeric$claKM<-0
 df_numeric$claKM<-kc$cluster
 df_numeric$claKM<-factor(df_numeric$claKM)
-df$claKM = df_numeric$claKM
-barplot(table(df$claKM),col="darkslateblue",border="darkslateblue",main="[k-means]#observations/cluster")
-```
-```{r}
+
 dim(df_numeric)
 cat.res <-catdes(df_numeric,grep("^claKM$", colnames(df_numeric)))
 
@@ -464,8 +465,6 @@ Ens podem fixar també amb que la categoria de education illiterate està molt s
 ## Anàlisis MCA
 
 ```{r}
-llmout<-which(df$mout=="Yes")
-
 res.mca<-MCA(df[,c(var_res, var_con[2], var_dis[1:11]) ],
              quali.sup= 1, quanti.sup = 2, ind.sup=llmout,
              graph = F)
@@ -903,28 +902,12 @@ En les taules anteriors hem pogut veure els valors de les variables que tenen el
 ## Comparison of clusters
 
 ```{r}
-temp_df = 
-df$hcpckMCA<-res.hcpc_mca$data.clust$clust
-# With Hierarchical Clustering (PCA)
-table(df$hcpck,df$hcpckMCA)
-df$hcpckMCA_hcpck<-factor(
-  df$hcpckMCA,
-  levels=c(4,3,2,1,5),
-  labels=c("kHPmca-4","kHPmca-3","kHPmca-2","kHPmca-1","kHPmca-5")
-)
-tt1<-table(df$hcpck,df$hcpckMCA_hcpck); tt1
+tt1<-table(res.hcpc$data.clust$clust,res.hcpc_mca$data.clust$clust); tt1
 100*sum(diag(tt1)/sum(tt1))
 ```
 
 ```{r}
-# With k-means (PCA)
-table(df$claKM, df$hcpckMCA)
-df$hcpckMCA_claKM<-factor(
-  df$hcpckMCA,
-  levels=c(2,3,1,4,5),
-  labels=c("kHPmca-2","kHPmca-3","kHPmca-1","kHPmca-4","kHPmca-5")
-)
-tt2<-table(df$claKM,df$hcpckMCA_claKM); tt
+tt2<-table(kc$cluster, res.hcpc_mca$data.clust$clust); tt2
 100*sum(diag(tt2)/sum(tt2))
 ```
 
