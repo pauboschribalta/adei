@@ -1,5 +1,12 @@
 ---
 title: "Entrega-2"
+<<<<<<< HEAD
+author: "Ivan Cala Mesa, Pau Bosch Ribalta"
+date: "2023-03-28"
+output:
+  html_document:
+    df_print: paged
+=======
 author: "Ivan Cala Mesa - Pau Bosch Ribalta"
 date: "\today"
 output:
@@ -15,6 +22,7 @@ fontsize: 18pt
 classoption: a4paper
 editor_options:
   chunk_output_type: console
+>>>>>>> origin/pau
 ---
 
 ```{r setup, include=FALSE}
@@ -40,26 +48,12 @@ package.check <- lapply(requiredPackages, FUN = function(x) {
 Obtenim les dades i les classifiquem:
 
 ```{r dataset, include=TRUE}
-#setwd("/home/pau/Escriptori/adei/lab2")
+setwd("/home/pau/Escriptori/adei/lab2")
 load("./bank-additional-clean.RData")
 ```
 
 ```{r}
-var_dis <- c("age", "job", "marital", "education", "housing", "loan",
-             "contact", "month", "day_of_week", "previous", "poutcome", 
-             "mout")
-var_con<- c("age_num", "duration", "campaign", "emp.var.rate", "cons.conf.idx", 
-            "cons.price.idx", "euribor3m", "nr.employed", "na_count")
-var_res<- c("y")
-df$default <- NULL
-```
-
-## Anàlisis CA
-
-### Transformació de la variable duration
-## Anàlisis PCA
-
-```{r}
+<<<<<<< HEAD
 # Load the required packages
 library(dplyr)
 library(factoextra)
@@ -83,10 +77,25 @@ pca_result <- PCA(df_numeric, quanti.sup = c(8), graph = FALSE)
 Multivariant outliers should be included as supplementary observations ll \<- which( df\$mout == "YesMOut") res.pca\<-PCA(df[,c(vars_res, vars_dis, vars_con)],quali.sup=c(1:19),quanti.sup= c(21), ind.sup = ll ) W plot.PCA(res.pca,choix=c("var"),invisible=c("quanti.sup")) plot.PCA(res.pca,choix=c("var"),invisible=c("var")) plot.PCA(res.pca,choix=c("var"),invisible=c("quanti.sup","var")) plot.PCA(res.pca,choix=c("ind"),invisible=c("ind"))
 
 ### 1. Eigenvalues and dominant axes. How many axes we have to interpret?
+=======
+var_dis <- c("age", "job", "marital", "education", "housing", "loan",
+             "contact", "month", "day_of_week", "previous", "poutcome", 
+             "mout")
+var_con<- c("age_num", "duration", "campaign", "emp.var.rate", "cons.conf.idx", 
+            "cons.price.idx", "euribor3m", "nr.employed", "na_count")
+var_res<- c("y")
+df$default <- NULL
+```
+
+## Anàlisis CA
+
+### Transformació de la variable duration
+>>>>>>> origin/pau
 
 Kaiser's rule suggests that we should interpret all the axes with an eigenvalue greater than 1, while the elbow rule suggests that we should interpret the first few axes up to the point where the eigenvalues start to level off.
 
 ```{r}
+<<<<<<< HEAD
 library(FactoMineR)
 library(factoextra)
 # extract the eigenvalues
@@ -130,262 +139,7 @@ fviz_pca_var(pca_result, col.var = "cos2", col.ind = "black")
 ```
 
 The correlation circle plot created by fviz_pca_var() function shows the correlation between each variable and each axis. The x-axis and y-axis represent the first two axes, and the location of each variable on the plot represents its correlation with those axes. The length of the vector for each variable represents the correlation between that variable and the origin (i.e., the center of the plot). The angle between the vectors represents the correlation between the two variables. We can use this plot to identify which variables are most strongly associated with each axis and which variables are strongly correlated with each other.
-
-### 2. Individuals point of view
-
-```{r}
-library(ggplot2)
-# Extract the individual coordinates and squared distances from the PCA result
-ind_coord <- get_pca_ind(pca_result)$coord
-ind_dist <- get_pca_ind(pca_result)$cos2
-
-# Plot the individual coordinates on the first two axes
-fviz_pca_ind(pca_result, axes = 1:2, show.labels = FALSE, labelsize = 0) +
-  ggtitle("PCA: Individual Coordinates on PC1 and PC2") +
-  theme(text = element_text(size = 14)) +
-  scale_shape_manual(values = c(16, 17, 15)) +
-  scale_color_gradient2(low="darkslateblue", mid="white",
-                      high="red", midpoint=0.5)
-  
-```
-
-#### In dimension 1:
-
-```{r}
-rang<-order(pca_result$ind$coord[,1])
-contrib.extremes<-c(row.names(df)[rang[1]], row.names(df)[rang[length(rang)]])
-contrib.extremes<-c(row.names(df)[rang[1:10]], row.names(df)[rang[(length(rang)-10):length(rang)]])
-fviz_pca_ind(pca_result, select.ind = list(names=contrib.extremes))
-```
-
-We can now have a look at them:
-
-```{r}
-df[which(row.names(df) %in% row.names(df)[rang[length(rang)]]), 1:length(df)]
-df[which(row.names(df) %in% row.names(df)[rang[1]]),1:length(df)]
-```
-
-#### In dimension 2:
-
-```{r}
-# Select the 100 most extreme individuals based on the first principal component
-rang1 <- order(pca_result$ind$coord[, 1])
-contrib.extremes1 <- c(row.names(df)[rang1[1:50]], row.names(df)[rang1[(length(rang1) - 49):length(rang1)]])
-
-# Select the 10 most extreme individuals based on the second principal component
-rang2 <- order(pca_result$ind$coord[, 2])
-contrib.extremes2 <- row.names(df)[rang2[1:10]]
-
-# Combine the two sets of extreme individuals
-contrib.extremes <- unique(c(contrib.extremes1, contrib.extremes2))
-
-# Plot the extreme individuals
-fviz_pca_ind(pca_result, select.ind = list(names = contrib.extremes))
-```
-
-We can now have a look at them:
-
-```{r}
-df[which(row.names(df) %in% row.names(df)[rang[length(rang)]]), 1:length(df)]
-df[which(row.names(df) %in% row.names(df)[rang[1]]),1:length(df)]
-```
-
-```{r}
-
-# Create a factor variable for the color-coded target variable
-habillage <- factor(df$y)
-
-# Plot the individuals with color-coded target variable
-ggplot(data = data.frame(ind_coord, habillage), aes(x = Dim.1, y = Dim.2, color = habillage)) +
-  geom_point() +
-  ggtitle("PCA: Individuals Point of View")
-```
-
--   This plot shows the positions of the individuals in the first two principal components. Each individual is represented by a point, and the color of the point represents the value of the categorical target variable.
--   The x-axis represents the first principal component, and the y-axis represents the second principal component. These two components together explain the most variance in the data.
--   The plot can help identify patterns or clusters of individuals in the data. For example, if individuals with the same value of the target variable tend to cluster together, this could indicate a relationship between the target variable and the principal components.
-
-```{r}
-# Identify extreme individuals
-extreme_ind <- ind_coord[which(row.names(ind_coord) %in% contrib.extremes), ]
-# Plot the extreme individuals on the first two axes
-ggplot(data = data.frame(ind_coord), aes(x = Dim.1, y = Dim.2)) +
-  geom_point() +
-  geom_point(data = data.frame(extreme_ind), color = "red", size = 3)
-  ggtitle("Extreme Individuals")
-```
-
--   This plot shows the positions of the extreme individuals on the first two principal components. Each extreme individual is represented by a red point, and the non-extreme individuals are represented by black points.
--   The plot can help identify individuals that are outliers in the data or have extreme values on one or more of the principal components. These individuals may have a large influence on the PCA results and should be examined further to understand their characteristics and potential impact on the analysis.
-
-```{r}
-# Detect multivariate outliers
-outliers <- which(rowSums(ind_dist) > mean(rowSums(ind_dist)) + 3 * sd(rowSums(ind_dist)))
-
-# Print the extreme individuals and multivariate outliers
-cat("Extreme individuals:\n")
-print(extreme_ind)
-cat("\n")
-
-cat("Multivariate outliers:\n")
-print(outliers)
-```
-
-### 3. Interpreting the axes: Variables point of view
-
-The variance plot and contribution plot created by fviz_contrib() function show the contribution of each variable to each axis. In the variance plot, the x-axis represents the axis number, and the y-axis represents the contribution of each variable to that axis. In the contribution plot, the x-axis represents the variable name, and the y-axis represents the contribution of each variable to each axis. The contribution of each variable to each axis is measured by the squared correlation between the variable and the axis. We can use these plots to identify the variables that are most strongly associated with each axis.
-
-```{r}
-round(cbind(pca_result$var$coord[,1:2],pca_result$var$cos2[,1:2],pca_result$var$contrib[,1:2]),2)
-round(cbind(pca_result$var$cos2[,1:2],pca_result$var$contrib[,1:2]),2)
-# dimdes easies this description from the variables
-dimdesc_result<-dimdesc(pca_result)
-###
-
-# Print the dimension description results
-print(dimdesc_result$Dim.1)
-# creates a variance plot that shows the contribution of each variable to each axis, and a contribution plot that shows the most contributing variables to each axis.
-fviz_contrib(pca_result, choice = "var", axes = 1) +
-  ggtitle("PCA: Contributions of Variables to PC1") +
-  theme(text = element_text(size = 14)) +
-  scale_shape_manual(values = c(16, 17, 15)) +
-  scale_color_manual(values = c("#FFA500", "#008000", "#0000FF"))
-```
-
-
-### 4. Perform a PCA taking into account also supplementary variables
-
-```{r}
-#c(vars_res, vars_dis,vars_con)
-#ll <- which( df$mout == "YesMOut")
-#res.pca<-PCA(df[,c(vars_res, vars_con)],quali.sup=c(1),quanti.sup= c(3), ind.sup = ll) 
-#plot(res.pca, choix="ind",invisible=c("ind","ind.sup"), cex=0.7, graph.type = "classic")
-# 
-#lines(res.pca$quali.sup$coord[1:2,1],res.pca$quali.sup$coord[1:2,2],lwd=2,col="black") # Does not work unless graph.type "classic" is set
-
-# Manually producing the plot
-#plot(res.pca$ind$coord[,1],res.pca$ind$coord[,2],pch=19,col="grey30")
-#points(res.pca$quali.sup$coord[,1],res.pca$quali.sup$coord[,2],pch=15,col="magenta")
-# lines(res.pca$quali.sup$coord[7:10,1],res.pca$quali.sup$coord[7:10,2],lwd=2,lty=2,col="blue")
-#text(res.pca$quali.sup$coord[,1],res.pca$quali.sup$coord[,2],labels=names(res.pca$quali.sup$coord[,1]),col="magenta",cex=0.8)
-
-#res.pca$quali.sup$coord
-
-
-```
-
-## Clustering PCA
-
-### K-Means classification
-
-```{r}
-prc<-pca_result$ind$coord[,1:3] # 3 components principals (kaiser)
-dim(prc)
-```
-### Classification
-
-```{r}
-dist<-dist(prc)  # coordenates are real - Euclidean metric
-kc<-kmeans(dist, 5, iter.max=30, trace=TRUE) #caclulate the distances, it turns into a matrix
-```
-We see from the output that in 4 iterations it has converged.
-We now procceed to save in the data frame the number of clusters.
-```{r}
-df_numeric$claKM<-0
-df_numeric$claKM<-kc$cluster
-df_numeric$claKM<-factor(df_numeric$claKM)
-barplot(table(df$claKM),col="darkslateblue",border="darkslateblue",main="[k-means]#observations/cluster")
-```
-```{r}
-dim(df_numeric)
-cat.res <-catdes(df_numeric,grep("^claKM$", colnames(df_numeric)))
-
-```
-The output shows the results of a cluster analysis based on the K-means algorithm. The analysis was carried out using eight quantitative variables and a categorical variable 'y' representing whether or not the client subscribed to a product.
-
-The first table shows the Eta squared value and p-value for each variable in relation to the cluster variable. The Eta squared value indicates the proportion of variance explained by the cluster variable, and the p-value indicates the statistical significance of the relationship between the variables. All variables showed a significant relationship with the cluster variable except for age_num.
-
-The second table provides a detailed description of each cluster based on the quantitative variables. The analysis resulted in five distinct clusters.
-
-Cluster 1 is characterized by a high duration of calls, low number of campaigns, high consumer confidence, low consumer price index, low consumer confidence index, and low number of employees and employment variation rate. This group represents a small proportion of customers, but stands out for its high call duration, which may indicate a high-quality interaction between the customer and the company.
-
-Cluster 2 is characterized by an extremely high call duration, high employment rate, high employment variation rate, high euribor value, positive employment variation rate, and high subscription rate to the product. This group is also an attractive target for advertising campaigns.
-
-Cluster 3 is characterized by low call duration, low product subscription rate, high consumer confidence index, high consumer price index, and high number of employees. This group represents the majority of customers. The low call duration and low number of subscriptions may suggest that this group is less receptive to advertising campaigns, although their high consumer confidence index may be an opportunity for brand building and customer loyalty.
-
-Cluster 4 is characterized by a high subscription rate to the product and low values of employment variation rate, consumer confidence index, consumer price index, and euribor. This group may represent loyal customers or customers with a high level of satisfaction with the product or service.
-
-Cluster 5 is characterized by high subscription rates to the product, high employment rate, high call duration, high euribor value, high employment variation rate, and high consumer price index. This group may represent a high-value target for advertising campaigns due to their high subscription rate and favorable economic indicators.
-
-
-### Hierarchical clustering
-
-```{r}
-# Perform hierarchical clustering on the first two principal components
-#hclust_result <- hclust(dist(pca_result$ind$coord[, 1:2]))
-
-# Visualize the results using a dendrogram
-#fviz_dend(hclust_result, cex = 0.5, k = 2)
-
-# Cut the dendrogram into three clusters
-#cut_result <- cutree(hclust_result, k = w)
-
-# Describe the clusters
-#summary(cut_result)
-
-res.hcpc <- HCPC(pca_result,nb.clust = -1, order = TRUE)
-table(res.hcpc$data.clust$clust)
-barplot(table(res.hcpc$data.clust$clust), col="darkslateblue", border="darkslateblue", main="[hierarchical] #observations/cluster")
-```
-
-```{r}
-  # categorical variables which characterizes the clusters
-```
-
-```{r}
-res.hcpc$desc.var$quanti.var    # description of each cluster by the categories
-res.hcpc$desc.var$quanti
-```
-
-Per a relitzar la descripció dels grups d'individus, hem de realitzar una agrupació jeràrquica dels components principals (HCPC).
-
-Agafem `r res.hcpc$call$t$nb.clust` clusters, ja que són els que ens indica el propi HCPC que hem d'incloure degut a la inèrcia acumulada d'aquests.
-
-A la següent gràfica es pot veure les inèrcies per cada parella de clusters. Veiem que les més significatives són de la 1 a la 2 i en menor mesura la 3 (les que ens recomanava agafar el HCPC).
-
-```{r}
-#fviz_dend(res.hcpc, show_labels = FALSE)
-plot(res.hcpc, choice = "bar")
-```
-
-A continuació imprimirem en un factor map tots els individus agrupats amb els diferents clusters que tenim. Podem veure com el cluster 1 esta completament difgerenciat de la resta, i el cluster 2 està disper i te punts desviats que provoquen que abarquin molta superfície sense individus.
-
-```{r}
-fviz_cluster(res.hcpc, geom = "point")
-```
-
-A continuació durem a terme la descripció de clusters envers les variables i categories més rellevants en ells.
-
-Primer de tot veiem les variables més relacionades amb tots els clusters:
-
-```{r}
-res.hcpc$desc.var
-```
-The analysis is based on a cluster analysis and its description in terms of quantitative variables. In this case, eight variables have been used for the analysis. The table describes the link between the cluster variable and the quantitative variables, followed by the description of each cluster individually.
-
-The variable "y" (customer subscription to the product) has a very strong relationship with the cluster variables in all three groups, with an Eta2 relationship of 98%, 98%, and 98% respectively. This indicates that customer subscription is an important factor in the separation of clusters.
-
-Cluster 1 is described by a high level of call duration, a low number of campaigns, high consumer confidence, a low consumer price index, low consumer confidence index, and a low number of employees and employment rate variation. This group represents a small proportion of customers but stands out for its high call duration, which may indicate high-quality interaction between the customer and the company.
-
-Cluster 2 is characterized by an extremely high call duration, a high employment rate, high employment rate variation, high euribor value, and positive employment rate variation. This group also has a high product subscription rate, indicating that this group is an attractive target for advertising campaigns.
-
-Cluster 3 is described by low call duration, low product subscription rate, high consumer confidence index, high consumer price index, and high number of employees. This group represents the majority of customers. The low call duration and low number of subscriptions may suggest that this group is less receptive to advertising campaigns, although their high consumer confidence may be an opportunity for brand building and customer loyalty.
-
-## Anàlisis CA
-
-### Transformació de la variable duration
-
-```{r}
+=======
 df$duration_fact <- cut(df$duration, 
               breaks = c(0, 10, 30, 60, 300, 900, 1800, max(df$duration)),
               labels = c("extr.curt", "molt.curta", "curta",
@@ -526,10 +280,108 @@ fviz_screeplot(res.mca,
 ```
 
 En el nostre cas, agafarem la primera dimensió que té un percentatge acomulat de variança més gran de 85%, la dimensió 24. Podem veure gràficament com aquesta dimensió és la última que manté una corva de valor propi constant i que ens explica suficient variança, a partir de la dimensió 25 la corva canvia la seva linealitat.
+>>>>>>> origin/pau
 
 ### 2. Individuals point of view
 
 ```{r}
+<<<<<<< HEAD
+library(ggplot2)
+# Extract the individual coordinates and squared distances from the PCA result
+ind_coord <- get_pca_ind(pca_result)$coord
+ind_dist <- get_pca_ind(pca_result)$cos2
+
+# Plot the individual coordinates on the first two axes
+fviz_pca_ind(pca_result, axes = 1:2, show.labels = FALSE, labelsize = 0) +
+  ggtitle("PCA: Individual Coordinates on PC1 and PC2") +
+  theme(text = element_text(size = 14)) +
+  scale_shape_manual(values = c(16, 17, 15)) +
+  scale_color_gradient2(low="darkslateblue", mid="white",
+                      high="red", midpoint=0.5)
+  
+```
+
+#### In dimension 1:
+
+```{r}
+rang<-order(pca_result$ind$coord[,1])
+contrib.extremes<-c(row.names(df)[rang[1]], row.names(df)[rang[length(rang)]])
+contrib.extremes<-c(row.names(df)[rang[1:10]], row.names(df)[rang[(length(rang)-10):length(rang)]])
+fviz_pca_ind(pca_result, select.ind = list(names=contrib.extremes))
+```
+
+We can now have a look at them:
+
+```{r}
+df[which(row.names(df) %in% row.names(df)[rang[length(rang)]]), 1:length(df)]
+df[which(row.names(df) %in% row.names(df)[rang[1]]),1:length(df)]
+```
+
+#### In dimension 2:
+
+```{r}
+# Select the 100 most extreme individuals based on the first principal component
+rang1 <- order(pca_result$ind$coord[, 1])
+contrib.extremes1 <- c(row.names(df)[rang1[1:50]], row.names(df)[rang1[(length(rang1) - 49):length(rang1)]])
+
+# Select the 10 most extreme individuals based on the second principal component
+rang2 <- order(pca_result$ind$coord[, 2])
+contrib.extremes2 <- row.names(df)[rang2[1:10]]
+
+# Combine the two sets of extreme individuals
+contrib.extremes <- unique(c(contrib.extremes1, contrib.extremes2))
+
+# Plot the extreme individuals
+fviz_pca_ind(pca_result, select.ind = list(names = contrib.extremes))
+```
+
+We can now have a look at them:
+
+```{r}
+df[which(row.names(df) %in% row.names(df)[rang[length(rang)]]), 1:length(df)]
+df[which(row.names(df) %in% row.names(df)[rang[1]]),1:length(df)]
+```
+
+```{r}
+
+# Create a factor variable for the color-coded target variable
+habillage <- factor(df$y)
+
+# Plot the individuals with color-coded target variable
+ggplot(data = data.frame(ind_coord, habillage), aes(x = Dim.1, y = Dim.2, color = habillage)) +
+  geom_point() +
+  ggtitle("PCA: Individuals Point of View")
+```
+
+-   This plot shows the positions of the individuals in the first two principal components. Each individual is represented by a point, and the color of the point represents the value of the categorical target variable.
+-   The x-axis represents the first principal component, and the y-axis represents the second principal component. These two components together explain the most variance in the data.
+-   The plot can help identify patterns or clusters of individuals in the data. For example, if individuals with the same value of the target variable tend to cluster together, this could indicate a relationship between the target variable and the principal components.
+
+```{r}
+# Identify extreme individuals
+extreme_ind <- ind_coord[which(row.names(ind_coord) %in% contrib.extremes), ]
+# Plot the extreme individuals on the first two axes
+ggplot(data = data.frame(ind_coord), aes(x = Dim.1, y = Dim.2)) +
+  geom_point() +
+  geom_point(data = data.frame(extreme_ind), color = "red", size = 3)
+  ggtitle("Extreme Individuals")
+```
+
+-   This plot shows the positions of the extreme individuals on the first two principal components. Each extreme individual is represented by a red point, and the non-extreme individuals are represented by black points.
+-   The plot can help identify individuals that are outliers in the data or have extreme values on one or more of the principal components. These individuals may have a large influence on the PCA results and should be examined further to understand their characteristics and potential impact on the analysis.
+
+```{r}
+# Detect multivariate outliers
+outliers <- which(rowSums(ind_dist) > mean(rowSums(ind_dist)) + 3 * sd(rowSums(ind_dist)))
+
+# Print the extreme individuals and multivariate outliers
+cat("Extreme individuals:\n")
+print(extreme_ind)
+cat("\n")
+
+cat("Multivariate outliers:\n")
+print(outliers)
+=======
 plot(res.mca, choix = c("ind"),
      invisible = c("var", "quali.sup"),
      cex = 1)
@@ -546,23 +398,124 @@ rang<-inds[order(inds$`Dim 1`, decreasing = TRUE),]
 res.mca$ind$coord[row.names(rang)[1:10],1]
 df[which(row.names(df) %in% row.names(res.mca$ind$coord
                                       [row.names(rang)[1:10],])),1:20]
+>>>>>>> origin/pau
 ```
 
 Seguidament veurem la mateixa informació però per la segona dimensió:
 
+The variance plot and contribution plot created by fviz_contrib() function show the contribution of each variable to each axis. In the variance plot, the x-axis represents the axis number, and the y-axis represents the contribution of each variable to that axis. In the contribution plot, the x-axis represents the variable name, and the y-axis represents the contribution of each variable to each axis. The contribution of each variable to each axis is measured by the squared correlation between the variable and the axis. We can use these plots to identify the variables that are most strongly associated with each axis.
+
 ```{r}
+<<<<<<< HEAD
+# Dimension description
+dimdesc_result <- dimdesc(pca_result)
+
+# Print the dimension description results
+print(dimdesc_result$Dim.1)
+# creates a variance plot that shows the contribution of each variable to each axis, and a contribution plot that shows the most contributing variables to each axis.
+fviz_contrib(pca_result, choice = "var", axes = 1) +
+  ggtitle("PCA: Contributions of Variables to PC1") +
+  theme(text = element_text(size = 14)) +
+  scale_shape_manual(values = c(16, 17, 15)) +
+  scale_color_manual(values = c("#FFA500", "#008000", "#0000FF"))
+```
+
+The output shows the correlation coefficients and p-values between the variables and the continuous variables in the first dimension of the PCA analysis.
+
+The most important correlations in the first dimension are:
+
+-   The negative correlation between the target variable "y" and the first dimension (-0.695), which means that this variable is strongly associated with the opposite direction of the first principal component.
+
+-   The negative correlation between "duration" and the first dimension (-0.256), indicating that longer call durations are associated with the opposite direction of the first principal component.
+
+-   The positive correlations between "euribor3m" (0.976), "emp.var.rate" (0.973), "cons.price.idx" (0.932), "cons.conf.idx" (0.925), and "nr.employed" (0.884) with the first dimension, which suggests that these economic indicators are associated with the same direction of the first principal component.
+
+The small p-values (all are 0.000) indicate that these correlations are statistically significant. The age of the customer ("age_num") and the number of contacts performed during the current campaign ("campaign") also show some correlation with the first dimension, although to a lesser extent than the other variables.
+
+```{r}
+# Print the dimension description results
+print(dimdesc_result$Dim.2)
+# creates a variance plot that shows the contribution of each variable to each axis, and a contribution plot that shows the most contributing variables to each axis.
+fviz_contrib(pca_result, choice = "var", axes = 2) +
+  ggtitle("PCA: Contributions of Variables to PC2") +
+  theme(text = element_text(size = 14)) +
+  scale_shape_manual(values = c(16, 17, 15)) +
+  scale_color_manual(values = c("#FFA500", "#008000", "#0000FF"))
+```
+
+This output shows the link between the variables and the continuous variables in terms of the R-square correlation and p-value. The most important correlations for the second dimension are:
+
+-   Duration: this variable has the highest correlation with the second dimension, meaning that it contributes the most to the definition of this axis.
+
+-   y: this variable also has a significant correlation with the second dimension, indicating that it is relevant for the analysis of this axis.
+
+-   nr.employed and campaign: these variables have a moderate correlation with the second dimension, suggesting that they are also relevant to some extent.
+
+-   emp.var.rate and euribor3m: these variables have a weaker correlation with the second dimension, but still contribute to its definition.
+
+-   cons.price.idx, age_num, and cons.conf.idx: these variables have a negligible correlation with the second dimension, meaning that they do not play an important role in the analysis of this axis.
+
+Overall, this output indicates that the second dimension is mostly defined by the duration variable, followed by other variables related to the campaign and employment, while other variables have a minor influence on this dimension.
+
+So, in this case, we have run PCA on a dataset and extracted the first and second principal components, which explain 62% and 18.6% of the total variance, respectively.
+
+The interpretation of the first dimension suggests a strong link between economic indicators, such as euribor3m, emp.var.rate, cons.price.idx, cons.conf.idx, and nr.employed, and the target variable y, as they show high positive correlation. Conversely, the variable duration shows negative correlation, which suggests that it has an inverse relationship with the economic indicators and y. In this sense, the first dimension can be interpreted as an economic indicator.
+
+On the other hand, the second dimension is mainly driven by the variable duration and target variable y, which show high positive correlation, while the economic indicators have a much lower correlation. This suggests that duration and y are important features for distinguishing the data points along the second dimension, which could be interpreted as a behavioral indicator.
+
+The first dimension appears to capture the economic aspects of the data,
+while the second dimension reflects the behavioral aspect. Although the
+first dimension explains more variance, the second dimension is also
+important as it captures different aspects of the data that are not
+captured by the first dimension. Therefore, considering both dimensions
+is crucial for a comprehensive understanding of the dataset.
+
+```{r}
+
+
+```
+
+```{r}
+
+
+```
+
+```{r}
+# Representation of clouds
+fviz_pca_var(pca_result, axes = c(1,2 ), col.var = "cos2", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE, ggtheme = theme_classic())
+=======
 rang<-inds[order(inds$`Dim 2`, decreasing = TRUE),]
 res.mca$ind$coord[row.names(rang)[1:10],2]
 df[which(row.names(df) %in% row.names(res.mca$ind$coord
                                       [row.names(rang)[1:10],])),1:20]
+>>>>>>> origin/pau
 ```
 
 A la següent gràfica podrem veure sobre sobre el pla quins individus son els més contributius (marcats en vermell) i els menys (en groc).
 
 ```{r}
+<<<<<<< HEAD
+#c(vars_res, vars_dis,vars_con)
+#ll <- which( df$mout == "YesMOut")
+#res.pca<-PCA(df[,c(vars_res, vars_con)],quali.sup=c(1),quanti.sup= c(3), ind.sup = ll) 
+#plot(res.pca, choix="ind",invisible=c("ind","ind.sup"), cex=0.7, graph.type = "classic")
+# 
+#lines(res.pca$quali.sup$coord[1:2,1],res.pca$quali.sup$coord[1:2,2],lwd=2,col="black") # Does not work unless graph.type "classic" is set
+
+# Manually producing the plot
+#plot(res.pca$ind$coord[,1],res.pca$ind$coord[,2],pch=19,col="grey30")
+#points(res.pca$quali.sup$coord[,1],res.pca$quali.sup$coord[,2],pch=15,col="magenta")
+# lines(res.pca$quali.sup$coord[7:10,1],res.pca$quali.sup$coord[7:10,2],lwd=2,lty=2,col="blue")
+#text(res.pca$quali.sup$coord[,1],res.pca$quali.sup$coord[,2],labels=names(res.pca$quali.sup$coord[,1]),col="magenta",cex=0.8)
+
+#res.pca$quali.sup$coord
+
+=======
 # A l'hora de fer les gràfiques per individus i categories,
 # posarem com a invisible els individus suplementaris per no tenir-los en
 # compte (individus amb outliers multivariants)
+>>>>>>> origin/pau
 
 fviz_mca_ind(
   res.mca,
@@ -581,6 +534,129 @@ fviz_mca_var(res.mca,
              repel = T)
 ```
 
+<<<<<<< HEAD
+```{r}
+prc<-pca_result$ind$coord[,1:3] # 3 components principals (kaiser)
+dim(prc)
+```
+### Classification
+
+```{r}
+dist<-dist(prc)  # coordenates are real - Euclidean metric
+kc<-kmeans(dist, 5, iter.max=30, trace=TRUE) #caclulate the distances, it turns into a matrix
+```
+We see from the output that in 4 iterations it has converged.
+We now procceed to save in the data frame the number of clusters.
+```{r}
+df_numeric$claKM<-0
+df_numeric$claKM<-kc$cluster
+df_numeric$claKM<-factor(df_numeric$claKM)
+barplot(table(df$claKM),col="darkslateblue",border="darkslateblue",main="[k-means]#observations/cluster")
+```
+```{r}
+dim(df_numeric)
+cat.res <-catdes(df_numeric,grep("^claKM$", colnames(df_numeric)))
+
+```
+The output shows the results of a cluster analysis based on the K-means algorithm. The analysis was carried out using eight quantitative variables and a categorical variable 'y' representing whether or not the client subscribed to a product.
+
+The first table shows the Eta squared value and p-value for each variable in relation to the cluster variable. The Eta squared value indicates the proportion of variance explained by the cluster variable, and the p-value indicates the statistical significance of the relationship between the variables. All variables showed a significant relationship with the cluster variable except for age_num.
+
+The second table provides a detailed description of each cluster based on the quantitative variables. The analysis resulted in five distinct clusters.
+
+Cluster 1 is characterized by a high duration of calls, low number of campaigns, high consumer confidence, low consumer price index, low consumer confidence index, and low number of employees and employment variation rate. This group represents a small proportion of customers, but stands out for its high call duration, which may indicate a high-quality interaction between the customer and the company.
+
+Cluster 2 is characterized by an extremely high call duration, high employment rate, high employment variation rate, high euribor value, positive employment variation rate, and high subscription rate to the product. This group is also an attractive target for advertising campaigns.
+
+Cluster 3 is characterized by low call duration, low product subscription rate, high consumer confidence index, high consumer price index, and high number of employees. This group represents the majority of customers. The low call duration and low number of subscriptions may suggest that this group is less receptive to advertising campaigns, although their high consumer confidence index may be an opportunity for brand building and customer loyalty.
+
+Cluster 4 is characterized by a high subscription rate to the product and low values of employment variation rate, consumer confidence index, consumer price index, and euribor. This group may represent loyal customers or customers with a high level of satisfaction with the product or service.
+
+Cluster 5 is characterized by high subscription rates to the product, high employment rate, high call duration, high euribor value, high employment variation rate, and high consumer price index. This group may represent a high-value target for advertising campaigns due to their high subscription rate and favorable economic indicators.
+
+
+### Hierarchical clustering
+
+```{r}
+# Perform hierarchical clustering on the first two principal components
+#hclust_result <- hclust(dist(pca_result$ind$coord[, 1:2]))
+
+# Visualize the results using a dendrogram
+#fviz_dend(hclust_result, cex = 0.5, k = 2)
+
+# Cut the dendrogram into three clusters
+#cut_result <- cutree(hclust_result, k = w)
+
+# Describe the clusters
+#summary(cut_result)
+
+res.hcpc <- HCPC(pca_result,nb.clust = -1, order = TRUE)
+table(res.hcpc$data.clust$clust)
+barplot(table(res.hcpc$data.clust$clust), col="darkslateblue", border="darkslateblue", main="[hierarchical] #observations/cluster")
+```
+```{r}
+  # categorical variables which characterizes the clusters
+```
+
+```{r}
+res.hcpc$desc.var$quanti.var    # description of each cluster by the categories
+res.hcpc$desc.var$quanti
+```
+
+Per a relitzar la descripció dels grups d'individus, hem de realitzar una agrupació jeràrquica dels components principals (HCPC).
+
+Agafem `r res.hcpc$call$t$nb.clust` clusters, ja que són els que ens indica el propi HCPC que hem d'incloure degut a la inèrcia acumulada d'aquests.
+
+A la següent gràfica es pot veure les inèrcies per cada parella de clusters. Veiem que les més significatives són de la 1 a la 2 i en menor mesura la 3 (les que ens recomanava agafar el HCPC).
+
+```{r}
+#fviz_dend(res.hcpc, show_labels = FALSE)
+plot(res.hcpc, choice = "bar")
+```
+
+A continuació imprimirem en un factor map tots els individus agrupats amb els diferents clusters que tenim. Podem veure com el cluster 1 esta completament difgerenciat de la resta, i el cluster 2 està disper i te punts desviats que provoquen que abarquin molta superfície sense individus.
+
+```{r}
+fviz_cluster(res.hcpc, geom = "point")
+```
+
+A continuació durem a terme la descripció de clusters envers les variables i categories més rellevants en ells.
+
+Primer de tot veiem les variables més relacionades amb tots els clusters:
+
+```{r}
+res.hcpc$desc.var
+```
+The analysis is based on a cluster analysis and its description in terms of quantitative variables. In this case, eight variables have been used for the analysis. The table describes the link between the cluster variable and the quantitative variables, followed by the description of each cluster individually.
+
+The variable "y" (customer subscription to the product) has a very strong relationship with the cluster variables in all three groups, with an Eta2 relationship of 98%, 98%, and 98% respectively. This indicates that customer subscription is an important factor in the separation of clusters.
+
+Cluster 1 is described by a high level of call duration, a low number of campaigns, high consumer confidence, a low consumer price index, low consumer confidence index, and a low number of employees and employment rate variation. This group represents a small proportion of customers but stands out for its high call duration, which may indicate high-quality interaction between the customer and the company.
+
+Cluster 2 is characterized by an extremely high call duration, a high employment rate, high employment rate variation, high euribor value, and positive employment rate variation. This group also has a high product subscription rate, indicating that this group is an attractive target for advertising campaigns.
+
+Cluster 3 is described by low call duration, low product subscription rate, high consumer confidence index, high consumer price index, and high number of employees. This group represents the majority of customers. The low call duration and low number of subscriptions may suggest that this group is less receptive to advertising campaigns, although their high consumer confidence may be an opportunity for brand building and customer loyalty.
+
+## Anàlisis CA
+
+```{r}
+# Convert the 'duration' variable to a factor with 7 levels
+df$duration_cat <- cut(df$duration, breaks = 7, labels = FALSE)
+
+
+
+# Perform Correspondence Analysis on the data
+#ca_result <- CA(df_numeric, graph = FALSE, ncp = 2)
+
+# Visualize the results using a biplot
+#fviz_ca_biplot(ca_result, repel = TRUE)
+```
+
+```{r}
+# Describe the results
+#summary(ca_result)
+```
+=======
 Podem veure que contribueixen en gran mesura les variables previous i poutcome per ambdues dimensions, mentres que per la dimensió 1 també contribuieixen month i contact. Education i job tenen una contribució en les dues dimensions en menor mesura de les mencionades anteriorment.
 
 ```{r}
@@ -590,6 +666,7 @@ fviz_mca_var(res.mca,
 ```
 
 Les categories més contributives en ambdues dimensions són "success" (categoria de "poutcome", variable que hem vist que contribuia en les dues dimensions) i "yes" (categoria de previous que també contribuia en les dues dimensions), la resta de categories no són tan determinants.
+>>>>>>> origin/pau
 
 Representarem les categories de les variables més representatives: poutcome, month i contact (com que poutcome i previous estan relacionades, sols imprimirem la més significativa, és a dir, poutcome).
 
