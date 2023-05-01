@@ -136,7 +136,7 @@ res.ca2$eig[length(ll),3]
 
 Gràficament, per la regla del colze, veiem que la dimensió on hi ha un canvi important de la corva és la 1. A més, per Kaiser, agafem totes les dimensions amb els eigenvalues els quals superin la mitjana de tots els eigenvalues, i també ens surt una sola dimensió.
 
-Amb aquesta dimensions representem un `r res.ca2eig[length(ll),3]`%, de nou un percentatge prou considerable.
+Amb aquesta dimensions representem un `r res.ca2$eig[length(ll),3]`%, de nou un percentatge prou considerable.
 
 ```{r}
 plot( res.ca2, cex=0.8, graph.type = "classic" )
@@ -152,7 +152,9 @@ Ens podem fixar també amb que la categoria de education illiterate està molt s
 
 ```{r}
 llmout<-which(df$mout=="Yes")
-res.mca<-MCA(df[,c(var_res, var_dis[1:11]) ], quali.sup=1, ind.sup=llmout,
+
+res.mca<-MCA(df[,c(var_res, var_con[2], var_dis[1:11]) ],
+             quali.sup= 1, quanti.sup = 2, ind.sup=llmout,
              graph = F)
 ```
 
@@ -416,7 +418,7 @@ Per a relitzar la descripció dels grups d'individus, hem de realitzar una agrup
 
 ```{r}
 # Posem nb.clust = -1 perquè utilitzi el numero de clusters que ens recomana
-res.hcpc_mca<-HCPC(res.mca, nb.clust = -1, order=TRUE, graph = F)
+res.hcpc_mca<-HCPC(res.mca, nb.clust = -1, order=TRUE)
 ```
 
 Agafem `r res.hcpc_mca$call$t$nb.clust` clusters, ja que són els que ens indica el propi HCPC que hem d'incloure degut a la inèrcia acumulada d'aquests.
@@ -424,7 +426,6 @@ Agafem `r res.hcpc_mca$call$t$nb.clust` clusters, ja que són els que ens indica
 A la següent gràfica es pot veure les inèrcies per cada parella de clusters. Veiem que les més significatives són de la 1 a la 4 (les que ens recomanava agafar el HCPC).
 
 ```{r}
-#fviz_dend(res.hcpc_mca, show_labels = FALSE)
 plot(res.hcpc_mca, choice = "bar")
 ```
 
@@ -585,3 +586,10 @@ En les taules anteriors hem pogut veure els valors de les variables que tenen el
 -   Els individus més propers, tenen valors de les variables corresponents amb les categories vistes a la descripció de clusters, per tant, té sentit que siguin els individus més cercans al centroide.
 
 -   Els individus més llunyans, tenen valors de les variables contraris amb les categories vistes a la descripció de clusters, per tant, té sentit que siguin els individus més distants al centroide.
+
+## Comparison of clusters
+
+### Target (y)
+
+
+### Target (duration)
