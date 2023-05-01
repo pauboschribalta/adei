@@ -83,7 +83,7 @@ tab1
 res.ca1 <- CA(tab1, graph = F)
 ```
 
-Seguidament triarem les dimensions que hem d'agafar gràficament i a partir dels eigenvalues.
+Seguidament triarem les dimensions que hem d'agafar, gràficament i a partir dels eigenvalues.
 
 ```{r}
 fviz_eig(res.ca1)
@@ -104,6 +104,9 @@ lines( res.ca1$row$coord[,1], res.ca1$row$coord[,2], col="blue", lwd = 2 )
 lines( res.ca1$col$coord[,1], res.ca1$col$coord[,2], col="red", lwd = 2 )
 ```
 
+Tal i com podem veure a la gràfica, hi ha diverses categories amb valors molt similars, que, per tant, podriem considerar-les com a una sola. Per exemple la duration_fact curta i molt.curta tenen quasibé el mateix valor, la resta de categories tenen prou discrepància. Mencionar que en la variable job, tenim dues altres categories amb valors molt similars, que són services i self-employed.
+
+Podem observar que les feines amb posicions superiors tendeixen a estar més estona a la trucada, mentres que els unemployed estan totalment separats.
 
 #### Duration_fact - Education
 
@@ -120,7 +123,7 @@ tab2
 res.ca2 <- CA(tab2, graph = F)
 ```
 
-Seguidament triarem les dimensions que hem d'agafar gràficament i a partir dels eigenvalues.
+Seguidament triarem les dimensions que hem d'agafar, gràficament i a partir dels eigenvalues.
 
 ```{r}
 fviz_eig(res.ca2)
@@ -140,6 +143,10 @@ plot( res.ca2, cex=0.8, graph.type = "classic" )
 lines( res.ca2$row$coord[,1], res.ca2$row$coord[,2], col="blue", lwd = 2 )
 lines( res.ca2$col$coord[,1], res.ca2$col$coord[,2], col="red", lwd = 2 )
 ```
+
+De la mateixa forma que hem vist amb la parella de variables anterior, aquí tornem a veure que les categories de duration_fact curta i molt.curta tenen valors molt similars. A més, veiem que llarga i molt.llarga també els passa el mateix.
+
+Ens podem fixar també amb que la categoria de education illiterate està molt separada de la resta, cosa que té molt de sentit. De la mateixa manera podem veure que els nivells d'estudi més alts estan relacionats amb les trucades més llargues.
 
 ## Anàlisis MCA
 
