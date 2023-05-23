@@ -1,0 +1,139 @@
+---
+title: "Entrega-2"
+author: "Ivan Cala Mesa, Pau Bosch Ribalta"
+date: "2023-03-28"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load Required Packages: to be increased over the course
+options(contrasts=c("contr.treatment","contr.treatment"))
+
+requiredPackages <- c("chemometrics","FactoMineR","car","knitr","missMDA")
+
+package.check <- lapply(requiredPackages, FUN = function(x) {
+  for (x in requiredPackages) {
+    if (!require(x, character.only = TRUE)) {
+    install.packages(x, dependencies  = TRUE)
+    library(x, character.only = TRUE)
+  }
+  }
+})
+```
+
+```{r}
+load("./bank-additional-clean.RData")
+```
+
+## Listing out variables
+```{r}
+summary(df)
+
+# List of variable names for the target variable
+target_vars <- names(data$y)
+
+# List of variable names for the discrete variables
+discrete_vars <- names(Filter(is.factor, data))
+
+# List of variable names for the continuous variables
+continuous_vars <- names(Filter(is.numeric, data))
+
+```
+Con el objetivo de poder encuadrar la variable binaria 'Y' en una regresión logística, será necesario asumir que las observaciones son independientes entre sí. Esto significa que los valores de la variable objetivo "Y" de una observación no están relacionados o influenciados por los valores de otras observaciones.
+```{r}
+# División del conjunto de datos en muestra de trabajo y muestra de prueba
+set.seed(123)  # Para reproducibilidad
+sample_size <- floor(0.8 * nrow(df))  # Tamaño de muestra de trabajo (80%)
+train_index <- sample(seq_len(nrow(df)), size = sample_size)  # Índices de muestra de trabajo
+
+# Creación de la muestra de trabajo y muestra de prueba
+train_data <- df[train_index, ]
+test_data <- df[-train_index, ]
+```
+
+
+```{r}
+# Modelo inicial con dos variables numéricas y factores significativos
+model <- glm(y ~ age_num + duration + job + education + housing + loan + contact + month,
+             data = train_data, family = binomial)
+summary(model)
+vif(model)
+marginalModelPlots(model)
+```
+
+```{r}
+model <- glm(y ~ age_num + duration + education + housing + loan + contact + month,
+             data = train_data, family = binomial)
+summary(model)
+vif(model)
+marginalModelPlots(model)
+residualPlots(model)
+```
+
+```{r}
+# Compute correlation coefficients between Y and other variables
+#correlations <- cor(df[, -which(names(df) == "y")], df$y)
+
+# Print correlation coefficients
+#print(correlations)
+
+```
+
+
+```{r}
+# Incorporar interacciones entre factores y una covariable
+model_interactions <- glm(y ~ age_num * education + duration + housing + loan + contact + month,
+                          data = train_data, family = binomial)
+summary(model_interactions)
+```
+
+
+```{r}
+# Modelo final con selección de variables y considerando influencia de observaciones
+model_final <- glm(y ~ age_num + duration + job + education + housing + loan + contact + month, data = train_data, family = binomial)
+
+summary(model_final)
+```
+
+
+```{r}
+# Diagnósticos del modelo final
+# Residuos de Pearson
+plot(model_final, which = 1)
+
+# Residuos de desviación
+plot(model_final, which = 2)
+
+```
+
+
+```{r FinalBlock}
+
+# Gráfico de influencia
+influence_plot(model_final)
+
+```
+
+```{r}
+# Predicción en la muestra de trabajo
+train_pred <- predict(model_final, train_data, type = "response")
+train_pred_class <- ifelse(train_pred > 0.5, "yes", "no")
+
+# Matriz de confusión en la muestra de trabajo
+train_actual <- train_data$y
+train_confusion <- table(Actual = train_actual, Predicted = train_pred_class)
+train_confusion
+
+# Predicción en la muestra de prueba
+test_pred <- predict(model_final, test_data, type = "response")
+test_pred_class <- ifelse(test_pred > 0.5, "yes", "no")
+
+# Matriz de confusión en la muestra de prueba
+test_actual <- test_data$y
+test_confusion <- table(Actual = test_actual, Predicted = test_pred_class)
+test_confusion
+```
+
