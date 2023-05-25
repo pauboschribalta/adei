@@ -29,20 +29,24 @@ load("./bank-additional-clean.RData")
 ```
 
 ## Listing out variables
+
 ```{r}
 summary(df)
 
 # List of variable names for the target variable
-target_vars <- names(data$y)
+target_vars <- names(df$y)
 
 # List of variable names for the discrete variables
-discrete_vars <- names(Filter(is.factor, data))
+discrete_vars <- names(Filter(is.factor, df))
+discrete_vars = discrete_vars[discrete_vars != 'y']
 
 # List of variable names for the continuous variables
-continuous_vars <- names(Filter(is.numeric, data))
+continuous_vars <- names(Filter(is.numeric, df))
 
 ```
+
 Con el objetivo de poder encuadrar la variable binaria 'Y' en una regresión logística, será necesario asumir que las observaciones son independientes entre sí. Esto significa que los valores de la variable objetivo "Y" de una observación no están relacionados o influenciados por los valores de otras observaciones.
+
 ```{r}
 # División del conjunto de datos en muestra de trabajo y muestra de prueba
 set.seed(123)  # Para reproducibilidad
@@ -54,10 +58,9 @@ train_data <- df[train_index, ]
 test_data <- df[-train_index, ]
 ```
 
-
 ```{r}
 # Modelo inicial con dos variables numéricas y factores significativos
-model <- glm(y ~ age_num + duration + job + education + housing + loan + contact + month,
+model <- glm(y ~ age_num + duration + job + education + housing + loan + month,
              data = train_data, family = binomial)
 summary(model)
 vif(model)
@@ -65,12 +68,12 @@ marginalModelPlots(model)
 ```
 
 ```{r}
-model <- glm(y ~ age_num + duration + education + housing + loan + contact + month,
+model1 <- glm(y ~ age_num + duration + education + housing + loan + month,
              data = train_data, family = binomial)
-summary(model)
-vif(model)
-marginalModelPlots(model)
-residualPlots(model)
+summary(model1)
+vif(model1)
+marginalModelPlots(model1)
+residualPlots(model1)
 ```
 
 ```{r}
@@ -82,38 +85,51 @@ residualPlots(model)
 
 ```
 
-
 ```{r}
 # Incorporar interacciones entre factores y una covariable
-model_interactions <- glm(y ~ age_num * education + duration + housing + loan + contact + month,
+model2 <- glm(y ~ age_num * education + duration + housing + loan + month,
                           data = train_data, family = binomial)
-summary(model_interactions)
+summary(model2)
 ```
-
 
 ```{r}
-# Modelo final con selección de variables y considerando influencia de observaciones
-model_final <- glm(y ~ age_num + duration + job + education + housing + loan + contact + month, data = train_data, family = binomial)
-
-summary(model_final)
+# Incorporación de interacción entre factores
+model3 <- glm(y ~ age_num * education + # factor and covariate
+                              loan * month + # couple of factors
+                              duration + 
+                              housing,
+                          data = train_data, family = binomial)
+summary(model3)
 ```
-
 
 ```{r}
-# Diagnósticos del modelo final
-# Residuos de Pearson
-plot(model_final, which = 1)
+model4 <- glm(y ~ age_num * education + # factor and covariate
+                  loan * month * housing + # couple of factors
+                  duration,
+                data = train_data, family = binomial)
+summary(model4)
+```
 
-# Residuos de desviación
-plot(model_final, which = 2)
+```{r}
+# Crear una lista de los modelos
+model_list <- list(model1, model2, model3, model4)
+
+# Crear una lista de etiquetas para los modelos
+model_labels <- c("Model 1", "Model 2", "Model 3", "Model 4")
+
+# Crear un layout de múltiples gráficos en una sola figura
+par(mfrow = c(2, 2))  # 2 filas y 2 columnas para 4 gráficos
+
+# Realizar los plots para cada modelo
+lapply(seq_along(model_list), function(i) {
+  plot(model_list[[i]], which = 1, main = paste("Residuos de Pearson -", model_labels[i]))
+  plot(model_list[[i]], which = 2, main = paste("Residuos de Desviación -", model_labels[i]))
+})
 
 ```
 
+```{r}
 
-```{r FinalBlock}
-
-# Gráfico de influencia
-influence_plot(model_final)
 
 ```
 
@@ -136,4 +152,3 @@ test_actual <- test_data$y
 test_confusion <- table(Actual = test_actual, Predicted = test_pred_class)
 test_confusion
 ```
-
