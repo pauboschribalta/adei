@@ -59,8 +59,31 @@ test_data <- df[-train_index, ]
 ```
 
 ```{r}
+continuous_vars
+cor(df$duration, df[,continuous_vars[-1]])
+```
+
+When undertaking the analysis of various models in R, one may often confront a binomial regression problem. A binomial regression refers to the statistical process of modeling a binary outcome as a function of one or more predictors. One potential solution is to employ a linear model, which may be a favorable option under certain circumstances, particularly when elucidating the connection between predictor variables and the likelihood of a positive binary result.
+
+The appeal of linear models for binomial regression problems resides in three major attributes:
+
+1.  Coefficients Interpretation: Linear models facilitate the interpretation of the relationship between predictor variables and the expected outcome. They deliver coefficients that signify the direction and magnitude of the impact of various predictors on the probability of success.
+
+2.  Simplicity and Familiarity: Linear regression has a long-standing history and broad application in statistics. This universal use and basic understanding make it an accessible tool for binomial regression, particularly when the focus is on discerning the linear connection between predictors and the log-odds of success.
+
+3.  Continuous Predictor Variables: For binomial regression problems primarily featuring continuous predictors, a linear model can accurately portray their linear relationships with the log-odds of success.
+
+However, it is essential to recognize that a linear model may not always be the optimal choice for binomial regression problems. Specifically designed for binary outcomes, alternative models may sometimes prove more suitable.
+
+Indeed, binomial regression scenarios often necessitate models explicitly constructed for binary results. While linear models offer insights into the connection between predictors and the expected outcome, they may fail to adequately represent nonlinear relationships or consider the inherent probabilities associated with binary outcomes.
+
+Alternative models tailored for binomial regression, such as logistic regression, probit regression, and complementary log-log regression, account for these underlying probabilities of success. They incorporate suitable link functions to model the relationship between predictors and the likelihood of success directly.
+
+When analyzing our specific problem with 'y' as the target variable in R, fitting a linear model could help to illustrate the linear relationship between the predictor variables and the expected value of 'y'. Nonetheless, it remains crucial to reflect upon the assumptions and limitations of linear regression and investigate alternative models like logistic regression, which might more accurately model the probability of 'y' being a success.
+
+```{r}
 # Modelo inicial con dos variables numéricas y factores significativos
-model <- glm(y ~ age_num + duration + job + education + housing + loan + month,
+model <- glm(y ~ age_num + duration + job + housing + loan + month,
              data = train_data, family = binomial)
 summary(model)
 vif(model)
@@ -68,9 +91,10 @@ marginalModelPlots(model)
 ```
 
 ```{r}
-model1 <- glm(y ~ age_num + duration + education + housing + loan + month,
+model1 <- glm(y ~ age_num + duration + job + housing + loan + month,
              data = train_data, family = binomial)
 summary(model1)
+
 vif(model1)
 marginalModelPlots(model1)
 residualPlots(model1)
@@ -87,26 +111,37 @@ residualPlots(model1)
 
 ```{r}
 # Incorporar interacciones entre factores y una covariable
-model2 <- glm(y ~ age_num * education + duration + housing + loan + month,
+model2 <- glm(y ~ age_num * job + duration + housing + loan + month,
                           data = train_data, family = binomial)
+
 summary(model2)
+
+vif(model2)
+marginalModelPlots(model2)
+residualPlots(model2)
 ```
 
 ```{r}
 # Incorporación de interacción entre factores
-model3 <- glm(y ~ age_num * education + # factor and covariate
-                              loan * month + # couple of factors
-                              duration + 
-                              housing,
-                          data = train_data, family = binomial)
+model3 <- glm(y ~ age_num * job + # factor and covariate
+              loan * housing + # couple of factors
+              duration + 
+              month,
+            data = train_data, family = binomial)
+vif(model3)
+marginalModelPlots(model3)
+residualPlots(model3)
 summary(model3)
 ```
 
 ```{r}
-model4 <- glm(y ~ age_num * education + # factor and covariate
-                  loan * month * housing + # couple of factors
+model4 <- glm(y ~ age_num * job + # factor and covariate
+                  loan * housing * contact + # couple of factors
                   duration,
                 data = train_data, family = binomial)
+vif(model4)
+marginalModelPlots(model4)
+residualPlots(model4)
 summary(model4)
 ```
 
@@ -135,7 +170,7 @@ lapply(seq_along(model_list), function(i) {
 
 ```{r}
 # Predicción en la muestra de trabajo
-train_pred <- predict(model_final, train_data, type = "response")
+train_pred <- predict(model4, train_data, type = "response")
 train_pred_class <- ifelse(train_pred > 0.5, "yes", "no")
 
 # Matriz de confusión en la muestra de trabajo
@@ -144,7 +179,7 @@ train_confusion <- table(Actual = train_actual, Predicted = train_pred_class)
 train_confusion
 
 # Predicción en la muestra de prueba
-test_pred <- predict(model_final, test_data, type = "response")
+test_pred <- predict(model4, test_data, type = "response")
 test_pred_class <- ifelse(test_pred > 0.5, "yes", "no")
 
 # Matriz de confusión en la muestra de prueba
@@ -152,3 +187,102 @@ test_actual <- test_data$y
 test_confusion <- table(Actual = test_actual, Predicted = test_pred_class)
 test_confusion
 ```
+
+```{r}
+# Load required packages
+library(ResourceSelection)  # For Hosmer-Lemeshow test
+library(car)  # For VIF calculation
+library(pROC)  # For ROC analysis
+
+# 1. Residual analysis
+par(mfrow = c(1, 2))  # Set up a 1x2 plot layout
+plot(model4, which = 1, main = "Pearson Residuals vs Predicted Values")
+plot(model4, which = 2, main = "Deviance Residuals vs Predicted Values")
+```
+
+### Goodness of fit
+
+Goodness-of-fit refers to the assessment of how well a statistical model fits the observed data. When it comes to binomial models, the goodness-of-fit analysis aims to evaluate the adequacy of the model in capturing the relationship between the predictors and the binary response variable.
+
+One commonly used metric for assessing the goodness-of-fit of a binomial model is the Hosmer-Lemeshow test. This test compares the observed outcomes with the predicted probabilities from the model. It divides the data into groups based on the predicted probabilities and assesses whether the observed frequencies within each group differ significantly from the expected frequencies.
+
+The Hosmer-Lemeshow test provides a chi-square statistic and a corresponding p-value. A low p-value suggests a lack of fit between the model and the observed data, indicating that the predicted probabilities do not align well with the actual binary outcomes.
+
+However, it's important to note that the Hosmer-Lemeshow test has some limitations and intricacies. First, it assumes that the predicted probabilities accurately represent the underlying probabilities in the population. If the model suffers from misspecification or violates certain assumptions, such as linearity or independence, the Hosmer-Lemeshow test may produce unreliable results.
+
+```{r}
+# 2. Goodness-of-fit test (Hosmer-Lemeshow)
+
+# Calculate the observed and expected values
+observed <- train_data$y
+expected <- fitted(model4)
+
+# Perform the Hosmer-Lemeshow test
+hoslem_result <- hoslem.test(observed, expected)
+hoslem_result
+```
+
+The Hosmer-Lemeshow goodness-of-fit (GOF) test is commonly used in logistic regression to assess how well a model fits the observed data. It evaluates the agreement between the observed outcomes and the predicted probabilities from the model.
+
+The test works by dividing the data into several groups based on the predicted probabilities. Then, it compares the observed and expected frequencies of the binary outcomes within each group. If the model fits the data well, the observed and expected frequencies should be similar across all groups.
+
+In the given model, model4, various predictors are included: age_num, job (factor), loan, housing, and contact (factors), and duration (covariate). The model also incorporates interactions between some of these predictors.
+
+The Hosmer-Lemeshow GOF test provides a statistical evaluation of how well model4 fits the observed data. The test produces a chi-square statistic and calculates the associated p-value. The null hypothesis assumes that the model fits the data well, while the alternative hypothesis suggests a lack of fit.
+
+Based on the test result, with a chi-square statistic of 4000 and 8 degrees of freedom, and a p-value \< 2.2e-16 (extremely small), there is strong evidence to reject the null hypothesis. This indicates that model4 does not adequately fit the observed data. The significant difference between the observed and expected frequencies suggests a lack of agreement between the model's predicted probabilities and the actual binary outcomes.
+
+```{r}
+# 3. Influential observations (Cook's distance and leverage)
+cooks_dist <- cooks.distance(model4)
+hat_values <- hatvalues(model4)
+plot(cooks_dist, pch = 19, main = "Cook's Distance")
+plot(hat_values, pch = 19, main = "Leverage")
+
+# Calculate Cook's distance values
+cooks_dist <- cooks.distance(model4)
+
+# Identify the indices of the 20 largest Cook's distances
+top_influential <- order(cooks_dist, decreasing = TRUE)[1:20]
+
+# Print the indices of the 20 most influential observations
+print(top_influential)
+```
+
+```{r}
+# 4. Collinearity assessment (Variance Inflation Factor)
+vif_values <- vif(model4)
+print(vif_values)
+```
+
+```{r}
+library(caret)
+# Set up the control parameters for cross-validation
+control <- trainControl(method = "cv",  # Cross-validation method
+                        number = 10,   # Number of folds
+                        verboseIter = FALSE,  # Disable verbose output
+                        savePredictions = TRUE)  # Save predictions for later use
+# Perform cross-validation using the train() function
+cv_model <- train(model4 ~ .,  # Formula for the model
+                  data = train_data,  # Training dataset
+                  method = "glm",  # Modeling method (e.g., glm for logistic regression)
+                  trControl = control)  # Control parameters for cross-validation
+
+# Print the cross-validated results
+print(cv_model)
+```
+
+```{r}
+# 6. ROC curve and AUC
+roc_data <- roc(train_data$y, predict(model4, type = "response"))
+plot(roc_data, main = "ROC Curve")
+auc <- auc(roc_data)
+print(auc)
+
+```
+
+The statement "Area under the curve: 0.9782" refers to the Area Under the Curve (AUC) value obtained from analyzing a Receiver Operating Characteristic (ROC) curve. The AUC measures the overall performance of a binary classification model, summarizing its ability to distinguish between the positive and negative classes.
+
+In this case, the AUC value is 0.9782. An AUC of 1 represents a perfect classifier, while an AUC of 0.5 indicates a random classifier. Therefore, an AUC of 0.9782 is quite high, indicating that the model has a strong discriminatory power and performs exceptionally well in distinguishing between the positive and negative classes.
+
+Based on the provided AUC value, it can be concluded that the model has excellent predictive performance. It demonstrates a high true positive rate and a low false positive rate, suggesting that it is capable of accurately classifying instances in the dataset. The closer the AUC is to 1, the better the model's performance is in terms of its ability to discriminate between the classes.
