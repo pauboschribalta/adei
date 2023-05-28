@@ -79,11 +79,11 @@ Indeed, binomial regression scenarios often necessitate models explicitly constr
 
 Alternative models tailored for binomial regression, such as logistic regression, probit regression, and complementary log-log regression, account for these underlying probabilities of success. They incorporate suitable link functions to model the relationship between predictors and the likelihood of success directly.
 
-When analyzing our specific problem with 'y' as the target variable in R, fitting a linear model could help to illustrate the linear relationship between the predictor variables and the expected value of 'y'. Nonetheless, it remains crucial to reflect upon the assumptions and limitations of linear regression and investigate alternative models like logistic regression, which might more accurately model the probability of 'y' being a success.
+When analyzing our specific problem with 'y' as the target variable in R, fitting a linear model could help to illustrate the linear relationship between the predictor variables and the expected value of 'y'. Nonetheless, it remains crucial to reflect upon the assumptions and limitations of linear regression and investigate alternative models which might more accurately model the probability of 'y' being a success.
 
 ```{r}
 # Modelo inicial con dos variables numéricas y factores significativos
-model <- glm(y ~ age_num + duration + job + housing + loan + month,
+model <- glm(y ~ age_num + duration + job,
              data = train_data, family = binomial)
 summary(model)
 vif(model)
@@ -125,8 +125,7 @@ residualPlots(model2)
 # Incorporación de interacción entre factores
 model3 <- glm(y ~ age_num * job + # factor and covariate
               loan * housing + # couple of factors
-              duration + 
-              month,
+              duration,
             data = train_data, family = binomial)
 vif(model3)
 marginalModelPlots(model3)
@@ -135,14 +134,34 @@ summary(model3)
 ```
 
 ```{r}
-model4 <- glm(y ~ age_num * job + # factor and covariate
-                  loan * housing * contact + # couple of factors
+model4 <- glm(y ~ age_num * emp.var.rate + # factor and covariate
+                  loan * housing + # couple of factors
                   duration,
                 data = train_data, family = binomial)
 vif(model4)
 marginalModelPlots(model4)
 residualPlots(model4)
 summary(model4)
+```
+
+```{r}
+model5 <- glm(y ~ age_num * emp.var.rate + # factor and covariate
+                  loan * housing, # couple of factors
+                data = train_data, family = binomial)
+vif(model5)
+marginalModelPlots(model5)
+residualPlots(model5)
+summary(model5)
+```
+
+```{r}
+model6 <- glm(y ~ duration * emp.var.rate + # factor and covariate
+                  loan * housing, # couple of factors
+                data = train_data, family = binomial)
+vif(model6)
+marginalModelPlots(model6)
+residualPlots(model6)
+summary(model6)
 ```
 
 ```{r}
@@ -221,10 +240,6 @@ expected <- fitted(model4)
 hoslem_result <- hoslem.test(observed, expected)
 hoslem_result
 ```
-
-The Hosmer-Lemeshow goodness-of-fit (GOF) test is commonly used in logistic regression to assess how well a model fits the observed data. It evaluates the agreement between the observed outcomes and the predicted probabilities from the model.
-
-The test works by dividing the data into several groups based on the predicted probabilities. Then, it compares the observed and expected frequencies of the binary outcomes within each group. If the model fits the data well, the observed and expected frequencies should be similar across all groups.
 
 In the given model, model4, various predictors are included: age_num, job (factor), loan, housing, and contact (factors), and duration (covariate). The model also incorporates interactions between some of these predictors.
 
