@@ -12,8 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Load Required Packages: to be increased over the course
 options(contrasts=c("contr.treatment","contr.treatment"))
 
-requiredPackages <- c("chemometrics","FactoMineR","car","knitr","missMDA")
-
+requiredPackages <- c("chemometrics","FactoMineR","car","knitr","missMDA","ResourceSelection", "pROC")
 package.check <- lapply(requiredPackages, FUN = function(x) {
   for (x in requiredPackages) {
     if (!require(x, character.only = TRUE)) {
@@ -170,25 +169,46 @@ lapply(seq_along(model_list), function(i) {
 ```
 
 ```{r}
-# Model 1 Predictions and Confusion Matrix
+# Model 2 Predictions and Confusion Matrix
 model2_pred <- predict(model2, test_data, type = "response")
 model2_pred_class <- ifelse(model2_pred > 0.5, "yes", "no")
 
-# Model 1 Confusion Matrix
+# Model 2 Confusion Matrix
 model2_actual <- test_data$y
 model2_confusion <- table(Actual = model2_actual, Predicted = model2_pred_class)
 
-# Model 2 Predictions and Confusion Matrix
+# Model 3 Predictions and Confusion Matrix
 model3_pred <- predict(model3, test_data, type = "response")
 model3_pred_class <- ifelse(model3_pred > 0.5, "yes", "no")
 
-# Model 2 Confusion Matrix
+# Model 3 Confusion Matrix
 model3_actual <- test_data$y
 model3_confusion <- table(Actual = model3_actual, Predicted = model3_pred_class)
 
 model2_confusion
 model3_confusion
 
+
+```
+
+```{r}
+# Model 2 Accuracy and Recall
+model2_accuracy <- sum(diag(model2_confusion)) / sum(model2_confusion)
+model2_recall <- model2_confusion[2, 2] / sum(model2_confusion[2, ])
+
+# Model 3 Accuracy and Recall
+model3_accuracy <- sum(diag(model3_confusion)) / sum(model3_confusion)
+model3_recall <- model3_confusion[2, 2] / sum(model3_confusion[2, ])
+
+# Print the accuracy and recall for Model 2
+cat("Model 2:\n")
+cat("Accuracy:", model2_accuracy, "\n")
+cat("Recall:", model2_recall, "\n")
+
+# Print the accuracy and recall for Model 3
+cat("Model 3:\n")
+cat("Accuracy:", model3_accuracy, "\n")
+cat("Recall:", model3_recall, "\n")
 
 ```
 
