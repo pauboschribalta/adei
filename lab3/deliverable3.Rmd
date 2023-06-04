@@ -44,6 +44,8 @@ continuous_vars <- names(Filter(is.numeric, df))
 
 ```
 
+## Model de regresió logística (target: y)
+
 Con el objetivo de poder encuadrar la variable binaria 'Y' en una regresión logística, será necesario asumir que las observaciones son independientes entre sí. Esto significa que los valores de la variable objetivo "Y" de una observación no están relacionados o influenciados por los valores de otras observaciones.
 
 ```{r}
