@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Load Required Packages: to be increased over the course
 options(contrasts=c("contr.treatment","contr.treatment"))
 
-requiredPackages <- c("chemometrics","FactoMineR","car","knitr","missMDA","ResourceSelection", "pROC")
+requiredPackages <- c("chemometrics","FactoMineR","car","knitr","missMDA","ResourceSelection", "pROC", "MASS")
 package.check <- lapply(requiredPackages, FUN = function(x) {
   for (x in requiredPackages) {
     if (!require(x, character.only = TRUE)) {
@@ -112,6 +112,8 @@ residualPlots(model1)
 Anova(model1)
 vif(model1)
 ```
+
+This model has non-significant variables and does not meet the model requirements, like interactions. As such, a new model has to be devised.
 
 ```{r}
 # Incorporar interacciones entre factores y una covariable
@@ -213,35 +215,21 @@ cat("Recall:", model3_recall, "\n")
 ```
 
 ```{r}
-# Predicción en la muestra de trabajo
-train_pred <- predict(model3, train_data, type = "response")
-train_pred_class <- ifelse(train_pred > 0.5, "yes", "no")
-
-# Matriz de confusión en la muestra de trabajo
-train_actual <- train_data$y
-train_confusion <- table(Actual = train_actual, Predicted = train_pred_class)
-train_confusion
-
-# Predicción en la muestra de prueba
-test_pred <- predict(model3, test_data, type = "response")
-test_pred_class <- ifelse(test_pred > 0.5, "yes", "no")
-
-# Matriz de confusión en la muestra de prueba
-test_actual <- test_data$y
-test_confusion <- table(Actual = test_actual, Predicted = test_pred_class)
-test_confusion
-```
-
-```{r}
 # Load required packages
 library(ResourceSelection)  # For Hosmer-Lemeshow test
 library(car)  # For VIF calculation
 library(pROC)  # For ROC analysis
 
 # 1. Residual analysis
-par(mfrow = c(1, 2))  # Set up a 1x2 plot layout
-plot(model4, which = 1, main = "Pearson Residuals vs Predicted Values")
-plot(model4, which = 2, main = "Deviance Residuals vs Predicted Values")
+par(mfrow = c(2, 2))  # Set up a 1x2 plot layout
+plot(model2, which = 1)
+mtext("Model 2", side = 4, line = 0)
+plot(model2, which = 2)
+mtext("Model 2", side = 4, line = 0)
+plot(model3, which = 1)
+mtext("Model 3", side = 4, line = 0)
+plot(model3, which = 2)
+mtext("Model 3", side = 4, line = 0)
 ```
 
 ### Goodness of fit
@@ -259,6 +247,17 @@ However, it's important to note that the Hosmer-Lemeshow test has some limitatio
 
 # Calculate the observed and expected values
 observed <- ifelse(train_data$y == "yes", 1,0)
+
+cat("Model 2")
+# Calculate the observed and expected values
+expected <- fitted(model2)
+expected <- ifelse(expected > 0.5, 1, 0)
+
+# Perform the Hosmer-Lemeshow test
+hoslem_result <- hoslem.test(observed, expected)
+hoslem_result
+
+cat("Model 3")
 expected <- fitted(model3)
 expected <- ifelse(expected > 0.5, 1, 0)
 
@@ -273,21 +272,22 @@ The test works by dividing the data into several groups based on the predicted p
 
 1.  X-squared (Chi-square) Statistic:
     -   The X-squared statistic is a measure of the discrepancy between the observed and expected values in the contingency table.
-    -   In this case, the X-squared value is 2.6101. A higher X-squared value suggests a larger discrepancy between the observed and expected values.
+    -   In this case, the X-squared values are 2.8191 vs 2.6101 for model2 and model3, respectively. A higher X-squared value suggests a larger discrepancy between the observed and expected values.
 2.  Degrees of Freedom (df):
     -   The degrees of freedom for the Hosmer-Lemeshow test is determined by the number of categories in the contingency table minus 1.
     -   In this output, the degrees of freedom is 8, indicating that there are 8 categories being compared.
 3.  p-value:
     -   The p-value assesses the statistical significance of the difference between the observed and expected values.
-    -   In this case, the p-value is 0.9564, which is relatively high.
-    -   A high p-value indicates that there is no significant discrepancy between the observed and expected values, suggesting that the logistic regression model (model3) fits the data well.
+    -   In this case, the p-values are 0.9452 vs 0.9564 for model2 and model3, respectively, which are relatively high.
+    -   A higher p-value indicates that there is no significant discrepancy between the observed and expected values, suggesting that the logistic regression model (model3) fits the data well.
 
-Implications: Based on the output of the Hosmer-Lemeshow GOF test for model3: - The X-squared statistic of 2.6101 indicates that there is a small discrepancy between the observed and expected values, but it is not statistically significant. - The high p-value of 0.9564 suggests that there is no evidence to reject the null hypothesis, which means that the logistic regression model fits the data well. - Therefore, we can conclude that model3 provides a good fit to the data based on the Hosmer-Lemeshow GOF test results.
+## Cooks distance
 
 ```{r}
+# MODEL 2
 # 3. Influential observations (Cook's distance and leverage)
-cooks_dist <- cooks.distance(model4)
-hat_values <- hatvalues(model4)
+cooks_dist <- cooks.distance(model2)
+hat_values <- hatvalues(model2)
 plot(cooks_dist, pch = 19, main = "Cook's Distance")
 plot(hat_values, pch = 19, main = "Leverage")
 
@@ -297,15 +297,89 @@ cooks_dist <- cooks.distance(model2)
 # Identify the indices of the 20 largest Cook's distances
 top_influential <- order(cooks_dist, decreasing = TRUE)[1:20]
 
-# Print the indices of the 20 most influential observations
-print(top_influential)
+# Subset the data to the most influential points
+influential_points <- train_data[top_influential, ]
+
+# Extract the values of the influential points
+influential_values <- as.data.frame(influential_points[, -ncol(influential_points)])
+
+# Print the values of the influential points
+print(influential_values)
 ```
 
 ```{r}
-# 4. Collinearity assessment (Variance Inflation Factor)
-vif_values <- vif(model4)
-print(vif_values)
+
+# Plot the influential points
+par(mfrow = c(2, 2))
+for (i in 1:4) {
+  plot(influential_points[, i], influential_points$y,
+       xlab = names(influential_points)[i], ylab = "y", main = "Influential Points",
+       pch = 19, col = "blue")
+}
+
 ```
+
+```{r}
+
+# 3. Influential observations (Cook's distance and leverage)
+cooks_dist <- cooks.distance(model3)
+hat_values <- hatvalues(model3)
+plot(cooks_dist, pch = 19, main = "Cook's Distance")
+plot(hat_values, pch = 19, main = "Leverage")
+
+# Identify the indices of the 20 largest Cook's distances
+top_influential <- order(cooks_dist, decreasing = TRUE)[1:20]
+
+# Subset the data to the most influential points
+influential_points <- train_data[top_influential, ]
+
+# Extract the values of the influential points
+influential_values <- as.data.frame(influential_points[, -ncol(influential_points)])
+
+# Print the values of the influential points
+print(influential_values)
+
+# Plot the influential points
+par(mfrow = c(2, 2))
+for (i in 1:4) {
+  plot(influential_points[, i], influential_points$y,
+       xlab = names(influential_points)[i], ylab = "y", main = "Influential Points",
+       pch = 19, col = "red")
+}
+
+```
+
+## VIF values
+
+```{r}
+# 4. Collinearity assessment (Variance Inflation Factor)
+vif(model2)
+vif(model3)
+```
+
+Comparing the VIF outputs for model2 and model3, we can observe the following:
+
+For model2:
+
+-   The interaction term "duration:housing" has a GVIF of 5.685354, indicating some degree of multicollinearity between these variables.
+
+-   The interaction term "marital:day_of_week" has a very high GVIF of 3.676400e+05, suggesting severe multicollinearity between these variables.
+
+-   The other variables, including the main effects, have relatively lower GVIF values, indicating lower levels of multicollinearity.
+
+For model3:
+
+-   The interaction term "housing:euribor3m" has a very high GVIF of 2.979348e+03, indicating a significant multicollinearity issue between these variables.
+
+-   The interaction term "marital:day_of_week" also has a high GVIF of 3.189494e+05, suggesting severe multicollinearity between these variables.
+
+-   The other variables, including the main effects, have lower GVIF values, indicating lower levels of multicollinearity.
+
+In terms of performance or correction, both models exhibit multicollinearity issues, particularly in their interaction terms. However, model3 shows a higher degree of multicollinearity, as indicated by the significantly higher GVIF values for the interaction terms compared to model2. This suggests that the interactions in model3 may be causing a more severe multicollinearity problem.
+
+Whatever the case, as it had been devised in the designing phase of the models, the specific requirement of the exercise made it hard to find other variable combinations that had better values in terms of VIF without having a significant negative impact in model performance. For that reason, we should consider these good results.
+
+## ROC
 
 ```{r}
 # 6. ROC curve and AUC
@@ -333,4 +407,37 @@ The statement refers to the Area Under the Curve (AUC) value obtained from analy
 
 In this case, the AUC value is 0.9965. An AUC of 1 represents a perfect classifier, while an AUC of 0.5 indicates a random classifier. Therefore, an AUC of 0.9965 is quite high, indicating that the model has a strong discriminatory power and performs exceptionally well in distinguishing between the positive and negative classes.
 
-Based on the provided AUC value, it can be concluded that the model has excellent predictive performance. It demonstrates a high true positive rate and a low false positive rate, suggesting that it is capable of accurately classifying instances in the dataset. The closer the AUC is to 1, the better the model's performance is in terms of its ability to discriminate between the classes.
+Based on the provided AUC value, it can be concluded that the models have excellent predictive performance. It demonstrates a high true positive rate and a low false positive rate, suggesting that they are capable of accurately classifying instances in the dataset. The closer the AUC is to 1, the better the model's performance is in terms of its ability to discriminate between the classes.
+
+```{r}
+cat("Model 2:\n")
+AIC(model2)
+BIC(model2)
+
+cat("Model 3:\n")
+AIC(model3)
+BIC(model3)
+
+
+```
+
+## Justification for Model Selection: Model3
+
+In this analysis, we have evaluated two models, Model2 and Model3, and based on their performance, we have decided to select Model3 as the final model. The decision is justified by considering multiple evaluation metrics and criteria, including the AIC, BIC, Hosmer-Lemeshow test, and VIF values.
+
+Starting with the AIC and BIC values, these metrics provide insights into the goodness-of-fit and model complexity. While Model2 has slightly better AIC and BIC values compared to Model3, it is important to note that the difference is very small. The AIC of Model2 is 704.7237, and the AIC of Model3 is 705.3971. Similarly, the BIC of Model2 is 874.663, and the BIC of Model3 is 875.3364. Despite the slight advantage of Model2 in terms of these criteria, the difference is negligible, and other factors should be taken into account for model selection.
+
+Next, we consider the results of the Hosmer-Lemeshow goodness-of-fit test. This test evaluates how well the model fits the observed data based on a chi-square test statistic. Both Model2 and Model3 exhibit non-significant p-values, indicating good fits. The chi-square statistic for Model2 is 2.8191, and for Model3 it is 2.6101. Although Model2 has a slightly higher chi-square value, the difference is minimal, and both models demonstrate satisfactory goodness-of-fit.
+
+Furthermore, we compare the VIF (Variance Inflation Factor) values between Model2 and Model3 to assess multicollinearity. The VIF values indicate the extent to which predictor variables are correlated with each other. Lower VIF values suggest lower levels of multicollinearity. Upon comparing the VIF values, we find that Model3 generally has lower VIF values compared to Model2. This indicates a relatively lower degree of multicollinearity in Model3, which is a desirable characteristic for a robust model.
+
+Considering these factors, including the slight advantage of Model2 in AIC and BIC, the comparable goodness-of-fit based on the Hosmer-Lemeshow test, and the lower VIF values of Model3, we conclude that Model3 demonstrates slightly better performance and offers a more robust model for our analysis. The small differences in AIC and BIC can be attributed to the different considerations and assumptions underlying these criteria.
+
+It is important to note that model selection is a complex process, and the choice of the final model should not solely rely on individual metrics. Context, interpretability, and other relevant factors should also be considered. The selection of Model3 is based on a comprehensive assessment of multiple criteria, and it provides a reasonable balance between model performance, goodness-of-fit, and multicollinearity.
+
+```{r, echo=FALSE}
+# R code for model selection
+model3
+```
+
+By selecting Model3, we aim to leverage its slightly better performance and lower multicollinearity to gain more accurate predictions and insights into the relationship between the predictors and the target variable.
