@@ -1,0 +1,282 @@
+---
+title: "Simple Linear Regression_lab - Pre"
+author: "Lídia Montero & Josep Franquet"
+date: '2021'
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+editor_options:
+  chunk_output_type: console
+---
+
+# Load Data 
+
+```{r}
+# Clear plots
+if(!is.null(dev.list())) dev.off()
+
+# Clean workspace
+rm(list=ls())
+
+setwd("/home/pau/Escriptori/adei/apunts")
+load("Anscombe73raw.RData")
+
+ls()
+anscombe
+
+attach(anscombe) #Thus, we will not have to write anscombe$var when accessing a variable
+summary(anscombe) #Summary of the whole data (at a variable level)
+
+```
+
+
+### Teoria
+
+Los modelos de regresión lineal son una técnica estadística utilizada para estudiar la relación entre una variable dependiente y una o más variables independientes. La regresión lineal se puede utilizar para predecir el valor de la variable dependiente a partir de las variables independientes.
+
+Hay varios tipos de modelos de regresión lineal, algunos de los cuales se describen a continuación:
+
+1. **Regresión lineal simple**: Es un modelo en el que hay una sola variable independiente y una variable dependiente. Se utiliza para predecir la relación entre dos variables continuas.
+
+2. **Regresión lineal múltiple**: Es un modelo en el que hay dos o más variables independientes y una variable dependiente. Se utiliza para predecir la relación entre varias variables continuas.
+
+3. **Regresión lineal polinómica**: Es un modelo en el que se ajusta una curva polinómica a los datos en lugar de una línea recta. Se utiliza cuando la relación entre las variables no es lineal.
+
+4. **Regresión logística**: Es un modelo en el que se utiliza una función logística para predecir una variable dependiente categórica (por ejemplo, sí/no, éxito/fracaso) a partir de una o más variables independientes.
+
+5. **Regresión de Poisson**: Es un modelo en el que se utiliza una distribución de Poisson para predecir el número de eventos raros en un período de tiempo determinado, a partir de una o más variables independientes.
+
+Cada modelo de regresión lineal tiene sus propias suposiciones y limitaciones, y se debe elegir el modelo adecuado en función de los datos y el problema que se esté abordando.
+
+
+### Regresión simple
+
+El modelo de regresión lineal simple es una técnica estadística utilizada para estudiar la relación entre dos variables continuas: una variable independiente y una variable dependiente. El objetivo es encontrar la línea recta que mejor se ajuste a los datos y que pueda utilizarse para predecir el valor de la variable dependiente a partir de la variable independiente.
+
+Para ajustar un modelo de regresión lineal simple, se deben realizar los siguientes pasos:
+
+1. Recolectar los datos de la variable independiente y la variable dependiente.
+
+2. Graficar los datos en un diagrama de dispersión para visualizar la relación entre las variables.
+
+3. Calcular la correlación entre las variables para determinar la fuerza y dirección de la relación.
+
+4. Estimar la ecuación de la línea recta que mejor se ajusta a los datos utilizando el método de mínimos cuadrados.
+
+5. Evaluar la calidad del ajuste utilizando medidas como el coeficiente de determinación (R²) y el error estándar de la estimación (SEE).
+
+6. Utilizar la ecuación de la línea recta para predecir el valor de la variable dependiente a partir de la variable independiente.
+
+Los modelos de regresión lineal simple son útiles para analizar la relación entre dos variables continuas y para predecir el valor de la variable dependiente a partir de la variable independiente. Sin embargo, es importante tener en cuenta que este modelo se basa en ciertas suposiciones, como la linealidad y la independencia de los errores, y que su aplicación debe ser cuidadosa y crítica.
+
+
+### Regresión múltiple
+
+El modelo de regresión lineal múltiple es una técnica estadística utilizada para estudiar la relación entre una variable dependiente y dos o más variables independientes. El objetivo es encontrar la ecuación de una superficie de ajuste que mejor se adapte a los datos y que pueda utilizarse para predecir el valor de la variable dependiente a partir de las variables independientes.
+
+Para ajustar un modelo de regresión lineal múltiple, se deben realizar los siguientes pasos:
+
+1. Recolectar los datos de la variable dependiente y las variables independientes.
+
+2. Graficar los datos para visualizar la relación entre las variables.
+
+3. Calcular la correlación entre las variables para determinar la fuerza y dirección de la relación.
+
+4. Estimar la ecuación de la superficie de ajuste utilizando el método de mínimos cuadrados.
+
+5. Evaluar la calidad del ajuste utilizando medidas como el coeficiente de determinación (R²) y el error estándar de la estimación (SEE).
+
+6. Utilizar la ecuación de la superficie de ajuste para predecir el valor de la variable dependiente a partir de las variables independientes.
+
+Los modelos de regresión lineal múltiple son útiles para analizar la relación entre una variable dependiente y dos o más variables independientes y para predecir el valor de la variable dependiente a partir de las variables independientes. Sin embargo, al igual que con los modelos de regresión lineal simple, es importante tener en cuenta que este modelo se basa en ciertas suposiciones y que su aplicación debe ser cuidadosa y crítica.
+
+## Set A
+
+```{r}
+# Set A
+par(mfrow=c(1,1))
+plot(XA,YA,pch=19)
+ma<-lm(YA~XA,data=anscombe)
+ls() #New linear model: ma
+summary(ma)
+
+# Default residual analysis:
+par(mfrow=c(2,2))
+plot(ma)
+
+# Metrics related to residuals:
+library(car)
+par(mfrow=c(1,1))
+residualPlot(ma)
+rstan <- rstandard(ma) #Standardized residuals
+rstud <- rstudent(ma) #Studentized residuals
+dcook <- cooks.distance(ma) #Cook distance for a posteriori influential observations
+dcook
+leverage <- hatvalues (ma) #Leverage of observations for a priori influential observations
+leverage
+
+plot(ma$fitted.values, rstan) #Standardized residuals vs fitted values
+plot(ma$fitted.values, rstud) #Studentized residuals vs fitted values
+
+marginalModelPlots(ma)
+
+crPlot(ma, "XA") #Partial regression between XA and YA
+# Used to check linearity between regressor and response
+
+dfbetas(ma) #Beta coefficients without observation i
+
+# Detection of influential data:
+matplot(dfbetas(ma), type="l", col=3:4,lwd=2)
+lines(sqrt(cooks.distance(ma)),col=1,lwd=3)
+abline(h=2/sqrt(dim(anscombe)[1]), lty=3,lwd=1,col=5)
+abline(h=-2/sqrt(dim(anscombe)[1]), lty=3,lwd=1,col=5)
+abline(h=sqrt(4/(dim(anscombe)[1]-length(names(coef(ma))))), lty=3,lwd=1,col=6)
+llegenda<-c("Cook d", names(coef(ma)), "DFBETA Cut-off", "Ch-H Cut-off")
+# legend(locator(n=1), legend=llegenda, col=1:length(llegenda), # lty=c(1,2,2,2,3,3), lwd=c(3,2,2,2,1,1))
+
+# Dffits: another metric for influential data:
+par(mfrow=c(1,1))
+dffits(ma)
+plot(dffits(ma),type="l",lwd=3)
+pp=length(names(coef(ma)))
+lines(sqrt(cooks.distance(ma)),col=3,lwd=2)
+abline(h=2*(sqrt(pp/(nrow(ma)-pp))),lty=3,lwd=1,col=2)
+abline(h=-2*(sqrt(pp/(nrow(ma)-pp))),lty=3,lwd=1,col=2)
+llegenda<-c("DFFITS","DFFITS Cut-off","Cooks D")
+# legend(locator(n=1),legend=llegenda,col=1:3,lty=c(1,3,1),lwd=c(3,1,2))
+
+# AIC and BIC:
+AIC(ma)
+AIC(ma, k=log(nrow(anscombe))) #This is used to calculate BIC of a linear model
+
+#Stepwise regression:
+ma_0 <- lm(YA ~ 1, anscombe)
+step(ma_0, ~XA, direction="forward",data=anscombe)
+```
+
+
+```{r}
+# Set B
+par(mfrow=c(1,1))
+plot(XB,YB,pch=19,col="red")
+mb<-lm(YB~XB,data=anscombe)
+lines(XB,fitted(mb),col="red")
+ls()
+summary(mb)
+
+par(mfrow=c(2,2))
+plot(mb)
+par(mfrow=c(1,1))
+residualPlot(mb)
+rstan_b <- rstandard(mb) #Standardized residuals
+rstud_b <- rstudent(mb) #Studentized residuals
+plot(mb$fitted.values, rstan_b) #Standardized residuals vs fitted values
+plot(mb$fitted.values, rstud_b) #Studentized residuals vs fitted values
+marginalModelPlots(mb)
+
+crPlot(mb, "XB") # Partial regression between XB and YB
+# Used to check linearity between regressor and response
+
+mbb<-lm(YB~XB+I(XB^2),data=anscombe)
+summary(mbb)
+rstan_b_2 <- rstandard(mbb) #Standardized residuals
+rstud_b_2 <- rstudent(mbb) #Studentized residuals
+plot(mbb$fitted.values, rstan_b_2) #Standardized residuals vs fitted values
+plot(mbb$fitted.values, rstud_b_2) #Studentized residuals vs fitted values
+
+plot(YB~XB,pch=19,col="red")
+q <- seq(3, 10, 0.01)
+y <- -5.9957343 + 2.7808392*q -0.1267133*q^2
+plot(q,y,type='l',col='navy', lwd=3)
+points(YB~XB, col = "red", pch = 19)
+```
+
+
+```{r}
+# Set C
+par(mfrow=c(1,1))
+plot(XC,YC,pch=19,col="darkgreen")
+text(XC,YC,label=row.names(anscombe),col="darkgreen",adj=1.5)
+mc<-lm(YC~XC,data=anscombe)
+lines(XC,fitted(mc),col="darkgreen")
+ls()
+summary(mc)
+
+par(mfrow=c(2,2))
+plot(mc)
+
+par(mfrow=c(1,1))
+Boxplot(resid(mc),col="darkgreen")
+cooks.distance(mc)
+Boxplot(cooks.distance(mc),col="darkgreen")
+
+residualPlot(mc)
+rstan <- rstandard(mc) #Standardized residuals
+rstud <- rstudent(mc) #Studentized residuals
+dcook <- cooks.distance(mc) #Cook distance
+dcook
+leverage <- hatvalues (mc) #Leverage of observations: a priori influential observations
+leverage
+
+plot(mc$fitted.values, rstan) #Standardized residuals vs fitted values
+plot(mc$fitted.values, rstud) #Studentized residuals vs fitted values
+
+dfbetas(mc) #Beta coefficients without observation i
+
+mcc<-lm(YC~XC,data=anscombe[-3,])
+summary(mcc)
+par(mfrow=c(2,2))
+plot(mcc)
+```
+
+
+```{r}
+# Set D
+par(mfrow=c(1,1))
+plot(XD,YD,pch=19,col="blue")
+text(XD,YD,label=row.names(anscombe),col="blue",adj=1.5)
+md<-lm(YD~XD,data=anscombe)
+summary(md)
+lines(XD,fitted(md),col="blue")
+ls()
+summary(md)
+
+par(mfrow=c(2,2))
+plot(md)
+
+resid(md)
+cooks.distance(md)
+hatvalues(md)
+
+# Better approximation:
+mdd<-lm(YD~XD,data=anscombe[-8,])
+summary(mdd)
+mean(YD[-8])
+```
+
+All in all:
+
+```{r}
+### Prospecció dels jocs de dades A,B,C,D
+par(mfrow=c(2,2))
+anscombe.lmA <- lm(anscombe$YA ~ anscombe$XA, data=anscombe)
+plot(anscombe$XA, anscombe$YA,pch=19,col=1)
+lines(anscombe$XA,anscombe.lmA$fitted.values, col=1, lty=3,lwd=2)
+text(x=anscombe$XA,y=anscombe$YA,labels=row.names(anscombe),adj=1.1, col=1)
+
+anscombe.lmB <- lm(anscombe$YB ~ anscombe$XB, data=anscombe)
+plot(anscombe$XB, anscombe$YB,pch=19,col=2)
+lines(anscombe$XB,anscombe.lmB$fitted.values, col=2, lty=3,lwd=2)
+text(x=anscombe$XB,y=anscombe$YB,labels=row.names(anscombe),adj=1.1, col=2)
+
+anscombe.lmC <- lm(anscombe$YC ~ anscombe$XC, data=anscombe)
+plot(anscombe$XC, anscombe$YC,pch=19,col=3)
+lines(anscombe$XC,anscombe.lmC$fitted.values, col=3, lty=3,lwd=2)
+text(x=anscombe$XC,y=anscombe$YC,labels=row.names(anscombe),adj=1.1, col=3)
+
+anscombe.lmD <- lm(anscombe$YD ~ anscombe$XD, data=anscombe)
+plot(anscombe$XD, anscombe$YD,pch=19,col=4)
+lines(anscombe$XD,anscombe.lmD$fitted.values, col=4, lty=3,lwd=2)
+text(x=anscombe$XD,y=anscombe$YD,labels=row.names(anscombe),adj=1.1, col=4)
+```
