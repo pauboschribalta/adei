@@ -340,7 +340,7 @@ ind_cluster <- ind_cluster[!rownames(ind_cluster) %in% extreme_ind, ]
 ggplot(ind_cluster, aes(x = Dim.1, y = Dim.2, color = factor(cluster))) +
   geom_point() +
   ggtitle("K-means Clustering") +
-  scale_color_manual(values = colors) +
+  scale_color_manual(values = c("red", "blue", "green", "yellow", "purple")) +
   labs(color = "Cluster")
 
 
