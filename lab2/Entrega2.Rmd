@@ -14,7 +14,7 @@ geometry: left=1.9cm,right=1.9cm,top=1.25cm,bottom=1.52cm
 fontsize: 18pt
 classoption: a4paper
 editor_options:
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -40,7 +40,7 @@ package.check <- lapply(requiredPackages, FUN = function(x) {
 Obtenim les dades i les classifiquem:
 
 ```{r dataset, include=TRUE}
-setwd("/home/pau/Escriptori/adei/lab2")
+#setwd("/home/pau/Escriptori/adei/lab2")
 load("./bank-additional-clean.RData")
 ```
 
@@ -61,6 +61,7 @@ df$default <- NULL
 ## Anàlisis CA
 
 ### Transformació de la variable duration
+
 ## Anàlisis PCA
 
 ```{r}
@@ -158,7 +159,6 @@ fviz_pca_ind(pca_result, axes = 1:2, show.labels = FALSE,
   
 ```
 
-
 In dimension 1:
 
 ```{r}
@@ -172,7 +172,6 @@ contrib.extremes1 <- c(row.names(df)[rang1[1:10]],
 fviz_pca_ind(pca_result, select.ind = list(names=contrib.extremes1))
 ```
 
-
 In dimension 2:
 
 ```{r}
@@ -182,7 +181,6 @@ rang2 <- order(pca_result$ind$coord[, 2])
 contrib.extremes2 <- row.names(df)[rang2[1:10]]
 fviz_pca_ind(pca_result, select.ind = list(names=contrib.extremes2))
 ```
-
 
 Between both dimensions:
 
@@ -217,8 +215,7 @@ ggplot(data = data.frame(ind_coord, habillage),
 -   The x-axis represents the first principal component, and the y-axis represents the second principal component. These two components together explain the most variance in the data.
 -   The plot can help identify patterns or clusters of individuals in the data. For example, if individuals with the same value of the target variable tend to cluster together, this could indicate a relationship between the target variable and the principal components.
 
-As can be seen in the graphs, the groups of outliers from Dimension are relatively close to each other(forming clusters), but with a variety of isolated points in relation to the others.
-As for the Dimension 2 outliers, a single cluster of outliers is formed, and with a variety of isolated points all around.
+As can be seen in the graphs, the groups of outliers from Dimension are relatively close to each other(forming clusters), but with a variety of isolated points in relation to the others. As for the Dimension 2 outliers, a single cluster of outliers is formed, and with a variety of isolated points all around.
 
 ```{r}
 # Identify extreme individuals
@@ -257,7 +254,6 @@ fviz_contrib(pca_result, choice = "var", axes = 1) +
   scale_color_manual(values = c("#FFA500", "#008000", "#0000FF"))
 ```
 
-
 ### 4. Perform a PCA taking into account also supplementary variables
 
 ```{r}
@@ -276,8 +272,7 @@ fviz_eig(pca_result2, addlabels = TRUE) +
   scale_color_manual(values = c("#FFA500", "#008000", "#0000FF"))
 ```
 
-As it can be observed, there is a slight change in the weight of contributions from different dimensions, as well as from some variables, as subtly appreciated in the first plot. Throughout the process, various tests were performed, such as modifying the way the 'y' variable is presented, such as passing it as a supplementary continuous (boolean) variable instead of a categorical one, resulting in some changes, although not very significant.
-In conclusion, there have been changes in the weights, although not significant enough to significantly alter the workflow dynamics.
+As it can be observed, there is a slight change in the weight of contributions from different dimensions, as well as from some variables, as subtly appreciated in the first plot. Throughout the process, various tests were performed, such as modifying the way the 'y' variable is presented, such as passing it as a supplementary continuous (boolean) variable instead of a categorical one, resulting in some changes, although not very significant. In conclusion, there have been changes in the weights, although not significant enough to significantly alter the workflow dynamics.
 
 ## Clustering PCA
 
@@ -296,8 +291,9 @@ dist<-dist(prc)
 #caclulate the distances, it turns into a matrix
 kc<-kmeans(dist, 5, iter.max=30, trace=TRUE) 
 ```
-We see from the output that in 3 iterations it has converged.
-We now procceed to save in the data frame the number of clusters.
+
+We see from the output that in 3 iterations it has converged. We now procceed to save in the data frame the number of clusters.
+
 ```{r}
 df$claKM = df_numeric$claKM
 
@@ -310,7 +306,46 @@ df_numeric$claKM<-factor(df_numeric$claKM)
 dim(df_numeric)
 cat.res <-catdes(df_numeric,grep("^claKM$", colnames(df_numeric)))
 
+# Assuming df_numeric is your dataframe containing the 'claKM' variable
+# Assuming 'x' and 'y' are the variables you want to plot
+
+# Set the colors based on claKM values
+num_clusters <- 5
+
+# Create a vector of blue-themed colors
+colors <- rgb(0, 0, seq(0, 1, length.out = num_clusters+1), max = 1)
+colors <- colors[-1]  # Remove the first color (black)
+
+# Print the vector of colors
+print(colors) # Add more colors if needed
+# # Assuming df_numeric is your dataframe containing the 'claKM' variable
+# 
+# # Count the number of data points in each cluster
+cluster_freq <- table(df_numeric$claKM)
+# 
+# # Create a bar plot of cluster frequencies
+barplot(cluster_freq, main = "Cluster Frequencies", xlab = "Cluster", ylab = "Frequency", col = colors)
+
+
+
 ```
+```{r}
+# Merge cluster information with ind_coord
+ind_cluster <- data.frame(ind_coord, cluster = df_numeric$claKM)
+
+# Filter out extreme individuals
+ind_cluster <- ind_cluster[!rownames(ind_cluster) %in% extreme_ind, ]
+
+# Plot the data with k-means cluster information
+ggplot(ind_cluster, aes(x = Dim.1, y = Dim.2, color = factor(cluster))) +
+  geom_point() +
+  ggtitle("K-means Clustering") +
+  scale_color_manual(values = colors) +
+  labs(color = "Cluster")
+
+
+```
+
 The output shows the results of a cluster analysis based on the K-means algorithm. The analysis was carried out using eight quantitative variables and a categorical variable 'y' representing whether or not the client subscribed to a product.
 
 The first table shows the Eta squared value and p-value for each variable in relation to the cluster variable. The Eta squared value indicates the proportion of variance explained by the cluster variable, and the p-value indicates the statistical significance of the relationship between the variables. The link between the cluster variable and the quantitative variables shows that all the variables have a strong association with the cluster variable, with eta2 values ranging from 0.012 to 0.989. This suggests that the clustering analysis is effective in capturing the differences between the clusters.
@@ -413,7 +448,6 @@ Realitzarem l'anàlisis per la target (duration_fact) i per les variables categ�
 
 #### Duration_fact - job
 
-
 Realitzem la taula que relaciona les dues variables i fem l'anàlisis de correspondència (CA).
 
 ```{r}
@@ -448,7 +482,6 @@ Tal i com podem veure a la gràfica, hi ha diverses categories amb valors molt s
 Podem observar que les feines amb posicions superiors tendeixen a estar més estona a la trucada, mentres que els unemployed estan totalment separats.
 
 #### Duration_fact - Education
-
 
 Igual que amb la parella anterior, realitzem la taula que relaciona les dues variables i fem l'anàlisis de correspondència (CA).
 
@@ -830,11 +863,10 @@ Com a informació addicional, comentar que cap dels individus dins del cluster h
     -   month
 
         1.  aug (10,69%)
-        
-        2.  apr (4,53%) (de forma negativa)
-        
-        En aquest cluster la variable té molt poc pes.
 
+        2.  apr (4,53%) (de forma negativa)
+
+        En aquest cluster la variable té molt poc pes.
 
 -   Cluster 3
 
@@ -845,30 +877,29 @@ Com a informació addicional, comentar que cap dels individus dins del cluster h
         2.  management (17,13%)
 
         3.  self-employed (12,03%)
-        
+
         Aquestes tres categories estan bastant relacionades amb el tipus de feina que són, ja que feines administratives, de control i d'autònom són similars.
-        
+
     -   education
 
         1.  university.degree (68.14%): Aquesta categoria esta bastant relacionada amb els nivells de job descrits anteriorment, ja que són posicions de feina altes i aquí es descriu el nivell més alt d'estudis registrat.
 
         2.  high.school (21.89%) (de forma negativa)
-        
+
     -   month
 
         1.  may (44,01%) (de forma negativa)
-        
-        2.  apr (19,31%) 
-        
-        3.  jul (11,29%)
-        
-        4.  aug (8,31%)
 
+        2.  apr (19,31%)
+
+        3.  jul (11,29%)
+
+        4.  aug (8,31%)
 
 -   Cluster 4
 
     -   month
-    
+
         1.  may (53,49%) (de forma negativa)
 
         2.  apr (40,70%)
@@ -894,7 +925,6 @@ A la taula següent podem veure, per cada cluster, els 5 individus més distants
 ```{r}
 res.hcpc_mca$desc.ind$dist
 ```
-
 
 ```{r}
 res.hcpc_mca$data.clust[which(rownames(res.hcpc_mca$data.clust)%in%names
@@ -971,5 +1001,3 @@ res.hcpc_mca$desc.var$quanti.var
 ```
 
 Si comparem els valors Eta2 dels diferents anàlisis, per PCA ens surt un valor superior (0.48) que per MCA (0.025). Això significa que per PCA, la variable ha tingut més pes a l'hora de crear els clusters que en MCA.
-
-

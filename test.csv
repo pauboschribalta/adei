@@ -1,0 +1,17 @@
+Cluster,Type of Consumer,Details
+1,Loyal customers,Longer duration of calls
+1,Loyal customers,Higher number of contacts
+1,Loyal customers,Higher product subscription rate
+1,Loyal customers,Sensitive to economic factors
+2,Economic-sensitive,Lower number of contacts
+2,Economic-sensitive,Lower product subscription rate
+2,Economic-sensitive,Highly sensitive to economic factors
+3,Early adopters,Highest number of contacts
+3,Early adopters,Highest product subscription rate
+3,Early adopters,Highly responsive to marketing campaigns
+4,Price-sensitive,Highly sensitive to consumer price index
+4,Price-sensitive,Highly sensitive to consumer confidence index
+4,Price-sensitive,Lower duration of calls
+5,Potential customers,Higher duration of calls
+5,Potential customers,Higher number of contacts
+5,Potential customers,Less likely to subscribe to the product
