@@ -1,0 +1,179 @@
+---
+title: "Case Study"
+author: "Daniel Villalobos"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE, echo=FALSE}
+# Load Required Packages: to be increased over the course
+options(contrasts=c("contr.treatment","contr.treatment"))
+
+requiredPackages <- c("chemometrics","FactoMineR","car", "factoextra","knitr","missMDA")
+
+#use this function to check if each package is on the local machine
+#if a package is installed, it will be loaded
+#if any are not, the missing package(s) will be installed and loaded
+package.check <- lapply(requiredPackages, FUN = function(x) {
+  if (!require(x, character.only = TRUE)) {
+    install.packages(x, dependencies = TRUE)
+    library(x, character.only = TRUE)
+  }
+})
+```
+
+## Carrega inicial de les dades
+```{r}
+setwd("/Users/danielvillalobostorrejon/Documents/Profe/ADEI/2022/segon_semestre/lab10")
+load("/Users/danielvillalobostorrejon/Documents/Profe/ADEI/2022/segon_semestre/lab4/BankMarketing-Clean.RData")
+```
+
+
+```{r}
+summary(df)
+```
+
+```{r}
+df$emp.var.rate <- as.numeric(df$emp.var.rate)
+df$cons.price.idx <- as.numeric(df$cons.price.idx)
+df$cons.conf.idx <- as.numeric(df$cons.conf.idx)
+df$euribor3m <- as.numeric(df$euribor3m)
+df$nr.employed <- as.numeric(df$nr.employed)
+df$pdays <- NULL
+vars_con <- c("age", "duration", "emp.var.rate", "cons.price.idx","cons.conf.idx","euribor3m", "nr.employed")
+vars_dis <- c("job", "marital", "education", "default", "day_of_week", "education_grouped", "duration_cuted", "mout")
+vars_res <- c("y")
+```
+
+
+### Modelització
+
+```{r}
+# Predict duration with the variable age
+m1 <- lm(formula = duration ~ age, data=df )
+
+summary(m1)
+```
+
+
+```{r}
+# Using stepwise methodology to get the most optimize linear regression model with Akaike criteria
+m2 <- lm(formula= duration ~ ., data =df)
+
+m_step = step(m2)
+summary(m_step)
+```
+
+
+```{r}
+optimize = lm(formula = duration ~ job + default + loan + month + poutcome + 
+    y + mout, data = df)
+summary(optimize)
+```
+
+
+### Residuals Analysis
+
+```{r}
+plot(optimize)
+```
+
+
+### Target variable transformation?
+
+```{r}
+library(MASS)
+boxcox(optimize,data=df)
+```
+
+* Si lambda es igual a 0: se debe aplicar una transformación logarítmica a la variable original.
+* Si lambda es mayor que 0 pero cercano a 0: se debe aplicar una transformación raíz cuadrada a la variable original.
+* Si lambda es igual a 1: no se requiere ninguna transformación adicional, ya que la variable original ya sigue una distribución normal.
+* Si lambda es mayor que 1: se debe aplicar una transformación exponencial a la variable original.
+* Si lambda es menor que 0 pero cercano a -1: se debe aplicar una transformación inversa a la variable original.
+* Si lambda es menor que -1: se debe aplicar una transformación inversa y una transformación exponencial a la variable original
+
+
+```{r}
+optimize_t = lm(formula = sqrt(duration) ~ job + default + loan + month + poutcome + 
+    y + mout, data = df)
+summary(optimize_t)
+
+# Check: ONLY POSITIVE AN NON-ZERO VALUES
+# boxTidwell(sqrt(duration) ~ job + default + loan + month + poutcome +
+#     y + mout,data=df)
+```
+
+
+### Variance inflation factor
+
+El factor de inflación de la varianza (VIF, por sus siglas en inglés) es una medida que se utiliza en estadísticas para evaluar la multicolinealidad en un modelo de regresión
+
+La multicolinealidad es un problema que ocurre cuando las variables predictoras están altamente correlacionadas entre sí, lo que puede hacer que los coeficientes estimados sean imprecisos o poco confiables.
+
+```{r}
+
+library(car)
+vif(optimize)
+
+```
+
+Treshold vif de 5 -> Eliminar variable del modelo
+
+### Other tools to check residuals
+
+```{r}
+avPlots(optimize,id=list(method=cooks.distance(optimize),n=5))
+```
+
+```{r}
+crPlots(optimize,id=list(method=cooks.distance(optimize),n=5))
+```
+
+
+```{r}
+library(effects)
+plot(allEffects(optimize))
+```
+
+```{r}
+Anova(optimize)
+```
+
+
+```{r}
+
+marginalModelPlots(optimize)
+```
+
+```{r}
+influencePlot(optimize)
+```
+
+```{r}
+df[row.names.data.frame(df)==27690,]
+```
+
+
+### Prediccions
+
+```{r}
+newdata = df[1, ]
+predict(optimize, newdata)
+```
+
+```{r}
+newdata = df[2600, ]
+predict(optimize, newdata, )
+```
+
+
+```{r}
+newdata = df[4500, ]
+predict(optimize, newdata, )
+```
+

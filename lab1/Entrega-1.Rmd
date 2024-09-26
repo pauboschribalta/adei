@@ -1,20 +1,21 @@
 ---
 title: "Entrega-1"
+author: "Ivan Cala Mesa - Pau Bosch Ribalta"
 output:
-  pdf_document: default
-  word_document: default
   html_document: default
-date: "2023-02-20"
+  word_document: default
+  pdf_document:
+    toc: true
+    toc_depth: 3
+date: "19/03/2023"
 ---
-
-Posada apunt i descarrega de paquets necessàris per a importar les funcions necessàries.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 # Load Required Packages: to be increased over the course
 options(contrasts=c("contr.treatment","contr.treatment"))
 
-requiredPackages <- c("chemometrics","FactoMineR","car", "dplyr","knitr","missMDA")
+requiredPackages <- c("chemometrics","FactoMineR","car", "dplyr","knitr","missMDA", "mvoutlier")
 
 #use this function to check if each package is on the local machine
 #if a package is installed, it will be loaded
@@ -37,7 +38,7 @@ Obtenim les dades:
 df <- read.csv2("./bank-additional-full.csv")
 ```
 
-Agafem una mostra de 5000 persones de forma aleatoria per poder fer el nostre estudi. L'única condició que posarem serà que hi hagi un rang de y = yes
+Agafem una mostra de 5000 persones de forma aleatoria per poder fer el nostre estudi. L'única condició que posarem serà que hi hagi un rang de y = yes determinat per poder realitzar un bon estudi de les dades.
 
 ```{r}
 set.seed(49643638)
@@ -99,13 +100,13 @@ Agruparem en quatre noves categories: Jove[0,25], Jove-Adult[26,45], Adult[46,65
 
 Realitzem aquesta distinció pels següents motius:
 
--   Jove: No solen tenir gaire poder adquisitiu propi
+-   **Jove:** No solen tenir gaire poder adquisitiu propi
 
--   Jove-Adult: És quan s'acostumen a fer més plans de futur i a tenir més capacitat econòmica
+-   **Jove-Adult:** És quan s'acostumen a fer més plans de futur i a tenir més capacitat econòmica
 
--   Adult: Solen ser persones amb una vida estable i sense gaires canvis econòmics grans
+-   **Adult:** Solen ser persones amb una vida estable i sense gaires canvis econòmics grans
 
--   Gran: Persones amb la vida feta, sense canvis econòmics (Com que l'edat més gran registrada és 88 anys, entendrem que no tenim outliers)
+-   **Gran:** Persones amb la vida feta, sense canvis econòmics (Com que l'edat més gran registrada és 88 anys, entendrem que no tenim outliers)
 
 La variable passarà a ser categòrica.
 
@@ -198,7 +199,7 @@ barplot(100*prop.table(table(df$education)),
 ```{r}
 pie(prop.table(table(df$housing)),
         col = c("brown3", "yellow2", "green3"),
-        main = "Distribució de hipotèques")
+        main = "Distribució d'hipotèques")
 legend("right", fill = c("brown3", "yellow2", "green3") , legend = paste(100*prop.table(table(df$housing)), "%"))
 ```
 
@@ -275,7 +276,7 @@ hist(df$campaign,
 #### Pdays
 
 ```{r}
-pdays_aux <- subset(df$pdays, df$pdays != 999)
+pdays_aux <- subset(df$pdays, df$pdays != 999) #Deixem fora els valors 999 ja que no són vàlids
 hist(pdays_aux,
      col = "blue4",
               ylim = c(0, 30),
@@ -382,6 +383,7 @@ hist(df$nr.employed,
 pie(prop.table(table(df$y)),
         col = c("brown3", "green3"),
         main = "Distribució de la variable y")
+legend("right", fill = c("brown3", "green3") , legend = paste(100*prop.table(table(df$y)), "%"))
 ```
 
 ## Qualitat de les dades
@@ -394,14 +396,12 @@ Passem tots els valors "unknown" a NA's per tractar-los com a missings i contem 
 
 ```{r}
 df[df == "unknown"] <- NA
-
-#Mostrem el nombre de missings per variable
 colSums(is.na(df))
 ```
 
 #### Nombre d'errors
 
-1- Que una persona tingui pdays de 999 i que previous "yes" és una contradicció
+1- Que una persona tingui pdays de 999 i que previous "yes" és una contradicció. Trobem el número de vegades que es dona aquesta situació. El nombre d'errors serà aquest multiplicat per dos, ja que els dos valors de la variable passen a ser errors.
 
 ```{r}
 err_ind <- which(df$pdays == 999 & df$previous == "Yes")
@@ -410,9 +410,13 @@ df$previous[err_ind]<-NA
 df$pdays[err_ind]<-NA
 ```
 
+No hem trobat més possibles errors.
+
 #### Nombre d'outliers
 
-Busquem els outliers de les variables utilitzant la tècnica del tercer quantil
+Busquem els outliers de les variables utilitzant la tècnica del tercer quantil.
+
+Per la variable "duration".
 
 ```{r}
 boxplot(df$duration, col = "blue4")
@@ -427,6 +431,8 @@ out_dur <- which(df$duration > treshold)
 length(out_dur)
 ```
 
+Per la variable "campaign".
+
 ```{r}
 boxplot(df$campaign, col = "blue4")
 treshold <- quantile(df$campaign, 0.75)*3
@@ -440,7 +446,7 @@ out_camp <- which(df$campaign > treshold)
 length(out_camp)
 ```
 
-#### Ranking de variables amb més valors NA
+#### Ranking de variables amb més valors NA i errors
 
 ```{r}
 nas_per_var <- data.frame(num_nas = colSums(is.na(df)),
@@ -455,7 +461,7 @@ barplot(nas_per_var$num_nas,
         ylim = c(0, 1400),
         col = "blue4",
         ylab = "Nombre de NA's",
-        main = "Ranking de variables amb més NA's",
+        main = "Ranking de variables amb més NA's i errors",
         las = 2)
 ```
 
@@ -468,18 +474,14 @@ df$pdays[err_ind]<-999
 df$previous[err_ind]<-"Yes"
 ```
 
-#### Afegim variable que conta els NA
-
-```{r}
-df$na_count <- apply(df, 1, function(x) sum(is.na(x)))
-```
-
 #### Nombre de missings
 
 ```{r}
 n_missings <- rowSums(is.na(df))
 table(n_missings)
 ```
+
+A la taula podem veure la distribució del nombre de missings pel nombre d'individus que tenen aquest nombre de missings.
 
 #### Nombre d'errors
 
@@ -498,9 +500,11 @@ out_ind <- rowSums(cbind(as.numeric(df$duration %in% out_dur), as.numeric(df$cam
 table(out_ind)
 ```
 
-### Imputació de missings
+Igual que amb els missings, a la taula podem veure la distribució del nombre d'outliers pel nombre d'individus que tenen aquest nombre de desviacions.
 
-Abans d'imputar els missings, passarem a NA's els index de les variables que hem trobat errors i outliers.
+#### Afegim variable que conti els NA
+
+Abans de contar els missings, passarem a NA's els index de les variables que hem trobat errors o outliers.
 
 ```{r}
 df$campaign[out_camp]<-NA
@@ -508,16 +512,39 @@ df$duration[out_dur]<-NA
 df$previous[err_ind]<-NA
 ```
 
+Creem la nova variable i contem els NA's
+
+```{r}
+df$na_count <- apply(df, 1, function(x) sum(is.na(x)))
+```
+
+#### Relació entre grup d'edat i valors atípics
+
+Respecte els grups d'edat que hem definit anteriorment, volem veure quin d'aquests grups és més propenç a tenir missings (dins dels missings hi ha outliers i errors).
+
+```{r}
+missings_edat <- aggregate(df$na_count, by = list(df$age), sum)
+missings_edat <- missings_edat[order(missings_edat$x, decreasing = TRUE), ]
+names(missings_edat) <- c("Grup d'edat", "Missings")
+missings_edat
+```
+
+A la taula podem veure la distribució de missings per grups d'edat (La primera columna sols és un identificador del grup d'edat, no aporta cap informació).
+
+### Imputació de missings
+
 #### Variables categòriques
 
 Imputem tots els NAs que tenim en el conjunt de variables categòriques (var_cat).
 
-Dades abans de imputar.
+Dades abans d'imputar.
 
 ```{r}
 var_cat <- c("age", "job", "marital", "education", "housing", "loan", "contact", "month", "day_of_week", "previous", "poutcome", "y") #Obviarem la variable "default" ja que té masses missings per imputar
 summary(df[,var_cat])
 ```
+
+Dades després d'imputar.
 
 ```{r}
 res.immca<-imputeMCA(df[,var_cat],ncp = length(var_cat)-1)
@@ -536,7 +563,7 @@ var_num <- c("duration", "campaign", "emp.var.rate", "cons.conf.idx", "cons.pric
 summary(df[,var_num])
 ```
 
-Imputació dels missings.
+Dades després d'imputar.
 
 ```{r}
 res.impca<-imputePCA(df[,var_num],ncp = length(var_num)-1)
@@ -544,22 +571,13 @@ summary(res.impca$completeObs)
 df[,var_num ]<-res.impca$completeObs
 ```
 
-#### Variables resposta
-
-```{r}
-```
-
 ## Profiling
-
-### Variables numériques
-
-```{r}
-```
 
 ### Variables categòriques
 
+Fem el profiling de la variable "y".
+
 ```{r}
-#edat
 res.catdes<-catdes(df,grep("^y$", colnames(df)), proba=0.05)
 res.catdes$test.chi2 # relació entre les variables y la variable resposta
 res.catdes$category 
@@ -567,21 +585,23 @@ res.catdes$quanti  # Global association to numeric variables
 res.catdes$quali # Global association to factors
 ```
 
-**Euribor3m**: El tipus d'interès a tres mesos (Euribor3m) és la variable més fortament relacionada amb la variable target "y" segons el nostre analisi i tractament de variables. Si l'Euribor3m és baix, és més probable que el client contracti el dipòsit a termini. Si aquest és alt, també és l'influenciador més gran en què el resultat acabi sent negatiu.
+**Mes**: El mes en què es va realitzar l'última campanya de màrqueting sembla estar relacionat amb el resultat negatiu de la variable target "y". En particular, els mesos de maig i juny tenen una taxa de rebuig més alta que altres mesos, mentre que el març, setembre i octubre estan molt relacionades amb un resultat positiu.
+
+**Euribor3m**: El tipus d'interès a tres mesos (Euribor3m) és la variable més fortament relacionada amb la variable target "y" segons el nostre anàlisis i tractament de variables. Si l'Euribor3m és baix, és més probable que el client contracti el dipòsit a termini. Si aquest és alt, també és l'influenciador més gran en què el resultat acabi sent negatiu.
 
 **Poutcome**: La variable Poutcome (resultat de la campanya de màrqueting anterior) també està fortament relacionada amb la variable target "y". Si el resultat de la campanya anterior va ser exitós, és més probable que el client contracti el dipòsit a termini.
 
-**Duration**: També es veu altament relacionada amb el resultat. Això pot ser degut a que com més temps duri la trucada, és més probable que l'agent de vendes hagi tingut l'oportunitat de persuadir el client i fer-li una oferta més atractiva.
+**Duration**: Aquesta variable és una altra que es veu altament relacionada amb el resultat. Això pot ser degut a que com més temps duri la trucada, és més probable que l'agent de vendes hagi tingut l'oportunitat de persuadir el client i fer-li una oferta més atractiva.
 
-**Job**: El tipus de treball del client també sembla estar relacionat amb la variable target "y". Els estudiants i els jubilats tenen més probabilitats de contractar el dipòsit a termini, mentre que els treballadors autònoms i els desocupats tenen menys probabilitats.
-
-**Mes**: El mes en què es va realitzar l'última campanya de màrqueting també sembla estar relacionat amb el resultat negatiu de la variable target "y". En particular, els mesos de maig i juny tenen una taxa de rebuig més alta que altres mesos, mentre que el març, septembre i octubre estan molt relacionats amb un resultat positiu.
+**Job**: El tipus de treball del client també sembla estar relacionat amb la variable target "y". Els treballadors autònoms i els desocupats tenen menys probabilitats de contractar el dipòsit.
 
 **Contact**: La forma de contacte també està relacionada amb el resultat de la variable target "y". Els clients contactats per telèfon fix tenen més probabilitats de rebutjar el dipòsit a termini que aquells contactats per correu electrònic o per telèfon mòbil.
 
 **Age**: En general, els clients més joves tenen més probabilitats de rebutjar el dipòsit a termini que els clients més grans.
 
 **Campaign**: El nombre de contactes realitzats durant l'última campanya de màrqueting també està relacionat amb el resultat negatiu de la variable target "y". En general, com més contactes es realitzin, és més probable que el client rebutgi el dipòsit a termini.
+
+### Variables numériques
 
 ```{r}
 #duration
@@ -592,23 +612,34 @@ res.condes$quanti  # Global association to numeric variables
 res.condes$quali # Global association to factors
 ```
 
-**Contacte**: La forma de contacte utilitzada en l'última campanya de màrqueting té una alta correlació amb la durada de la trucada. En particular, els clients contactats per telèfon mòbil tendeixen a tenir trucades més curtes que aquells contactats per telèfon. La relació negativa entre "Duration" i "Contact" podria explicar-se pel fet que el correu electrònic i el telèfon mòbil són formes de contacte més breus i concises que una trucada telefònica.
+**y**: Hi ha una forta relació amb la variable categòrica y. En particular, té sentit que una duració elevada de la trucada vingui de la ma d'un resultat positiu, perquè l'agent de vendes va poder explicar i vendre el producte més estona.
 
-**Pdays**: La variable "Pdays" representa el número de dies que han passat des que el client va ser contactat per última vegada per a una campanya de màrqueting anterior. Els clients que han estat contactats recentment (és a dir, menor valor en Pdays) tendeixen a tenir trucades més curtes en l'última campanya.
+**Contacte**: La forma de contacte utilitzada en l'última campanya de màrqueting té una alta correlació amb la durada de la trucada. En particular, els clients contactats per telèfon mòbil tendeixen a tenir una taxa més alta de contractació del servei/producte. Això implica una relació creuada amb la duració com ja hem comentat.
 
-**Previous**: La variable "Previous" representa el número de contactes realitzats abans de l'última campanya de màrqueting. En general, com més gran sigui el número de contactes, menor serà la durada de l'última trucada. La relació negativa entre "Duration" i "Previous" podria explicar-se per la possibilitat que l'agent de vendes hagi hagut de repetir informació prèviament proporcionada en trucades anteriors.
+**Previous**: La variable "Previous" representa el número de contactes realitzats abans de l'última campanya de màrqueting. En general, com més gran sigui el número de contactes, menor serà la durada de l'última trucada. La relació entre "Duration" i "Previous" podria explicar-se per la possibilitat que l'agent de vendes hagi hagut de repetir informació prèviament proporcionada en trucades anteriors.
 
-**Job**: El tipus de treball del client també pot estar relacionat amb la durada de la trucada. En particular, els clients desocupats i els estudiants tendeixen a tenir trucades més curtes que altres tipus de treballadors. La relació negativa entre "Duration" i "Job" podria explicar-se pel fet que els clients desocupats i els estudiants poden tenir menys ingressos i, per tant, estar menys interessats en contractar un dipòsit a termini fix, el que es reflectiria en trucades més curtes.
-
-## Identify individuals considered as multivariate outliers
+## Outliers multivariants
 
 ```{r}
-library(chemometrics)
-
 # Perform multivariate outlier analysis using Moutlier function
 outliers <- Moutlier(df[, c("age_num", "duration")], quantile= 0.995)
 top5 <- order(outliers$md, decreasing=TRUE)[1:5]
-print("Els individus multivariate outlier a destacar són els presents a la següent llista:")
 print(top5)
 outliers$cutoff
+
+llmout <- which((outliers$md > outliers$cutoff) & (outliers$rd > outliers$cutoff))
+df$mout <- "No"
+df[llmout, "mout"] <- "Yes"
+```
+
+A la nostra execució final, hem determinat que els nostres individus a destacar que siguin multivariate outliers són els que tenen els identificadors següents:
+
+    724 1951 2023 1581  566
+
+## Exportació
+
+Una vegada hem netejat i triat les nostres dades, exportarem el nou dataset amb el següent codi, que ens guarda el nou conjunt de dades en el directori actual.
+
+```{r}
+save(df, file = "./bank-additional-clean.RData")
 ```

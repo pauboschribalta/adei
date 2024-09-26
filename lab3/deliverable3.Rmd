@@ -1,0 +1,691 @@
+---
+title: "Entrega-3"
+author: "Ivan Cala Mesa - Pau Bosch Ribalta"
+date: "\today"
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: 4
+  html_document:
+    toc: yes
+    toc_depth: '4'
+    df_print: paged
+geometry: left=1.9cm,right=1.9cm,top=1.25cm,bottom=1.52cm
+fontsize: 18pt
+classoption: a4paper
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load Required Packages: to be increased over the course
+options(contrasts=c("contr.treatment","contr.treatment"))
+
+requiredPackages <- c("chemometrics","FactoMineR","car","knitr",
+                      "missMDA","ResourceSelection", "pROC", "MASS")
+package.check <- lapply(requiredPackages, FUN = function(x) {
+  for (x in requiredPackages) {
+    if (!require(x, character.only = TRUE)) {
+    install.packages(x, dependencies  = TRUE)
+    library(x, character.only = TRUE)
+  }
+  }
+})
+```
+
+```{r}
+setwd("/home/pau/Escriptori/part pau")
+load("./bank-additional-clean.RData")
+```
+
+## Listing out variables
+
+```{r}
+# List of variable names for the target variable
+target_vars <- names(df)[c(11, 20)]
+
+# List of variable names for the discrete variables
+discrete_vars <- names(Filter(is.factor, df))
+discrete_vars = discrete_vars[discrete_vars != 'y']
+
+# List of variable names for the continuous variables
+continuous_vars <- names(Filter(is.numeric, df))
+```
+
+## Model de regresió lineal (target: duration)
+
+### Variables numèriques
+
+Per començar a contruïr el nostre model, inclourem totes les variables numèriques que tenim en el nostre data set.
+
+```{r}
+lm1 <- lm(duration ~ campaign + emp.var.rate + cons.price.idx +
+            cons.conf.idx + euribor3m + nr.employed + age_num, data=df)
+summary(lm1)
+vif(lm1)
+```
+
+A partir d'aquest primer model, treurem les variables emp.var.rate i age_num ja que el model ens diu que no tenen relació amb la target. També treurem cons.price.idx ja que esta correlacionada amb cons.conf.idx i té menys importància dins del model.
+
+```{r}
+lm2 <- lm(duration ~ campaign + cons.conf.idx + euribor3m +
+            nr.employed, data=df)
+summary(lm2)
+vif(lm2)
+```
+
+Amb aquest segon model podem veure que tenim molta colinealitat. Per arreglar aquest problema treiem l'indicador euribor3m (la variable amb més colinealitat).
+
+```{r}
+lm3 <- lm(duration ~ campaign + cons.conf.idx + nr.employed, data=df)
+summary(lm3)
+vif(lm3)
+```
+
+Amb aquest model hem solucionat el problema de la colinealitat i hem obtingut una explicativitat del 24%. Tot i que el model 3 sigui pitjor que el 2, l'agafem perquè té una colinealitat menor que 3. Si agafessim el model 2, aquest no seria vàlid. Així doncs el nostre model inicial amb les variables numèriques és el model lm3.
+
+### Variables categòriques
+
+Una vegada tenim el model amb les variables numèriques addients, procedirem a afegir-li les variables categòriques. Per veure quines variables categòriques hem d'afegir al model començarem per fer un condes i veure'm les categories més relacionades amb la target.
+
+```{r}
+condes(df[, c(continuous_vars[1], discrete_vars)], num.var = 1)
+```
+
+Incourem al model les 5 variables més representatives amb excepció de default, que conté un alt nombre de NA's:
+
+-   Month
+-   Contact
+-   Day_of_week
+-   Poutcome
+-   Age
+
+```{r}
+lm4 <- lm(duration ~ campaign + cons.conf.idx + nr.employed + month
+          + contact + day_of_week + poutcome + age, data=df)
+summary(lm4)
+vif(lm4, type = "predictor") # Molta colinealitat
+```
+
+Amb aquest primer model que hi intervenen les variables categòriques, hem passat a tenir una explicativitat del 36%, més de 10 punts més que sols amb numèriques. Degut a l'alta colinealitat, el vif dona error. Per solucionar-ho ens veiem obligats a treure una variable numèrica. En aquest cas treurem la variable nr.employed ja que ens dona millors resultats que si treiem la variable cons.conf.idx.
+
+```{r}
+lm5 <- lm(duration ~ campaign + cons.conf.idx + month + contact
+          + day_of_week + poutcome + age, data=df)
+summary(lm5)
+vif(lm5)
+```
+
+Com que seguim tenint colinealitat, treure'm la variable contact, ja que de les dues variables amb colinealitat (contact i cons.conf.idx) és la que té menys importància (p valor més elevat).
+
+```{r}
+lm6 <- lm(duration ~ campaign + cons.conf.idx+ month
+          + day_of_week + poutcome + age, data=df)
+summary(lm6)
+vif(lm6)
+```
+
+Amb aquest model no tenim colinealitat i tenim una explicativitat del 36%. Tot i així realitzarem un step a partir del model inicial amb totes les variables categòriques per validar el nostre model.
+
+```{r}
+comp <- step(lm4, trace = F)
+summary(comp)
+vif(comp)
+```
+
+Amb el step podem veure que hem fet la mateixa transformació però, a més, hem fet una iteració més per treure la colinealitat i eliminar la variable contact.
+
+### Interaccions
+
+Per a relitzar les interaccions entre variables, hem agafat totes les variables seleccionades en els apartats anteriors i les hem elevat al quadrat. D'aquesta manera totes les variables interactuaran entre si i amb un step podrem veure quines d'aquestes interaccions són les més útils pel nostre model. A partir d'aquest moment no tindrem en compte la colinealitat ja que al fer les interaccions, com és obvi, hi haurà colinealitat alta entre molts factors del model al tenir la mateixa variable intervenint en diversos camps.
+
+```{r}
+lm7 <- lm(duration ~ (campaign + cons.conf.idx + month
+                      + day_of_week + poutcome + age)^2, data=df)
+lm8 <- step(lm7, trace = F)
+summary(lm8)
+```
+
+Repliquem el model que ens ha donat el step amb un model propi per veure exactament les variables que interactuen:
+
+```{r}
+lm9 <- lm(formula = duration ~ campaign + cons.conf.idx + month
+          + day_of_week + poutcome + age + campaign * cons.conf.idx
+          + cons.conf.idx * day_of_week + 
+    cons.conf.idx * age + month * day_of_week, data = df)
+anova(lm6, lm9)
+```
+
+Fent la comparació entre el model sense i amb interaccions (utilityzant la funció anova()) podem veure que el model amb interaccions (lm9), és molt millor que el model sense (lm6). Amb la incorporació de les interaccions hem elevat fins a un 37% el percentatge d'explicativitat.
+
+### Transformacions
+
+En aquest punt realitzarem les transformacions addients en les variables per ajustar el model a les dades que tenim. Començarem evaluant la variable original (duration), per a fer-ho utilitzarem la funció boxcox() per trobar el valor de la lambda.
+
+```{r}
+boxcox(lm9, data=df)
+```
+
+Veiem que el valor de lambda és major que 0 però proper a aquest. Per tant, haurem de realitzar una transformació d'arrel quadrada sobre duration.
+
+```{r}
+lm10 <- lm(sqrt(duration) ~ campaign + cons.conf.idx + month
+           + day_of_week + poutcome + age + campaign * cons.conf.idx
+           + cons.conf.idx * day_of_week + 
+            cons.conf.idx * age + month * day_of_week, data = df)
+summary(lm10)
+```
+
+Amb aquesta transformació hem aconseguit elevar l'explicativitat fins al 40%, però el més destacable és que hem rebaixat el residual standard error fins a un valor de 6,5, quan en l'anterior model tenia un valor de més de 300.
+
+Seguidament realitzarem un boxTidwell sobre les variables numèriques per veure si és necessària alguna transformació. Sols realitzarem el procés per la variable campaign, ja que la variable cons.conf.idx té valors negatius i no es pot realitzar l'anàlisis.
+
+```{r}
+boxTidwell(sqrt(duration) ~ campaign, data = df)
+```
+
+La funció ens diu que no val la pena realizar una transformació, ja que el resultat del p-valor és superior a 0,05. Per a validar aquesta hipòtesis realitzarem el marginalModelPlot i podrem veure si el nostre model s'adapta a les dades o no:
+
+```{r}
+marginalModelPlots(lm10)
+```
+
+Aquest output ens mostra que, com ja hem vist anteriorment, la variable campaign ja s'ajusta prou, tot i que la variable cons.conf.idx no. Per tant, hem de transformar cons.conf.idx, per fer-ho aplicarem poly() amb un grau que ajusti el model.
+
+```{r}
+lm11 <- lm(sqrt(duration) ~ campaign + poly(cons.conf.idx, 3)
+           + day_of_week + month + poutcome + age + 
+             campaign * cons.conf.idx + cons.conf.idx * day_of_week + 
+            cons.conf.idx * age + month * day_of_week, data = df)
+
+marginalModelPlots(lm11)
+```
+
+Com podem veure, amb aquesta transformació, la variable s'ajusat prou bé al model.
+
+### Individus influents
+
+Seguidament farem una observació dels individus més influents en el model per detectar anomalies i individus fora de rang.
+
+```{r}
+influencePlot(lm11)
+```
+
+En la taula anterior podem veure com hi ha un individu el qual està destorbant el model ja que no es pot obtenir la seva Cook's distance. Per tant, el treurem del model amb un nou data frame. Una vegada tret l'individu problemàtic tornarem a realitzar el model i la influencePlot().
+
+```{r}
+r <- which(row.names(df) == 27690)
+df_new <- df[-c(r),]
+lm12 <- lm(sqrt(duration) ~ campaign + poly(cons.conf.idx, 3)
+           + day_of_week + month + poutcome + campaign * cons.conf.idx
+           + cons.conf.idx * day_of_week + 
+            cons.conf.idx * age + month * day_of_week, data = df_new)
+influencePlot(lm12)
+```
+
+Com podem veure, ara els individus si que són representatius i la plot té sentit. Podem veure com hi ha un individu aïllat amb una forta influència (cercle bastant gran) i una cook's distance important (blau bastant intens). La resta d'individus són menys influents i estan més agrupats. Per detectar i eliminar individus amb una alta cook's distance i un residuu alt realitzarem el següent filtrate:
+
+```{r}
+threshold_cook <- 4/(nrow(df_new)-length(coef(lm12)))
+llcoo <- which( cooks.distance(lm12) > threshold_cook)
+llresid <- which(abs(rstudent(lm12))>3)
+
+df_new <- df_new[-c(llcoo, llresid),]
+
+lm13 <- lm(sqrt(duration) ~ campaign + poly(cons.conf.idx, 3)
+           + day_of_week + month + poutcome + age
+           + campaign * cons.conf.idx + cons.conf.idx * day_of_week + 
+            cons.conf.idx * age + month * day_of_week, data = df_new)
+summary(lm13)
+```
+
+Com podem veure, aquest filtratge d'individus anòmals ens ha augmentat el percentatge d'explicativitat fins a un 47%. Tot i així, podem veure que hi ha variables que no aporten res al model, com és el cas de age. Per trant, traurem aquesta variable per obtenir el model final (no és un gran canvi però pensem que és millor treure-la si no té explicativitat rellevant):
+
+```{r}
+lm.final <- lm(sqrt(duration) ~ campaign + poly(cons.conf.idx, 3)
+               + day_of_week + poutcome + campaign * cons.conf.idx
+               + cons.conf.idx * day_of_week +  cons.conf.idx * age
+               + month * day_of_week, data = df_new)
+summary(lm.final)
+```
+
+### Anàlisis del model final
+
+Per acabar aquest model, farem l'anàlisis final per treure les conclusions de la validesa i qualitat del model.
+
+Primer de tot començarem observant la distribució dels residus de pearson per cada variable del model:
+
+```{r}
+par(mfrow = c(1, 1))
+residualPlots(lm.final)
+```
+
+Podem veure que els residus estan, generalment, alineats en el 0, fet que ens aporta una bona seguretat en les dades del model. Tot i així hi ha alguns individus aïllasts que estan fora del rang idílic. Tot i així no són preocupants ja que no hi ha residus amb un valor més gran que
+
+```{r}
+par(mfrow = c(1, 1))
+plot(lm.final)
+```
+
+Per a cada plot farem el seu anàlisis partinent:
+
+1.    Els residus no mostren patrons significatius, estan repartits per tot l'espai i la seva variabilitat és regular i centrada al 0. Podem veure que compleix la homoscedisticitat i la independència.
+
+2.    Podem veure que els residus no segueixen una distribució normal, ja que existeixen dues cues significatives a l'inici i al final de la plot.
+
+3.    En la línia de la primera plot, podem veure que segueix sent homoscedàtica però aquí sí que podem veure dos patrons més marcats en els valors fitats 15 i 28 aproximadament. A més, la línia smooth no és regular.
+
+4.    En aquesta última plot podem veure que els residus estan ben distribuïts ja que la majoria es troben amb un leverage inferior a 0,05 i amb residus propers al 0. Tot i així podem veure alguns individus fora de rang amb leverages més elevats, tot i així la variabilitat es manté constant al 0.
+
+## Model de regresió logística (target: y)
+
+Con el objetivo de poder encuadrar la variable binaria 'Y' en una regresión logística, será necesario asumir que las observaciones son independientes entre sí. Esto significa que los valores de la variable objetivo "Y" de una observación no están relacionados o influenciados por los valores de otras observaciones.
+
+```{r}
+# División del conjunto de datos en muestra de trabajo y muestra de prueba
+set.seed(123)  # Para reproducibilidad
+sample_size <- floor(0.8 * nrow(df))  # Tamaño de muestra de trabajo (80%)
+train_index <- sample(seq_len(nrow(df)),
+                      size = sample_size)# Índices de muestra de trabajo
+
+# Creación de la muestra de trabajo y muestra de prueba
+train_data <- df[train_index, ]
+test_data <- df[-train_index, ]
+```
+
+```{r}
+continuous_vars
+cor(df$duration, df[,continuous_vars[-1]])
+```
+
+When undertaking the analysis of various models in R, one may often confront a binomial regression problem. A binomial regression refers to the statistical process of modeling a binary outcome as a function of one or more predictors. One potential solution is to employ a linear model, which may be a favorable option under certain circumstances, particularly when elucidating the connection between predictor variables and the likelihood of a positive binary result.
+
+The appeal of linear models for binomial regression problems resides in three major attributes:
+
+1.  Coefficients Interpretation: Linear models facilitate the interpretation of the relationship between predictor variables and the expected outcome. They deliver coefficients that signify the direction and magnitude of the impact of various predictors on the probability of success.
+
+2.  Simplicity and Familiarity: Linear regression has a long-standing history and broad application in statistics. This universal use and basic understanding make it an accessible tool for binomial regression, particularly when the focus is on discerning the linear connection between predictors and the log-odds of success.
+
+3.  Continuous Predictor Variables: For binomial regression problems primarily featuring continuous predictors, a linear model can accurately portray their linear relationships with the log-odds of success.
+
+However, it is essential to recognize that a linear model may not always be the optimal choice for binomial regression problems. Specifically designed for binary outcomes, alternative models may sometimes prove more suitable.
+
+Indeed, binomial regression scenarios often necessitate models explicitly constructed for binary results. While linear models offer insights into the connection between predictors and the expected outcome, they may fail to adequately represent nonlinear relationships or consider the inherent probabilities associated with binary outcomes.
+
+Alternative models tailored for binomial regression, such as logistic regression, probit regression, and complementary log-log regression, account for these underlying probabilities of success. They incorporate suitable link functions to model the relationship between predictors and the likelihood of success directly.
+
+When analyzing our specific problem with 'y' as the target variable in R, fitting a linear model could help to illustrate the linear relationship between the predictor variables and the expected value of 'y'. Nonetheless, it remains crucial to reflect upon the assumptions and limitations of linear regression and investigate alternative models like logistic regression, which might more accurately model the probability of 'y' being a success.
+
+```{r}
+# Modelo inicial con dos variables numéricas y factores significativos
+model <- glm(y ~ age_num + duration + job + housing + loan
+             + month + euribor3m, data = train_data, family = binomial)
+summary(model)
+vif(model)
+marginalModelPlots(model)
+```
+
+```{r}
+Anova(model)
+```
+
+```{r}
+model1 <- glm(y ~ duration + housing + month + euribor3m 
+            + marital + day_of_week, data = train_data, family = binomial)
+summary(model1)
+```
+
+```{r}
+vif(model1)
+```
+
+```{r}
+marginalModelPlots(model1)
+residualPlots(model1)
+```
+
+```{r}
+Anova(model1)
+vif(model1)
+```
+
+This model has non-significant variables and does not meet the model requirements, like interactions. As such, a new model has to be devised.
+
+```{r}
+# Incorporar interacciones entre factores y una covariable
+model2 <- glm(y ~ duration * housing + euribor3m + marital * day_of_week
+              + month, data = train_data, family = binomial)
+
+summary(model2)
+Anova(model2)
+vif(model2)
+```
+
+```{r}
+marginalModelPlots(model2)
+residualPlots(model2)
+```
+
+```{r}
+# Incorporación de interacción entre factores
+model3 <- glm(y ~ duration + housing*euribor3m + marital*day_of_week
+              + month, data = train_data, family = binomial)
+vif(model3)
+```
+
+```{r}
+anova(model3)
+Anova(model3)
+```
+
+```{r}
+residualPlots(model3)
+```
+
+```{r}
+summary(model3)
+```
+
+```{r}
+# Crear una lista de los modelos
+model_list <- list(model2, model3)
+```
+
+```{r}
+# Crear una lista de etiquetas para los modelos
+model_labels <- c("Model 2", "Model 3")
+
+# Crear un layout de múltiples gráficos en una sola figura
+par(mfrow = c(2, 2))  # 2 filas y 2 columnas para 4 gráficos
+
+# Realizar los plots para cada modelo
+lapply(seq_along(model_list), function(i) {
+  plot(model_list[[i]], which = 1, main = 
+         paste("Residuos de Pearson -", model_labels[i]))
+  plot(model_list[[i]], which = 2, main = 
+         paste("Residuos de Desviación -", model_labels[i]))
+})
+
+```
+
+```{r}
+# Model 2 Predictions and Confusion Matrix
+model2_pred <- predict(model2, test_data, type = "response")
+model2_pred_class <- ifelse(model2_pred > 0.5, "yes", "no")
+
+# Model 2 Confusion Matrix
+model2_actual <- test_data$y
+model2_confusion <- table(Actual = model2_actual,
+                          Predicted = model2_pred_class)
+
+# Model 3 Predictions and Confusion Matrix
+model3_pred <- predict(model3, test_data, type = "response")
+model3_pred_class <- ifelse(model3_pred > 0.5, "yes", "no")
+
+# Model 3 Confusion Matrix
+model3_actual <- test_data$y
+model3_confusion <- table(Actual = model3_actual,
+                          Predicted = model3_pred_class)
+
+model2_confusion
+model3_confusion
+
+
+```
+
+```{r}
+# Model 2 Accuracy and Recall
+model2_accuracy <- sum(diag(model2_confusion)) / sum(model2_confusion)
+model2_recall <- model2_confusion[2, 2] / sum(model2_confusion[2, ])
+
+# Model 3 Accuracy and Recall
+model3_accuracy <- sum(diag(model3_confusion)) / sum(model3_confusion)
+model3_recall <- model3_confusion[2, 2] / sum(model3_confusion[2, ])
+
+# Print the accuracy and recall for Model 2
+cat("Model 2:\n")
+cat("Accuracy:", model2_accuracy, "\n")
+cat("Recall:", model2_recall, "\n")
+
+# Print the accuracy and recall for Model 3
+cat("Model 3:\n")
+cat("Accuracy:", model3_accuracy, "\n")
+cat("Recall:", model3_recall, "\n")
+
+```
+
+```{r}
+# Load required packages
+library(ResourceSelection)  # For Hosmer-Lemeshow test
+library(car)  # For VIF calculation
+library(pROC)  # For ROC analysis
+
+# 1. Residual analysis
+par(mfrow = c(2, 2))  # Set up a 1x2 plot layout
+plot(model2, which = 1)
+mtext("Model 2", side = 4, line = 0)
+plot(model2, which = 2)
+mtext("Model 2", side = 4, line = 0)
+plot(model3, which = 1)
+mtext("Model 3", side = 4, line = 0)
+plot(model3, which = 2)
+mtext("Model 3", side = 4, line = 0)
+```
+
+### Goodness of fit
+
+Goodness-of-fit refers to the assessment of how well a statistical model fits the observed data. When it comes to binomial models, the goodness-of-fit analysis aims to evaluate the adequacy of the model in capturing the relationship between the predictors and the binary response variable.
+
+One commonly used metric for assessing the goodness-of-fit of a binomial model is the Hosmer-Lemeshow test. This test compares the observed outcomes with the predicted probabilities from the model. It divides the data into groups based on the predicted probabilities and assesses whether the observed frequencies within each group differ significantly from the expected frequencies.
+
+The Hosmer-Lemeshow test provides a chi-square statistic and a corresponding p-value. A low p-value suggests a lack of fit between the model and the observed data, indicating that the predicted probabilities do not align well with the actual binary outcomes.
+
+However, it's important to note that the Hosmer-Lemeshow test has some limitations and intricacies. First, it assumes that the predicted probabilities accurately represent the underlying probabilities in the population. If the model suffers from misspecification or violates certain assumptions, such as linearity or independence, the Hosmer-Lemeshow test may produce unreliable results.
+
+```{r}
+# 2. Goodness-of-fit test (Hosmer-Lemeshow)
+
+# Calculate the observed and expected values
+observed <- ifelse(train_data$y == "yes", 1,0)
+
+cat("Model 2")
+# Calculate the observed and expected values
+expected <- fitted(model2)
+expected <- ifelse(expected > 0.5, 1, 0)
+
+# Perform the Hosmer-Lemeshow test
+hoslem_result <- hoslem.test(observed, expected)
+hoslem_result
+
+cat("Model 3")
+expected <- fitted(model3)
+expected <- ifelse(expected > 0.5, 1, 0)
+
+# Perform the Hosmer-Lemeshow test
+hoslem_result <- hoslem.test(observed, expected)
+hoslem_result
+```
+
+The Hosmer-Lemeshow goodness-of-fit (GOF) test is commonly used in logistic regression to assess how well a model fits the observed data. It evaluates the agreement between the observed outcomes and the predicted probabilities from the model.
+
+The test works by dividing the data into several groups based on the predicted probabilities. Then, it compares the observed and expected frequencies of the binary outcomes within each group. If the model fits the data well, the observed and expected frequencies should be similar across all groups.
+
+1.  X-squared (Chi-square) Statistic:
+    -   The X-squared statistic is a measure of the discrepancy between the observed and expected values in the contingency table.
+    -   In this case, the X-squared values are 2.8191 vs 2.6101 for model2 and model3, respectively. A higher X-squared value suggests a larger discrepancy between the observed and expected values.
+2.  Degrees of Freedom (df):
+    -   The degrees of freedom for the Hosmer-Lemeshow test is determined by the number of categories in the contingency table minus 1.
+    -   In this output, the degrees of freedom is 8, indicating that there are 8 categories being compared.
+3.  p-value:
+    -   The p-value assesses the statistical significance of the difference between the observed and expected values.
+    -   In this case, the p-values are 0.9452 vs 0.9564 for model2 and model3, respectively, which are relatively high.
+    -   A higher p-value indicates that there is no significant discrepancy between the observed and expected values, suggesting that the logistic regression model (model3) fits the data well.
+
+### Cooks distance
+
+```{r}
+# MODEL 2
+# 3. Influential observations (Cook's distance and leverage)
+cooks_dist <- cooks.distance(model2)
+hat_values <- hatvalues(model2)
+plot(cooks_dist, pch = 19, main = "Cook's Distance")
+plot(hat_values, pch = 19, main = "Leverage")
+
+# Calculate Cook's distance values
+cooks_dist <- cooks.distance(model2)
+
+# Identify the indices of the 20 largest Cook's distances
+top_influential <- order(cooks_dist, decreasing = TRUE)[1:20]
+
+# Subset the data to the most influential points
+influential_points <- train_data[top_influential, ]
+
+# Extract the values of the influential points
+influential_values <- as.data.frame(influential_points
+                                    [, -ncol(influential_points)])
+
+# Print the values of the influential points
+print(influential_values)
+```
+
+```{r}
+
+# Plot the influential points
+par(mfrow = c(2, 2))
+for (i in 1:4) {
+  plot(influential_points[, i], influential_points$y,
+       xlab = names(influential_points)[i],
+       ylab = "y", main = "Influential Points",
+       pch = 19, col = "blue")
+}
+
+```
+
+```{r}
+
+# 3. Influential observations (Cook's distance and leverage)
+cooks_dist <- cooks.distance(model3)
+hat_values <- hatvalues(model3)
+plot(cooks_dist, pch = 19, main = "Cook's Distance")
+plot(hat_values, pch = 19, main = "Leverage")
+
+# Identify the indices of the 20 largest Cook's distances
+top_influential <- order(cooks_dist, decreasing = TRUE)[1:20]
+
+# Subset the data to the most influential points
+influential_points <- train_data[top_influential, ]
+
+# Extract the values of the influential points
+influential_values <- as.data.frame(influential_points
+                                    [,-ncol(influential_points)])
+
+# Print the values of the influential points
+print(influential_values)
+
+# Plot the influential points
+par(mfrow = c(2, 2))
+for (i in 1:4) {
+  plot(influential_points[, i], influential_points$y,
+       xlab = names(influential_points)[i], ylab = "y"
+       , main = "Influential Points",
+       pch = 19, col = "red")
+}
+
+```
+
+### VIF values
+
+```{r}
+# 4. Collinearity assessment (Variance Inflation Factor)
+vif(model2)
+vif(model3)
+```
+
+Comparing the VIF outputs for model2 and model3, we can observe the following:
+
+For model2:
+
+-   The interaction term "duration:housing" has a GVIF of 5.685354, indicating some degree of multicollinearity between these variables.
+
+-   The interaction term "marital:day_of_week" has a very high GVIF of 3.676400e+05, suggesting severe multicollinearity between these variables.
+
+-   The other variables, including the main effects, have relatively lower GVIF values, indicating lower levels of multicollinearity.
+
+For model3:
+
+-   The interaction term "housing:euribor3m" has a very high GVIF of 2.979348e+03, indicating a significant multicollinearity issue between these variables.
+
+-   The interaction term "marital:day_of_week" also has a high GVIF of 3.189494e+05, suggesting severe multicollinearity between these variables.
+
+-   The other variables, including the main effects, have lower GVIF values, indicating lower levels of multicollinearity.
+
+In terms of performance or correction, both models exhibit multicollinearity issues, particularly in their interaction terms. However, model3 shows a higher degree of multicollinearity, as indicated by the significantly higher GVIF values for the interaction terms compared to model2. This suggests that the interactions in model3 may be causing a more severe multicollinearity problem.
+
+Whatever the case, as it had been devised in the designing phase of the models, the specific requirement of the exercise made it hard to find other variable combinations that had better values in terms of VIF without having a significant negative impact in model performance. For that reason, we should consider these good results.
+
+### ROC
+
+```{r}
+# 6. ROC curve and AUC
+model2_roc_data <- roc(train_data$y, predict(model2, type = "response"))
+model3_roc_data <- roc(train_data$y, predict(model3, type = "response"))
+```
+
+```{r}
+cat("Model2: ")
+auc(model2_roc_data)
+cat("Model3: ")
+auc(model3_roc_data)
+```
+
+```{r}
+par(mfrow=c(1,2))
+plot(model2_roc_data, main = "Model 2 ROC Curve")
+mtext(sprintf("Area under the curve: %0.5f", auc(model2_roc_data))
+      , side = 4, line = 0)
+plot(model3_roc_data, main = "Model 3 ROC Curve")
+mtext(sprintf("Area under the curve: %0.5f", auc(model3_roc_data))
+      , side = 4, line = 0)
+
+```
+
+The statement refers to the Area Under the Curve (AUC) value obtained from analyzing a Receiver Operating Characteristic (ROC) curve. The AUC measures the overall performance of a binary classification model, summarizing its ability to distinguish between the positive and negative classes.
+
+In this case, the AUC value is 0.9965. An AUC of 1 represents a perfect classifier, while an AUC of 0.5 indicates a random classifier. Therefore, an AUC of 0.9965 is quite high, indicating that the model has a strong discriminatory power and performs exceptionally well in distinguishing between the positive and negative classes.
+
+Based on the provided AUC value, it can be concluded that the models have excellent predictive performance. It demonstrates a high true positive rate and a low false positive rate, suggesting that they are capable of accurately classifying instances in the dataset. The closer the AUC is to 1, the better the model's performance is in terms of its ability to discriminate between the classes.
+
+```{r}
+cat("Model 2:\n")
+AIC(model2)
+BIC(model2)
+
+cat("Model 3:\n")
+AIC(model3)
+BIC(model3)
+
+
+```
+
+### Justification for Model Selection: Model3
+
+In this analysis, we have evaluated two models, Model2 and Model3, and based on their performance, we have decided to select Model3 as the final model. The decision is justified by considering multiple evaluation metrics and criteria, including the AIC, BIC, Hosmer-Lemeshow test, and VIF values.
+
+Starting with the AIC and BIC values, these metrics provide insights into the goodness-of-fit and model complexity. While Model2 has slightly better AIC and BIC values compared to Model3, it is important to note that the difference is very small. The AIC of Model2 is 704.7237, and the AIC of Model3 is 705.3971. Similarly, the BIC of Model2 is 874.663, and the BIC of Model3 is 875.3364. Despite the slight advantage of Model2 in terms of these criteria, the difference is negligible, and other factors should be taken into account for model selection.
+
+Next, we consider the results of the Hosmer-Lemeshow goodness-of-fit test. This test evaluates how well the model fits the observed data based on a chi-square test statistic. Both Model2 and Model3 exhibit non-significant p-values, indicating good fits. The chi-square statistic for Model2 is 2.8191, and for Model3 it is 2.6101. Although Model2 has a slightly higher chi-square value, the difference is minimal, and both models demonstrate satisfactory goodness-of-fit.
+
+Furthermore, we compare the VIF (Variance Inflation Factor) values between Model2 and Model3 to assess multicollinearity. The VIF values indicate the extent to which predictor variables are correlated with each other. Lower VIF values suggest lower levels of multicollinearity. Upon comparing the VIF values, we find that Model3 generally has lower VIF values compared to Model2. This indicates a relatively lower degree of multicollinearity in Model3, which is a desirable characteristic for a robust model.
+
+Considering these factors, including the slight advantage of Model2 in AIC and BIC, the comparable goodness-of-fit based on the Hosmer-Lemeshow test, and the lower VIF values of Model3, we conclude that Model3 demonstrates slightly better performance and offers a more robust model for our analysis. The small differences in AIC and BIC can be attributed to the different considerations and assumptions underlying these criteria.
+
+It is important to note that model selection is a complex process, and the choice of the final model should not solely rely on individual metrics. Context, interpretability, and other relevant factors should also be considered. The selection of Model3 is based on a comprehensive assessment of multiple criteria, and it provides a reasonable balance between model performance, goodness-of-fit, and multicollinearity.
+
+```{r, echo=FALSE}
+# R code for model selection
+model3
+```
+
+By selecting Model3, we aim to leverage its slightly better performance and lower multicollinearity to gain more accurate predictions and insights into the relationship between the predictors and the target variable.
+
